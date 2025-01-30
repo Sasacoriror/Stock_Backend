@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DCF Calculator</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="DCF_Calculator.js"></script>
+  <style>
+    .content {
+      max-width: 500px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+<div class="content">
+  <div class="container">
+    <div class="row">
+      <h1>DCF = Discounted Cash Flow</h1>
+      <div class="col-md-5">
+        <form class="form">
+          <div class="form-group">
+            <label for="currentSharePrice">Current Share Price</label>
+            <input type="number" class="form-control" id="currentSharePrice">
+          </div>
+          <div class="form-group">
+            <label for="FCF">Free Cash Flow Per Share (FCF)</label>
+            <input type="number" class="form-control" id="FCF">
+          </div>
+          <div class="form-group">
+            <label for="Growth">FCF Growth Rate (g)</label>
+            <input type="number" class="form-control" id="Growth">
+          </div>
+          <div class="form-group">
+            <label for="Years">Total Years To Simulate (n)</label>
+            <input type="number" class="form-control" id="Years">
+          </div>
+          <div class="form-group">
+            <label for="Discount">Discount Rate (k)</label>
+            <input type="number" class="form-control" id="Discount">
+          </div>
+        </form>
+
+        <button class="btn btn-primary" onclick="Input()">Regn ut</button>
+        <div id="value"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

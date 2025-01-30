@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projection Snapshot Table</title>
+    <script src="Snowball.js"></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+<h1>Projection Snapshot Table</h1>
+<form id="projectionForm">
+    <label>Stock Price: <input type="number" id="stockPrice" step="0.01" required></label><br>
+    <label>Annual Dividend: <input type="number" id="annualDividend" step="0.01" required></label><br>
+    <label>Expected Dividend CAGR (%): <input type="number" id="dividendCAGR" step="0.01" required></label><br>
+    <label>Expected Stock Price CAGR (%): <input type="number" id="stockPriceCAGR" step="0.01" required></label><br>
+    <label>Amount to Invest: <input type="number" id="amountToInvest" step="0.01" required></label><br>
+    <label>Investment Frequency:
+        <select id="investmentFrequency" required>
+            <option value="oneTime">One Time</option>
+            <option value="monthly">Monthly</option>
+        </select>
+    </label><br>
+    <label>Dividend Frequency:
+        <select id="dividendFrequency" required>
+            <option value="quarterly">Quarterly</option>
+            <option value="monthly">Monthly</option>
+            <option value="semiAnnual">Semi-Annual</option>
+            <option value="annual">Annual</option>
+        </select>
+    </label><br>
+    <label>Reinvest Dividends:
+        <select id="dividendReinvestment" required>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select>
+    </label><br>
+    <button type="button" onclick="calculateProjection()">Generate Table</button>
+</form>
+
+<div id="tableContainer"></div>
+</body>
+</html>

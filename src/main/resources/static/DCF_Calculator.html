@@ -5,6 +5,11 @@
   <title>DCF Calculator</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="DCF_Calculator.js"></script>
+  <script>
+    fetch("index.html")
+            .then(response => response.text())
+            .then(data => document.getElementById("navbar").innerHTML = data);
+  </script>
   <style>
     .content {
       max-width: 500px;
@@ -13,6 +18,7 @@
   </style>
 </head>
 <body>
+<div id="navbar"></div>
 <div class="content">
   <div class="container">
     <div class="row">

@@ -1,66 +1,80 @@
 function calculateProjection() {
-    const stockPrice = parseFloat(document.getElementById('stockPrice').value);
+    let stockPrice = parseFloat(document.getElementById('stockPrice').value);
     let annualDividend = parseFloat(document.getElementById('annualDividend').value);
     const dividendCAGR = parseFloat(document.getElementById('dividendCAGR').value) / 100;
     const stockPriceCAGR = parseFloat(document.getElementById('stockPriceCAGR').value) / 100;
     const amountToInvest = parseFloat(document.getElementById('amountToInvest').value);
     const investmentFrequency = document.getElementById('investmentFrequency').value;
-    const dividendFrequency = document.getElementById('dividendFrequency').value;
+    const dividendFrequency = document.getElementById('dividendFrequency').value.toLowerCase();
     const dividendReinvestment = document.getElementById('dividendReinvestment').value === 'yes';
 
-    const years = 50;
-    const frequencyMultiplier = {
-        monthly: 12,
-        quarterly: 4,
-        semiAnnual: 2,
-        annual: 1 }
-        [dividendFrequency];
+    let periodsPerYear;
+    if (dividendFrequency === 'monthly') {
+        periodsPerYear = 12;
+    } else if (dividendFrequency === 'quarterly') {
+        periodsPerYear = 4;
+    } else if (dividendFrequency === 'semiannual' || dividendFrequency === 'semiAnnual') {
+        periodsPerYear = 2;
+    } else if (dividendFrequency === 'annual') {
+        periodsPerYear = 1;
+    } else {
+        console.error("Unknown dividend frequency: " + dividendFrequency);
+        return;
+    }
 
-    //const results = [];
+    const totalYears = 50;
+    const totalPeriods = totalYears * periodsPerYear;
 
-    //let totalShares = investmentFrequency === 'monthly' ? amountToInvest / stockPrice / 12 : amountToInvest / stockPrice;
+    // Convert annual growth rates into per-period growth factors.
+    const periodStockPriceGrowth = Math.pow(1 + stockPriceCAGR, 1 / periodsPerYear);
+    // Option 1: Update dividend only once per year (keeps dividend constant during the year).
+    // Option 2: Convert dividend growth to per-period if you want it to change every period.
+    // For this example, we update dividends annually.
+
     let totalShares = 0;
-    let investedAmount = 0;
-    let price = 0;
-    let currentStockPrice = stockPrice;
-    let annualDividendIncome = 0;
+    if (investmentFrequency === 'oneTime') {
+        totalShares = amountToInvest / stockPrice;
+        console.log("Initial Shares:", totalShares);
+    }
+    // (For monthly investing, you would add investments each period.)
 
-    console.clear()
-    console.log("Year| "+"Invested| "+"Dividend")
+    console.clear();
+    console.log("Year | Annual Dividend Income");
 
-
-    for (let year = 1; year <= years; year++) {
-        // Update invested amount
+    for (let period = 1; period <= totalPeriods; period++) {
+        // For monthly investment, add new shares each period:
         if (investmentFrequency === 'monthly') {
-            investedAmount += amountToInvest * 12;
-        } else if (investmentFrequency === 'oneTime' && year === 1) {
-            investedAmount += amountToInvest;
+            // Here, amountToInvest is the amount invested each month.
+            //totalShares += amountToInvest / stockPrice;
+            //console.log("Initial Shares:", totalShares);
+
         }
 
+        // Update stock price for each period.
+        stockPrice *= periodStockPriceGrowth;
 
-        totalShares = investedAmount / stockPrice;
+        // Calculate dividend payment for this period (if dividends are paid monthly, use annualDividend / 12)
+        if (dividendReinvestment) {
+            const dividendPayment = (annualDividend / periodsPerYear) * totalShares;
+            // Reinvest at the current stock price:
+            const newShares = dividendPayment / stockPrice;
+            console.log("Dividend Payment:", dividendPayment.toFixed(4), "New Shares:", newShares.toFixed(6));
+            totalShares += newShares;
+        }
 
+        // At the end of each year, update the annual dividend and log the annual dividend income.
+        if (period % periodsPerYear === 0) {
+            let currentYear = period / periodsPerYear;
+            let annualDividendIncome = totalShares * annualDividend;
+            console.log(currentYear + "   |  " + annualDividendIncome.toFixed(2));
 
-        // Update the annual dividend after all intervals
-        if (year === 1){
-            annualDividend == annualDividend
-        } else if (year>1) {
+            // Update annual dividend for the next year.
             annualDividend *= 1 + dividendCAGR;
         }
-
-
-
-        // Store results every 5 years
-        if (year % 5 === 0) {
-            annualDividendIncome = totalShares*annualDividend
-           console.log(year+"  |  "+investedAmount+"  |  "+annualDividendIncome.toFixed(2));
-        }
-
     }
-    console.log("Totalshares: "+totalShares);
-    console.log("InvestedAmount: "+investedAmount);
-    console.log("StockPrice: "+stockPrice+"\nStockPriceCAGR: "+stockPriceCAGR);
-    console.log("Price: "+price)
+
+    console.log("Total Shares: " + totalShares.toFixed(4));
+    console.log("Final Stock Price: " + stockPrice.toFixed(2));
     //generateTable(results);
 }
 

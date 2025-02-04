@@ -1,5 +1,6 @@
 package com.example.stocks.Controller;
 
+import com.example.stocks.DTO.PriceDTO;
 import com.example.stocks.Service.PriceService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,8 +16,13 @@ public class StockController {
         this.priceService = priceService;
     }
 
-    @GetMapping("TickerPrice")
+    @GetMapping("TickerInfo")
     public String getStockPrice() {
         return priceService.getTickerData();
+    }
+
+    @GetMapping("PriceInfo")
+    public PriceDTO getPriceData() {
+        return priceService.getPriceData();
     }
 }

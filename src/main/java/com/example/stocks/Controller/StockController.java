@@ -20,7 +20,7 @@ public class StockController {
 
     @PostMapping("find/{ticker}")
     public void findPrice(@PathVariable("ticker") String ticker) {
-        endpoints.setPriceAPI(ticker);
+        endpoints.setPriceAPI(ticker.toUpperCase());
     }
 
     @GetMapping("TickerInfo")

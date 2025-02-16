@@ -3,28 +3,30 @@ package com.example.stocks.DTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PriceDTO {
 
-    @JsonProperty("weighted_shares_outstanding")
-    private Double weightedSharesOutstanding;
+    @JsonProperty("ticker")
+    private String ticker;
 
-    @JsonProperty("market_cap")
-    private Double markedCap;
+    @JsonProperty("results")
+    private List<Result> results;
 
-    public Double getWeightedSharesOutstanding() {
-        return weightedSharesOutstanding;
+    public String getTicker() {
+        return ticker;
     }
 
-    public void setWeightedSharesOutstanding(Double weightedSharesOutstanding) {
-        this.weightedSharesOutstanding = weightedSharesOutstanding;
+    public void setTicker(String ticker) {
+        this.ticker = ticker;
     }
 
-    public Double getMarkedCap() {
-        return markedCap;
+    public List<Result> getResults() {
+        return results;
     }
 
-    public void setMarkedCap(Double markedCap) {
-        this.markedCap = markedCap;
+    public void setResults(List<Result> results) {
+        this.results = results;
     }
 }

@@ -31,18 +31,15 @@ public class PriceService {
     }
 
     public PriceDTO getPriceData(){
-        ResponseEntity<String> response = restTemplate.getForEntity(endpoints.getPriceAPI(), String.class);
+        ResponseEntity<String> response = restTemplate
+                .getForEntity(endpoints.getPriceAPI(), String.class);
 
         if (response.getBody() == null) {
             throw new RuntimeException("No Response");
         }
 
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(response.getBody());
-            JsonNode resultsNode = rootNode.path("results");
-            return objectMapper.treeToValue(resultsNode, PriceDTO.class);
-
+            return objectMapper.readValue(response.getBody(), PriceDTO.class);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error parsing JSON response");

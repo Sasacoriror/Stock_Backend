@@ -3,7 +3,6 @@ package com.example.stocks.Controller;
 import com.example.stocks.DTO.PriceDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Service.PriceService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

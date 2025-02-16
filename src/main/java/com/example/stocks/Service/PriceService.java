@@ -13,7 +13,6 @@ public class PriceService {
 
     private final RestTemplate restTemplate;
     private final Endpoints endpoints;
-    private final String API_URL = "https://api.polygon.io/v3/reference/tickers/AAPL?apiKey=7k0sCkhL4aw1lSb0OhKRLibal5qpHV85";
     private final ObjectMapper objectMapper;
 
     public PriceService(RestTemplate restTemplate, ObjectMapper objectMapper, Endpoints endpoints) {
@@ -32,7 +31,7 @@ public class PriceService {
     }
 
     public PriceDTO getPriceData(){
-        ResponseEntity<String> response = restTemplate.getForEntity(API_URL, String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(endpoints.getPriceAPI(), String.class);
 
         if (response.getBody() == null) {
             throw new RuntimeException("No Response");

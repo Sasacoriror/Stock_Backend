@@ -22,9 +22,9 @@ public class StockController {
         this.stockRepository = stockRepository;
     }
 
-    @PostMapping
+    @PostMapping("storeStockData")
     public void store(@RequestBody Stocks stocks) {
-
+        stockRepository.save(stocks);
     }
 
     @PostMapping("find/{ticker}")

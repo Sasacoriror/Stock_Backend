@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/")
+@CrossOrigin(origins = "http://localhost:63342")
 public class StockController {
 
     private final PriceService priceService;
@@ -23,8 +24,9 @@ public class StockController {
     }
 
     @PostMapping("storeStockData")
-    public void store(@RequestBody Stocks stocks) {
+    public String store(@RequestBody Stocks stocks) {
         stockRepository.save(stocks);
+        return "Stock added successfully";
     }
 
     @PostMapping("find/{ticker}")

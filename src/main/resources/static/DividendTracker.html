@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Dividends</title>
+    <link rel="stylesheet" href="DividendTracker.css">
+    <script src="DividendTracker.js"></script>
     <script>
         fetch("index.html")
             .then(response => response.text())
             .then(data => document.getElementById("navbar").innerHTML = data);
     </script>
+
     <style>
         h1{
             text-align: center;
@@ -16,6 +19,24 @@
 </head>
 <body>
 <div id="navbar"></div>
-<h1>COMMING SOON</h1>
+<h1>Dividend Portfolio</h1>
+
+<div class="form-container">
+    <label>Stock ticker:
+        <input type="text" id="tickerSymbol" placeholder="EX: MSFT" required>
+    </label>
+
+    <label>Stock Price:
+        <input type="number" id="theStockPrice" placeholder="Ex:100$" required>
+    </label>
+
+    <label>How many shares:
+        <input type="number" id="shares" placeholder="Ex:5" required>
+    </label>
+
+
+    <button onclick="sendData()">Add</button>
+    <div id="value"></div>
+</div>
 </body>
 </html>

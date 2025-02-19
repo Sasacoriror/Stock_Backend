@@ -1,24 +1,25 @@
 package com.example.stocks.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 
 @Entity
 public class Stocks {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
+    @JsonProperty("stockTickerInn")
     private String StockName;
 
+    @JsonProperty("priceInn")
     private int stockPrice;
 
+    @JsonProperty("sharesInn")
     private int stockQuantity;
 
-    public Stocks(int id, String stockName, int stockPrice, int stockQuantity) {
+    public Stocks(Long id, String stockName, int stockPrice, int stockQuantity) {
         this.id = id;
         this.StockName = stockName;
         this.stockPrice = stockPrice;
@@ -27,11 +28,11 @@ public class Stocks {
 
     public Stocks() {}
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

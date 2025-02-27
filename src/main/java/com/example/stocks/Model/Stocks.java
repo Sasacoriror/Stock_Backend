@@ -2,8 +2,12 @@ package com.example.stocks.Model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 public class Stocks {
 
     @Id
@@ -11,7 +15,8 @@ public class Stocks {
     private Long id;
 
     @JsonProperty("stockTickerInn")
-    private String StockName;
+    @Column(unique = true, nullable = false)
+    private String stockName;
 
     @JsonProperty("priceInn")
     private int stockPrice;
@@ -19,15 +24,24 @@ public class Stocks {
     @JsonProperty("sharesInn")
     private int stockQuantity;
 
-    public Stocks(Long id, String stockName, int stockPrice, int stockQuantity) {
+    @JsonProperty("currentPrice")
+    private double currentPrice;
+
+    @JsonProperty("dividend")
+    private double dividend;
+
+    public Stocks(Long id, String stockName, int stockPrice, int stockQuantity,
+                  double currentPrice, double dividend) {
         this.id = id;
-        this.StockName = stockName;
+        this.stockName = stockName;
         this.stockPrice = stockPrice;
         this.stockQuantity = stockQuantity;
+        this.currentPrice = currentPrice;
+        this.dividend = dividend;
     }
 
     public Stocks() {}
-
+/*
     public Long getId() {
         return id;
     }
@@ -60,13 +74,31 @@ public class Stocks {
         this.stockQuantity = stockQuantity;
     }
 
+    public double getCurrentPrice() {
+        return currentPrice;
+    }
+
+    public void setCurrentPrice(double currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+
+    public double getDividend() {
+        return dividend;
+    }
+
+    public void setDividend(double dividend) {
+        this.dividend = dividend;
+    }*/
+
     @Override
     public String toString() {
         return "Stocks{" +
                 "id=" + id +
-                ", StockName='" + StockName + '\'' +
+                ", StockName='" + stockName + '\'' +
                 ", stockPrice=" + stockPrice +
                 ", stockQuantity=" + stockQuantity +
+                ", currentPrice=" + currentPrice +
+                ", dividend=" + dividend +
                 '}';
     }
 }

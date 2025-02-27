@@ -25,16 +25,20 @@ public class StockController {
     }
 
     @PostMapping("storeStockData")
-    public String store(@RequestBody Stocks stocks) {
-        stockRepository.save(stocks);
-        return "Stock added successfully";
+    public Stocks store(@RequestBody Stocks stocks) {
+        Stocks stocks1 = stockRepository.save(stocks);
+        endpoints.setPriceAPI(stocks1.getStockName());
+        endpoints.setDividendAPI(stocks1.getStockName());
+        priceService.updateStockData();
+        //return "Stock added successfully";
+        return stocks1;
     }
-
+/*
     @PostMapping("find/{ticker}")
     public void findPrice(@PathVariable("ticker") String ticker) {
         endpoints.setPriceAPI(ticker.toUpperCase());
         endpoints.setDividendAPI(ticker.toUpperCase());
-    }
+    }*/
 
     @GetMapping("TickerInfo")
     public String getStockPrice() {

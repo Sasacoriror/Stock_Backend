@@ -9,8 +9,7 @@ public class Endpoints {
     private String dividendAPI;
 
     public void setPriceAPI(String ticker) {
-        //String url = "https://api.polygon.io/v3/reference/tickers/"+ticker+"?apiKey=7k0sCkhL4aw1lSb0OhKRLibal5qpHV85";
-        String url = "https://api.polygon.io/v2/aggs/ticker/"+ticker+"/prev?adjusted=true&apiKey=Ix4tpJivedA1nWgzXSR8nQjJV1si8jbE";
+        String url = "https://api.polygon.io/v2/aggs/ticker/"+ticker+"/prev?adjusted=true&apiKey=7k0sCkhL4aw1lSb0OhKRLibal5qpHV85";
         this.priceAPI = url;
     }
 

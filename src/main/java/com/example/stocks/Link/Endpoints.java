@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 public class Endpoints {
 
     private String priceAPI;
+    private String dividendAPI;
 
     public void setPriceAPI(String ticker) {
         //String url = "https://api.polygon.io/v3/reference/tickers/"+ticker+"?apiKey=7k0sCkhL4aw1lSb0OhKRLibal5qpHV85";
@@ -15,6 +16,15 @@ public class Endpoints {
 
     public String getPriceAPI() {
         return priceAPI;
+    }
+
+    public void setDividendAPI(String ticker) {
+        String url = "https://api.polygon.io/v3/reference/dividends?ticker="+ticker+"&limit=1&apiKey=7k0sCkhL4aw1lSb0OhKRLibal5qpHV85";
+        this.dividendAPI = url;
+    }
+
+    public String getDividendAPI() {
+        return dividendAPI;
     }
 
 

@@ -1,6 +1,7 @@
 package com.example.stocks.Controller;
 
 import com.example.stocks.DTO.PriceDTO;
+import com.example.stocks.DTO.ResultsDividendDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Respository.StockRepository;
@@ -32,6 +33,7 @@ public class StockController {
     @PostMapping("find/{ticker}")
     public void findPrice(@PathVariable("ticker") String ticker) {
         endpoints.setPriceAPI(ticker.toUpperCase());
+        endpoints.setDividendAPI(ticker.toUpperCase());
     }
 
     @GetMapping("TickerInfo")
@@ -42,5 +44,10 @@ public class StockController {
     @GetMapping("PriceInfo")
     public PriceDTO getPriceData() {
         return priceService.getPriceData();
+    }
+
+    @GetMapping("DividendInfo")
+    public ResultsDividendDTO getDividendData() {
+        return priceService.getDividendData();
     }
 }

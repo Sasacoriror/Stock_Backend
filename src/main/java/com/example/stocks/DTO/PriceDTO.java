@@ -12,7 +12,7 @@ public class PriceDTO {
     private String ticker;
 
     @JsonProperty("results")
-    private List<ResultDTO> results;
+    private List<ResultPriceDTO> results;
 
     public String getTicker() {
         return ticker;
@@ -22,11 +22,11 @@ public class PriceDTO {
         this.ticker = ticker;
     }
 
-    public List<ResultDTO> getResults() {
+    public List<ResultPriceDTO> getResults() {
         return results;
     }
 
-    public void setResults(List<ResultDTO> results) {
+    public void setResults(List<ResultPriceDTO> results) {
         this.results = results;
     }
 }

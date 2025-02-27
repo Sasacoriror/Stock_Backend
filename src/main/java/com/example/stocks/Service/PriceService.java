@@ -1,8 +1,8 @@
 package com.example.stocks.Service;
 
 import com.example.stocks.DTO.PriceDTO;
+import com.example.stocks.DTO.ResultsDividendDTO;
 import com.example.stocks.Link.Endpoints;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -40,6 +40,22 @@ public class PriceService {
 
         try {
             return objectMapper.readValue(response.getBody(), PriceDTO.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error parsing JSON response");
+        }
+    }
+
+    public ResultsDividendDTO getDividendData(){
+        ResponseEntity<String> response = restTemplate
+                .getForEntity(endpoints.getDividendAPI(), String.class);
+
+        if (response.getBody() == null) {
+            throw new RuntimeException("No Response");
+        }
+
+        try {
+            return objectMapper.readValue(response.getBody(), ResultsDividendDTO.class);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error parsing JSON response");

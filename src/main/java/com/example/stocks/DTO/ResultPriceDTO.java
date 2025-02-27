@@ -2,7 +2,7 @@ package com.example.stocks.DTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ResultDTO {
+public class ResultPriceDTO {
 
     @JsonProperty("c")
     private double c;

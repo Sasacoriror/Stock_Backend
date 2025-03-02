@@ -1,5 +1,6 @@
 package com.example.stocks.Link;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -7,6 +8,10 @@ public class Endpoints {
 
     private String priceAPI;
     private String dividendAPI;
+/*
+    @Value("${API_KEY}")
+    private String apiKey;
+ */
 
     public void setPriceAPI(String ticker) {
         String url = "https://api.polygon.io/v2/aggs/ticker/"+ticker+"/prev?adjusted=true&apiKey=7k0sCkhL4aw1lSb0OhKRLibal5qpHV85";

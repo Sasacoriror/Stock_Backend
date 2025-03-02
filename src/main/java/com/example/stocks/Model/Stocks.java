@@ -30,75 +30,23 @@ public class Stocks {
     @JsonProperty("dividend")
     private double dividend;
 
+    @JsonProperty("totalDividend")
+    private double totalDivided;
+
+    @JsonProperty("totalPrice")
+    private double totalPrice;
+
     public Stocks(Long id, String stockName, int stockPrice, int stockQuantity,
-                  double currentPrice, double dividend) {
+                  double currentPrice, double dividend, double totalDivided, double totalPrice) {
         this.id = id;
         this.stockName = stockName;
         this.stockPrice = stockPrice;
         this.stockQuantity = stockQuantity;
         this.currentPrice = currentPrice;
         this.dividend = dividend;
+        this.totalDivided = totalDivided;
+        this.totalPrice = totalPrice;
     }
 
     public Stocks() {}
-/*
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getStockName() {
-        return StockName;
-    }
-
-    public void setStockName(String stockName) {
-        StockName = stockName;
-    }
-
-    public int getStockPrice() {
-        return stockPrice;
-    }
-
-    public void setStockPrice(int stockPrice) {
-        this.stockPrice = stockPrice;
-    }
-
-    public int getStockQuantity() {
-        return stockQuantity;
-    }
-
-    public void setStockQuantity(int stockQuantity) {
-        this.stockQuantity = stockQuantity;
-    }
-
-    public double getCurrentPrice() {
-        return currentPrice;
-    }
-
-    public void setCurrentPrice(double currentPrice) {
-        this.currentPrice = currentPrice;
-    }
-
-    public double getDividend() {
-        return dividend;
-    }
-
-    public void setDividend(double dividend) {
-        this.dividend = dividend;
-    }*/
-
-    @Override
-    public String toString() {
-        return "Stocks{" +
-                "id=" + id +
-                ", StockName='" + stockName + '\'' +
-                ", stockPrice=" + stockPrice +
-                ", stockQuantity=" + stockQuantity +
-                ", currentPrice=" + currentPrice +
-                ", dividend=" + dividend +
-                '}';
-    }
 }

@@ -8,6 +8,8 @@ import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Service.PriceService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/")
 @CrossOrigin(origins = "http://localhost:63342")
@@ -27,18 +29,23 @@ public class StockController {
     @PostMapping("storeStockData")
     public Stocks store(@RequestBody Stocks stocks) {
         Stocks stocks1 = stockRepository.save(stocks);
-        endpoints.setPriceAPI(stocks1.getStockName());
-        endpoints.setDividendAPI(stocks1.getStockName());
+        endpoints.setPriceAPI(stocks1.getStockName().toUpperCase());
+        endpoints.setDividendAPI(stocks1.getStockName().toUpperCase());
         priceService.updateStockData();
         //return "Stock added successfully";
         return stocks1;
     }
 /*
+    @GetMapping("findAll")
+    public List<Stocks> findAll() {
+        return stockRepository.findAll();
+    }*/
+
     @PostMapping("find/{ticker}")
     public void findPrice(@PathVariable("ticker") String ticker) {
         endpoints.setPriceAPI(ticker.toUpperCase());
         endpoints.setDividendAPI(ticker.toUpperCase());
-    }*/
+    }
 
     @GetMapping("TickerInfo")
     public String getStockPrice() {

@@ -81,7 +81,7 @@ public class PriceService {
             ResultsDividendDTO dividendData = getDividendData();
 
             if (priceData != null && priceData.getResults() != null) {
-                stock.setCurrentPrice(priceData.getResults().get(0).getC()); // "C" is closing price
+                stock.setCurrentPrice(priceData.getResults().get(0).getC());
             }
 
             if (dividendData != null && dividendData.getResults() != null && !dividendData.getResults().isEmpty()) {

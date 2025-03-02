@@ -8,5 +8,13 @@ async function sendData(){
         headers: {"Content-Type": "application/json" },
         body: JSON.stringify({stockTickerInn, priceInn, sharesInn})
     });
-    alert(await response.text());
+    await response.text();
+    console.log("Sending to backend.")
+    emptyField();
+}
+
+function emptyField(){
+    document.getElementById("tickerSymbol").value = "";
+    document.getElementById("theStockPrice").value = "";
+    document.getElementById("shares").value = "";
 }

@@ -36,6 +36,7 @@ public class Stocks {
     @JsonProperty("totalPrice")
     private double totalPrice;
 
+
     public Stocks(Long id, String stockName, int stockPrice, int stockQuantity,
                   double currentPrice, double dividend, double totalDivided, double totalPrice) {
         this.id = id;

@@ -88,6 +88,9 @@ public class PriceService {
                 stock.setDividend(dividendData.getResults().get(0).getCash_amount());
             }
 
+            stock.setTotalDivided((stock.getStockQuantity()*stock.getDividend())*4);
+            stock.setTotalPrice(stock.getStockQuantity()*stock.getCurrentPrice());
+
 
             stockRepository.save(stock);
         }

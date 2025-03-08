@@ -35,11 +35,11 @@ public class StockController {
         //return "Stock added successfully";
         return stocks1;
     }
-/*
+
     @GetMapping("findAll")
     public List<Stocks> findAll() {
         return stockRepository.findAll();
-    }*/
+    }
 
     @PostMapping("find/{ticker}")
     public void findPrice(@PathVariable("ticker") String ticker) {

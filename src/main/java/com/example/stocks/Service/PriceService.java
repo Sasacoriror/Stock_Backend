@@ -6,6 +6,7 @@ import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Respository.StockRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -70,6 +71,7 @@ public class PriceService {
         }
     }
 
+    @Transactional
     public void updateStockData() {
         List<Stocks> stocks = stockRepository.findAll();
 

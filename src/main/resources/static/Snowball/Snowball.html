@@ -7,12 +7,18 @@
     <script src="Snowball.js"></script>
     <script src="SnowballChart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="../index.css">
     <link rel="stylesheet" href="snowball.css">
     <script>
-        fetch("index.html")
+        fetch("../Index/index.html")
             .then(response => response.text())
-            .then(data => document.getElementById("navbar").innerHTML = data);
+            .then(data => {
+                document.getElementById("navbar").innerHTML = data;
+                const link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = "../Index/navbar.css";  // Adjust path accordingly
+                document.head.appendChild(link);
+            });
     </script>
 
 </head>

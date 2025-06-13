@@ -6,9 +6,15 @@
     <link rel="stylesheet" href="DividendTracker.css">
     <script src="DividendTracker.js"></script>
     <script>
-        fetch("index.html")
+        fetch("../Index/index.html")
             .then(response => response.text())
-            .then(data => document.getElementById("navbar").innerHTML = data);
+            .then(data => {
+                document.getElementById("navbar").innerHTML = data;
+                const link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = "../Index/navbar.css";  // Adjust path accordingly
+                document.head.appendChild(link);
+            });
     </script>
 
     <style>

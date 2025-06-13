@@ -5,11 +5,17 @@
   <title>DCF Calculator</title>
   <script src="DCF_Calculator.js"></script>
   <link rel="stylesheet" href="DCF.css">
-  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../index.css">
   <script>
-    fetch("index.html")
-            .then(response => response.text())
-            .then(data => document.getElementById("navbar").innerHTML = data);
+      fetch("../Index/index.html")
+          .then(response => response.text())
+          .then(data => {
+              document.getElementById("navbar").innerHTML = data;
+              const link = document.createElement("link");
+              link.rel = "stylesheet";
+              link.href = "../Index/navbar.css";  // Adjust path accordingly
+              document.head.appendChild(link);
+          });
   </script>
 
 </head>

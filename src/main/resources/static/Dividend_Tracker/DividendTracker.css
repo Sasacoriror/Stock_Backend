@@ -5,6 +5,9 @@ body {
     padding: 0;
     display: flex;
     flex-direction: column;
+    align-items: center; /* horizontally center */
+    justify-content: center; /* vertically center (optional) */
+    min-height: 100vh; /* make body take full height of viewport */
 }
 
 h1 {

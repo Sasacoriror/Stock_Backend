@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Your Portfolio</title>
   <script>
-    fetch("Sidebar/Sidebar.html")
+    fetch("../Sidebar/Sidebar.html")
             .then(response => response.text())
             .then(data => {
               document.getElementById("sidenav").innerHTML = data;
               const link = document.createElement("link");
               link.rel = "stylesheet";
-              link.href = "Sidebar/Sidebar.css";  // Adjust path accordingly
+              link.href = "../Sidebar/Sidebar.css";  // Adjust path accordingly
               document.head.appendChild(link);
             });
   </script>

@@ -50,4 +50,20 @@ public class Stocks {
     }
 
     public Stocks() {}
+
+/*
+    @Override
+    public String toString() {
+        return "Stocks{" +
+                "id=" + id +
+                ", stockName='" + stockName + '\'' +
+                ", stockPrice=" + stockPrice +
+                ", stockQuantity=" + stockQuantity +
+                ", currentPrice=" + currentPrice +
+                ", dividend=" + dividend +
+                ", totalDivided=" + totalDivided +
+                ", totalPrice=" + totalPrice +
+                '}';
+    }
+ */
 }

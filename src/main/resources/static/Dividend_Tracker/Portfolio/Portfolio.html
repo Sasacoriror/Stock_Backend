@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Your Portfolio</title>
+    <script src="Portfolio.js"></script>
+    <link rel="stylesheet" href="Portfolio.css">
   <script>
     fetch("../Sidebar/Sidebar.html")
             .then(response => response.text())
@@ -22,6 +24,23 @@
 </head>
 <body>
 <div id="sidenav"></div>
-<h2>COMMING SOON</h2>
+<h2>Stock Table</h2>
+<table id="stocksTable">
+    <thead>
+    <tr>
+        <th>Stock Name</th>
+        <th>Stock Price</th>
+        <th>Stock Quantity</th>
+        <th>Current Price</th>
+        <th>Dividend</th>
+        <th>Total Dividend</th>
+        <th>Total Price</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Rows will be inserted here -->
+    </tbody>
+</table>
 </body>
 </html>

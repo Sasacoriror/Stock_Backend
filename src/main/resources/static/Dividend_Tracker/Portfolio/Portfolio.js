@@ -14,7 +14,7 @@ function renderTable(stocks) {
     const tbody = document.querySelector('#stocksTable tbody');
     tbody.innerHTML = ''; // Clear old rows
 
-    stocks.forEach((stock, index) => {
+    stocks.forEach((stock) => {
         const tr = document.createElement('tr');
 
         // Exclude ID

@@ -41,12 +41,15 @@ public class StockController {
         return stockRepository.findAll();
     }
 
+
+    /////////////////////////////////
+
     @PostMapping("find/{ticker}")
     public void findPrice(@PathVariable("ticker") String ticker) {
         endpoints.setPriceAPI(ticker.toUpperCase());
         endpoints.setDividendAPI(ticker.toUpperCase());
     }
-
+/*
     @GetMapping("TickerInfo")
     public String getStockPrice() {
         return priceService.getTickerData();
@@ -61,4 +64,5 @@ public class StockController {
     public ResultsDividendDTO getDividendData() {
         return priceService.getDividendData();
     }
+ */
 }

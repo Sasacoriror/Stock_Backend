@@ -10,10 +10,13 @@ import lombok.Setter;
 @Setter
 public class Stocks {
 
-    @Id
+   /* @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    */
+
+    @Id
     @JsonProperty("stockTickerInn")
     @Column(unique = true, nullable = false)
     private String stockName;
@@ -37,9 +40,9 @@ public class Stocks {
     private double totalPrice;
 
 
-    public Stocks(Long id, String stockName, int stockPrice, int stockQuantity,
+    public Stocks(String stockName, int stockPrice, int stockQuantity,
                   double currentPrice, double dividend, double totalDivided, double totalPrice) {
-        this.id = id;
+        //this.id = id;
         this.stockName = stockName;
         this.stockPrice = stockPrice;
         this.stockQuantity = stockQuantity;

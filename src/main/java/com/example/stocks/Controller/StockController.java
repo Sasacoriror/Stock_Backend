@@ -6,6 +6,7 @@ import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Service.PriceService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,6 +40,12 @@ public class StockController {
     @GetMapping("findAll")
     public List<Stocks> findAll() {
         return stockRepository.findAll();
+    }
+
+    @DeleteMapping("delete/{tickerSymbol}")
+    public ResponseEntity<String> delete(@PathVariable String tickerSymbol) {
+        stockRepository.deleteById(Long.valueOf(tickerSymbol));
+        return ResponseEntity.ok("Stock with ticker symbol "+tickerSymbol+" deleted successfully");
     }
 
 

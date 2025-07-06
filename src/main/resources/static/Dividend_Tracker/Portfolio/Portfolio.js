@@ -17,7 +17,6 @@ function renderTable(stocks) {
     stocks.forEach((stock) => {
         const tr = document.createElement('tr');
 
-        // Exclude ID
         ['stockTickerInn', 'priceInn', 'sharesInn', 'currentPrice', 'dividend', 'totalDividend', 'totalPrice'].forEach(key => {
             const td = document.createElement('td');
             td.textContent = stock[key];
@@ -38,11 +37,10 @@ function renderTable(stocks) {
 
 function deleteRow(id) {
     // DELETE request to backend (uncomment to enable)
-    /*
+
     fetch(`http://localhost:8080/api/v1/delete/${id}`, {
         method: 'DELETE'
     }).then(() => fetchStocks());
-    */
     console.log("Deleted ID:", id);
     fetchStocks(); // Refresh table (mock behavior)
 }

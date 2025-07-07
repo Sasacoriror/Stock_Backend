@@ -44,7 +44,7 @@ public class StockController {
 
     @DeleteMapping("delete/{tickerSymbol}")
     public ResponseEntity<String> delete(@PathVariable String tickerSymbol) {
-        stockRepository.deleteById(Long.valueOf(tickerSymbol));
+        stockRepository.deleteById(tickerSymbol);
         return ResponseEntity.ok("Stock with ticker symbol "+tickerSymbol+" deleted successfully");
     }
 

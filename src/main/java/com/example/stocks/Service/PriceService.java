@@ -71,6 +71,10 @@ public class PriceService {
         }
     }
 
+    public void saveDividendData(){
+        //Create a method that save the data to the DB without updating everything like the method below.
+    }
+
     @Transactional
     public void updateStockData() {
         List<Stocks> stocks = stockRepository.findAll();

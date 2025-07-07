@@ -32,7 +32,8 @@ public class StockController {
         Stocks stocks1 = stockRepository.save(stocks);
         endpoints.setPriceAPI(stocks1.getStockName().toUpperCase());
         endpoints.setDividendAPI(stocks1.getStockName().toUpperCase());
-        priceService.updateStockData();
+        priceService.saveDividendData();
+        //priceService.updateStockData();
         //return "Stock added successfully";
         return stocks1;
     }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PriceService {
@@ -71,9 +72,6 @@ public class PriceService {
         }
     }
 
-    public void saveDividendData(){
-        //Create a method that save the data to the DB without updating everything like the method below.
-    }
 
     @Transactional
     public void updateStockData() {
@@ -86,19 +84,34 @@ public class PriceService {
             PriceDTO priceData = getPriceData();
             ResultsDividendDTO dividendData = getDividendData();
 
-            if (priceData != null && priceData.getResults() != null) {
-                stock.setCurrentPrice(priceData.getResults().get(0).getC());
+            Double newPrice = null;
+            Double newDividend = null;
+
+            if (priceData != null && priceData.getResults() != null && !priceData.getResults().isEmpty()) {
+                newPrice = priceData.getResults().get(0).getC();
             }
 
             if (dividendData != null && dividendData.getResults() != null && !dividendData.getResults().isEmpty()) {
-                stock.setDividend(dividendData.getResults().get(0).getCash_amount());
+                newDividend = dividendData.getResults().get(0).getCash_amount();
             }
 
-            stock.setTotalDivided((stock.getStockQuantity()*stock.getDividend())*4);
-            stock.setTotalPrice(stock.getStockQuantity()*stock.getCurrentPrice());
+            boolean hasChanges = false;
 
+            if (newPrice != null && !Objects.equals(newPrice, stock.getCurrentPrice())) {
+                stock.setCurrentPrice(newPrice);
+                stock.setTotalPrice(stock.getStockQuantity() * newPrice);
+                hasChanges = true;
+            }
 
-            stockRepository.save(stock);
+            if (newDividend != null && !Objects.equals(newDividend, stock.getDividend())) {
+                stock.setDividend(newDividend);
+                stock.setTotalDivided(stock.getStockQuantity() * newDividend * 4);
+                hasChanges = true;
+            }
+
+            if (hasChanges) {
+                stockRepository.save(stock);
+            }
         }
     }
 

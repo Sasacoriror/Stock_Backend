@@ -27,7 +27,7 @@ function renderTable(stocks) {
         const actionTd = document.createElement('td');
         actionTd.innerHTML = `
                 <button class="edit-btn">Edit</button>
-                <button class="delete-btn" onclick="deleteRow(${stock.id})">Delete</button>
+                <button class="delete-btn" onclick="deleteRow('${stock.stockTickerInn}')">Delete</button>
             `;
         tr.dataset.id = stock.id; // Store ID in row
         tbody.appendChild(tr);

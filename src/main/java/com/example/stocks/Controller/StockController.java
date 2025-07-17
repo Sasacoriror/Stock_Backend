@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/")
@@ -47,6 +50,29 @@ public class StockController {
     public ResponseEntity<String> delete(@PathVariable String tickerSymbol) {
         stockRepository.deleteById(tickerSymbol);
         return ResponseEntity.ok("Stock with ticker symbol "+tickerSymbol+" deleted successfully");
+    }
+
+
+    @PutMapping("updateData/{tickerSymbol}")
+    public ResponseEntity<String> update(
+            @PathVariable String tickerSymbol,
+            @RequestBody Map<String, Integer> data) {
+
+        Optional<Stocks> stocks = stockRepository.findById(tickerSymbol);
+
+        Stocks stocks1 = stocks.get();
+
+        if (data.containsKey("sharesInn")){
+            stocks1.setStockQuantity(data.get("sharesInn"));
+        }
+
+        if (data.containsKey("priceInn")){
+            stocks1.setStockPrice(data.get("priceInn"));
+
+        }
+
+        stockRepository.save(stocks1);
+        return ResponseEntity.ok("Stock with ticker symbol "+tickerSymbol+" updated successfully");
     }
 
 

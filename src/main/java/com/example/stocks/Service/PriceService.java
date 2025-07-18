@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class PriceService {
@@ -113,6 +114,22 @@ public class PriceService {
                 stockRepository.save(stock);
             }
         }
+    }
+
+    @Transactional
+    public void UpdateDatabase(String stockName){
+        Optional<Stocks> stocks = stockRepository.findById(stockName);
+
+        double dividend = stocks.get().getDividend();
+        int shares = stocks.get().getStockQuantity();
+        int stockPricePayd = stocks.get().getStockPrice();
+
+        double newTotalDividend = (dividend * 4) * shares;
+        //double newTotalValue = shares*stockPricePayd;
+
+        stocks.get().setTotalDivided(newTotalDividend);
+
+
     }
 
 }

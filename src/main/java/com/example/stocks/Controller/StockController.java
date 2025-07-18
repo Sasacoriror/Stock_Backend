@@ -72,6 +72,9 @@ public class StockController {
         }
 
         stockRepository.save(stocks1);
+
+        priceService.UpdateDatabase(tickerSymbol);
+
         return ResponseEntity.ok("Stock with ticker symbol "+tickerSymbol+" updated successfully");
     }
 

@@ -45,3 +45,18 @@ button {
     background-color: #888;
     color: white;
 }
+
+#summaryTable {
+    border-collapse: collapse;
+    width: 80%;
+    margin: 20px auto;
+}
+
+#summaryTable th, #summaryTable td {
+    padding: 12px;
+    border: 1px solid #ccc;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1em;
+    background-color: #f9f9f9;
+}

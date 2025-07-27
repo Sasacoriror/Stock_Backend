@@ -3,27 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <title>Your Portfolio</title>
-    <script src="Portfolio.js"></script>
+    <script src="Portfolio.js" defer></script>
     <link rel="stylesheet" href="Portfolio.css">
-  <script>
-    fetch("../Sidebar/Sidebar.html")
-            .then(response => response.text())
-            .then(data => {
-              document.getElementById("sidenav").innerHTML = data;
-              const link = document.createElement("link");
-              link.rel = "stylesheet";
-              link.href = "../Sidebar/Sidebar.css";  // Adjust path accordingly
-              document.head.appendChild(link);
-            });
-  </script>
-  <style>
-    h2{
-      text-align: center;
-    }
-  </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch("../Sidebar/Sidebar.html")
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("sidenav").innerHTML = data;
+                    const link = document.createElement("link");
+                    link.rel = "stylesheet";
+                    link.href = "../Sidebar/Sidebar.css";
+                    document.head.appendChild(link);
+                });
+        });
+    </script>
+    <style>
+        h2 {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 <div id="sidenav"></div>
+
+<!-- Summary Section -->
+<h2>Portfolio Summary</h2>
+<table id="summaryTable">
+    <thead>
+    <tr>
+        <th>Total Value</th>
+        <th>Total Profit</th>
+        <th>Total Dividends</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td id="totalValue">$0.00</td>
+        <td id="totalProfit">$0.00</td>
+        <td id="totalDividends">$0.00</td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- Stocks Table -->
 <h2>Stock Table</h2>
 <table id="stocksTable">
     <thead>

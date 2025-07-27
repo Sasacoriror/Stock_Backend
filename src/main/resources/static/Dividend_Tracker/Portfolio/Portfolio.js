@@ -5,6 +5,7 @@ async function fetchStocks() {
         const response = await fetch(apiUrl);
         const data = await response.json();
         renderTable(data);
+        renderSummary(data); // New summary rendering
     } catch (error) {
         console.error("Error fetching stock data:", error);
     }
@@ -12,7 +13,7 @@ async function fetchStocks() {
 
 function renderTable(stocks) {
     const tbody = document.querySelector('#stocksTable tbody');
-    tbody.innerHTML = ''; // Clear old rows
+    tbody.innerHTML = '';
 
     stocks.forEach((stock) => {
         const tr = document.createElement('tr');
@@ -23,31 +24,46 @@ function renderTable(stocks) {
             tr.appendChild(td);
         });
 
-        // Actions column
         const actionTd = document.createElement('td');
         actionTd.innerHTML = `
-                <button class="edit-btn" onclick="editRow('${stock.stockTickerInn}')">Edit</button>
-                <button class="delete-btn" onclick="deleteRow('${stock.stockTickerInn}')">Delete</button>
-            `;
-        tr.dataset.id = stock.id; // Store ID in row
-        tbody.appendChild(tr);
+            <button class="delete-btn" onclick="deleteRow('${stock.stockTickerInn}')">Delete</button>
+        `;
+        tr.dataset.id = stock.id;
         tr.appendChild(actionTd);
+        tbody.appendChild(tr);
     });
 }
 
-function editRow(id){
+function renderSummary(stocks) {
+    let totalValue = 0;
+    let totalCost = 0;
+    let totalDividends = 0;
 
+    stocks.forEach(stock => {
+        const shares = parseFloat(stock.sharesInn);
+        const buyPrice = parseFloat(stock.priceInn);
+        const currentPrice = parseFloat(stock.currentPrice);
+        const totalDividend = parseFloat(stock.totalDividend);
+
+        totalValue += currentPrice * shares;
+        totalCost += buyPrice * shares;
+        totalDividends += totalDividend;
+    });
+
+    const profit = totalValue - totalCost;
+
+    document.getElementById("totalValue").textContent = `$${totalValue.toFixed(2)}`;
+    document.getElementById("totalProfit").textContent = `$${profit.toFixed(2)}`;
+    document.getElementById("totalDividends").textContent = `$${totalDividends.toFixed(2)}`;
 }
 
 function deleteRow(id) {
-    // DELETE request to backend (uncomment to enable)
-
     fetch(`http://localhost:8080/api/v1/delete/${id}`, {
         method: 'DELETE'
-    }).then(() => fetchStocks());
-    console.log("Deleted ID:", id);
-    fetchStocks(); // Refresh table (mock behavior)
+    })
+        .then(() => fetchStocks())
+        .catch(error => console.error("Delete failed:", error));
 }
 
-// Load data on page load
+// Load on page load
 fetchStocks();

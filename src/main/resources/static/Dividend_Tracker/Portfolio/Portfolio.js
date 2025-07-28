@@ -52,6 +52,7 @@ function renderSummary(stocks) {
 
     const profit = totalValue - totalCost;
 
+    document.getElementById("totalInvested").textContent = `$${totalCost.toFixed(2)}`
     document.getElementById("totalValue").textContent = `$${totalValue.toFixed(2)}`;
     document.getElementById("totalProfit").textContent = `$${profit.toFixed(2)}`;
     document.getElementById("totalDividends").textContent = `$${totalDividends.toFixed(2)}`;

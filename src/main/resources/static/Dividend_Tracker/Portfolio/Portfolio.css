@@ -50,6 +50,7 @@ button {
     border-collapse: collapse;
     width: 80%;
     margin: 20px auto;
+    margin-left: 200px;
 }
 
 #summaryTable th, #summaryTable td {

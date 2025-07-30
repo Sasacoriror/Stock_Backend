@@ -5,7 +5,7 @@ async function fetchStocks() {
         const response = await fetch(apiUrl);
         const data = await response.json();
         renderTable(data);
-        renderSummary(data); // New summary rendering
+        renderSummary(data);
     } catch (error) {
         console.error("Error fetching stock data:", error);
     }
@@ -27,6 +27,7 @@ function renderTable(stocks) {
         const actionTd = document.createElement('td');
         actionTd.innerHTML = `
             <button class="delete-btn" onclick="deleteRow('${stock.stockTickerInn}')">Delete</button>
+            <button class="edit-btn" onclick="editRow('${stock.stockTickerInn}')">Edit</button>
         `;
         tr.dataset.id = stock.id;
         tr.appendChild(actionTd);
@@ -56,6 +57,10 @@ function renderSummary(stocks) {
     document.getElementById("totalValue").textContent = `$${totalValue.toFixed(2)}`;
     document.getElementById("totalProfit").textContent = `$${profit.toFixed(2)}`;
     document.getElementById("totalDividends").textContent = `$${totalDividends.toFixed(2)}`;
+}
+
+function editRow(id){
+
 }
 
 function deleteRow(id) {

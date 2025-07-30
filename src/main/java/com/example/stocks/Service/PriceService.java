@@ -112,6 +112,7 @@ public class PriceService {
 
             if (hasChanges) {
                 stockRepository.save(stock);
+                UpdateDatabase(stock.getStockName());
             }
         }
     }
@@ -128,8 +129,6 @@ public class PriceService {
         //double newTotalValue = shares*stockPricePayd;
 
         stocks.get().setTotalDivided(newTotalDividend);
-
-
     }
 
 }

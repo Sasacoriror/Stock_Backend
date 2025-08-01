@@ -27,7 +27,7 @@ function renderTable(stocks) {
         const actionTd = document.createElement('td');
         actionTd.innerHTML = `
             <button class="delete-btn" onclick="deleteRow('${stock.stockTickerInn}')">Delete</button>
-            <button class="edit-btn" onclick="editRow('${stock.stockTickerInn}')">Edit</button>
+            <button class="edit-btn" onclick="openEditRow('${stock.stockTickerInn}', '${stock.sharesInn}', '${stock.priceInn}')">Edit</button>
         `;
         tr.dataset.id = stock.id;
         tr.appendChild(actionTd);
@@ -59,8 +59,34 @@ function renderSummary(stocks) {
     document.getElementById("totalDividends").textContent = `$${totalDividends.toFixed(2)}`;
 }
 
-function editRow(id){
+let stockName= "";
 
+function openEditRow(id, shares, price){
+
+    stockName = id;
+    document.getElementById("editShares").value = shares;
+    document.getElementById("editPrice").value = price;
+    document.getElementById("editModal").style.display = "block";
+    console.log("ticker: "+id+" | Shares: "+shares+" | Price: "+price);
+}
+
+async function editRow(){
+    let sharesInn = document.getElementById("editShares").value;
+    let priceInn = document.getElementById("editPrice").value;
+
+    const response = await fetch(`http://localhost:8080/api/v1/updateData/${stockName}`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json" },
+        body: JSON.stringify({sharesInn, priceInn})
+    });
+    await response.text();
+    console.log("Sending to backend to update data.")
+    closeEditModal();
+    fetchStocks();
+}
+
+function closeEditModal() {
+    document.getElementById("editModal").style.display = "none";
 }
 
 function deleteRow(id) {

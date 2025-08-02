@@ -6,13 +6,12 @@ import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Service.PriceService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/v1/")
@@ -31,15 +30,29 @@ public class StockController {
     }
 
     @PostMapping("storeStockData")
-    public Stocks store(@RequestBody Stocks stocks) {
+    public ResponseEntity<?> storeData(@Valid @RequestBody Stocks stocks, BindingResult result) {
+        if (result.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            result.getFieldErrors().forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
+            return ResponseEntity.badRequest().body(errors);
+        }
+
         Stocks stocks1 = stockRepository.save(stocks);
         endpoints.setPriceAPI(stocks1.getStockName().toUpperCase());
         endpoints.setDividendAPI(stocks1.getStockName().toUpperCase());
-        //priceService.saveDividendData();
         priceService.updateStockData();
-        //return "Stock added successfully";
+        return ResponseEntity.ok("Stock added successfully");
+    }
+
+
+    /*public Stocks storeData(@RequestBody Stocks stocks) {
+        Stocks stocks1 = stockRepository.save(stocks);
+        endpoints.setPriceAPI(stocks1.getStockName().toUpperCase());
+        endpoints.setDividendAPI(stocks1.getStockName().toUpperCase());
+        priceService.updateStockData();
         return stocks1;
     }
+     */
 
     @GetMapping("findAll")
     public List<Stocks> findAll() {

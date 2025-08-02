@@ -2,28 +2,28 @@ package com.example.stocks.Model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
+import jakarta.validation.constraints.Pattern;
+
 
 @Entity
 @Getter
 @Setter
 public class Stocks {
 
-   /* @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    */
-
     @Id
     @JsonProperty("stockTickerInn")
     @Column(unique = true, nullable = false)
+    @Pattern(regexp = "^[A-Za-z]+$")
     private String stockName;
 
+    @Min(value = 0, message = "The price cannot be lower than 0 (zero)")
     @JsonProperty("priceInn")
     private int stockPrice;
 
+    @Min(value = 1, message = "The number of shares cannot be lower than 1 (one)")
     @JsonProperty("sharesInn")
     private int stockQuantity;
 

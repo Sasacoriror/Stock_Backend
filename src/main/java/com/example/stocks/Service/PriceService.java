@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PriceService {
@@ -73,12 +74,30 @@ public class PriceService {
         }
     }
 
+    public void oneMinutte() {
+        try {
+            Thread.sleep(61000);
+        }catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+            System.out.println("oneMinute function was interrupted");
+        }
+
+    }
 
     @Transactional
     public void updateStockData() {
         List<Stocks> stocks = stockRepository.findAll();
+        int counter = 0;
 
         for (Stocks stock : stocks) {
+
+
+            if (counter == 2) {
+                oneMinutte();
+                counter = 0;
+                System.out.println("Stopped\ncounter = " + counter);
+            }
+
             endpoints.setPriceAPI(stock.getStockName());
             endpoints.setDividendAPI(stock.getStockName());
 
@@ -114,6 +133,7 @@ public class PriceService {
                 stockRepository.save(stock);
                 UpdateDatabase(stock.getStockName());
             }
+            counter++;
         }
     }
 
@@ -123,7 +143,6 @@ public class PriceService {
 
         double dividend = stocks.get().getDividend();
         int shares = stocks.get().getStockQuantity();
-        int stockPricePayd = stocks.get().getStockPrice();
 
         double newTotalDividend = (dividend * 4) * shares;
         //double newTotalValue = shares*stockPricePayd;

@@ -5,6 +5,7 @@ import com.example.stocks.DTO.ResultsDividendDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Respository.StockRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,21 +43,47 @@ public class PriceService {
         return response.getBody();
     }
 
+
+    ////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+
+
+    public static class StockNotFoundException extends RuntimeException {
+        public StockNotFoundException(String message) {
+            super(message);
+        }
+    }
+
+
     public PriceDTO getPriceData(){
         ResponseEntity<String> response = restTemplate
                 .getForEntity(endpoints.getPriceAPI(), String.class);
 
         if (response.getBody() == null) {
-            throw new RuntimeException("No Response");
+            throw new RuntimeException("No response from price API");
         }
 
         try {
-            return objectMapper.readValue(response.getBody(), PriceDTO.class);
+            JsonNode root = objectMapper.readTree(response.getBody());
+
+
+            boolean isInvalid = root.has("resultsCount") && root.get("resultsCount").asInt() == 0;
+
+            if (isInvalid) {
+                throw new StockNotFoundException("Stock data not found.");
+            }
+
+            return objectMapper.treeToValue(root, PriceDTO.class);
+
+        } catch (StockNotFoundException e) {
+            throw e; // Let it bubble to the controller
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error parsing JSON response");
         }
     }
+
 
     public ResultsDividendDTO getDividendData(){
         ResponseEntity<String> response = restTemplate
@@ -67,7 +94,17 @@ public class PriceService {
         }
 
         try {
+            JsonNode root = objectMapper.readTree(response.getBody());
+
+            boolean isInvalid = root.has("results") && root.get("results").isArray() && root.get("results").size() == 0;
+
+            if (isInvalid) {
+                throw new StockNotFoundException("Stock data not found.");
+            }
+
             return objectMapper.readValue(response.getBody(), ResultsDividendDTO.class);
+        } catch (StockNotFoundException e) {
+            throw e; // Let it bubble to the controller
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error parsing JSON response");
@@ -98,8 +135,8 @@ public class PriceService {
                 System.out.println("Stopped\ncounter = " + counter);
             }
 
-            endpoints.setPriceAPI(stock.getStockName());
-            endpoints.setDividendAPI(stock.getStockName());
+            endpoints.setPriceAPI(stock.getStockName().toUpperCase());
+            endpoints.setDividendAPI(stock.getStockName().toUpperCase());
 
             PriceDTO priceData = getPriceData();
             ResultsDividendDTO dividendData = getDividendData();

@@ -37,22 +37,19 @@ public class StockController {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        Stocks stocks1 = stockRepository.save(stocks);
-        endpoints.setPriceAPI(stocks1.getStockName().toUpperCase());
-        endpoints.setDividendAPI(stocks1.getStockName().toUpperCase());
-        priceService.updateStockData();
-        return ResponseEntity.ok("Stock added successfully");
-    }
+        String stockName = stocks.getStockName().toUpperCase();
+        endpoints.setPriceAPI(stockName);
+        endpoints.setDividendAPI(stockName);
+
+        priceService.getPriceData();
+        priceService.getDividendData();
 
 
-    /*public Stocks storeData(@RequestBody Stocks stocks) {
-        Stocks stocks1 = stockRepository.save(stocks);
-        endpoints.setPriceAPI(stocks1.getStockName().toUpperCase());
-        endpoints.setDividendAPI(stocks1.getStockName().toUpperCase());
+        Stocks savedStock = stockRepository.save(stocks);
         priceService.updateStockData();
-        return stocks1;
+        return ResponseEntity.ok("Stock saved successfully\n"+savedStock);
     }
-     */
+
 
     @GetMapping("findAll")
     public List<Stocks> findAll() {

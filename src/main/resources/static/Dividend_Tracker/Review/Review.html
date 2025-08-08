@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Review Stock</title>
+    <link rel="stylesheet" href="Review.css">
     <script>
         fetch("../Sidebar/Sidebar.html")
             .then(response => response.text())
@@ -22,6 +23,11 @@
 </head>
 <body>
 <div id="sidenav"></div>
-<h2>COMMING SOON</h2>
+<!--<h2>COMMING SOON</h2>-->
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search stocks...">
+    <button type="button" onclick="">Search</button>
+</div>
+
 </body>
 </html>

@@ -1,7 +1,5 @@
 package com.example.stocks.Controller;
 
-import com.example.stocks.DTO.PriceDTO;
-import com.example.stocks.DTO.ResultsDividendDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Respository.StockRepository;

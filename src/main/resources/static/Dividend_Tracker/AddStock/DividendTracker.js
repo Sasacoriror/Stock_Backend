@@ -3,14 +3,29 @@ async function sendData(){
     let priceInn = document.getElementById("theStockPrice").value;
     let sharesInn = document.getElementById("shares").value;
 
-    const response = await fetch("http://localhost:8080/api/v1/storeStockData", {
-        method: "POST",
-        headers: {"Content-Type": "application/json" },
-        body: JSON.stringify({stockTickerInn, priceInn, sharesInn})
-    });
-    await response.text();
-    console.log("Sending to backend.")
-    emptyField();
+    try {
+        const response = await fetch("http://localhost:8080/api/v1/storeStockData", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                stockTickerInn,
+                priceInn,
+                sharesInn
+            })
+        });
+
+        if (!response.ok){
+            throw new Error(`Error: ${response.status} ${response.statusText}`)
+        }
+
+        await response.text();
+        console.log("Stock successfully added")
+        emptyField();
+    }catch (error){
+        alert(`Failed to send data: ${error.message}`)
+    }
+
+
 }
 
 function emptyField(){

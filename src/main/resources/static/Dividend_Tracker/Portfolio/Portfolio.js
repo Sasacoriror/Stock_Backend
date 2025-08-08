@@ -85,6 +85,13 @@ async function editRow(){
     fetchStocks();
 }
 
+window.onclick = function(event) {
+    const modal = document.getElementById("editModal");
+    if (event.target === modal) {
+        closeEditModal();
+    }
+};
+
 function closeEditModal() {
     document.getElementById("editModal").style.display = "none";
 }
@@ -97,5 +104,5 @@ function deleteRow(id) {
         .catch(error => console.error("Delete failed:", error));
 }
 
-// Load on page load
+//Load page
 fetchStocks();

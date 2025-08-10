@@ -3,6 +3,10 @@ async function sendData(){
     let priceInn = document.getElementById("theStockPrice").value;
     let sharesInn = document.getElementById("shares").value;
 
+    if (!noEmptyFields(stockTickerInn, priceInn, sharesInn)){
+        return;
+    }
+
     try {
         const response = await fetch("http://localhost:8080/api/v1/storeStockData", {
             method: "POST",
@@ -24,8 +28,15 @@ async function sendData(){
     }catch (error){
         alert(`Failed to send data: ${error.message}`)
     }
+}
 
+function noEmptyFields(ticker, price, shares){
 
+    if (ticker.trim() === '' || price.trim() === '' || shares.trim() === ''){
+        alert("All boxes must be gilled inn")
+        return false;
+    }
+    return true;
 }
 
 function emptyField(){

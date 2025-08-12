@@ -54,12 +54,21 @@ function renderSummary(stocks) {
     });
 
     const profit = totalValue - totalCost;
-    const percentage = ((totalValue - totalCost) / totalCost) * 100;
+    const percentage = ((profit) / totalCost) * 100;
+
+    const positiveOrNegative = `${profit >= 0 ? '+' : ''}$${profit.toFixed(2)}, ${percentage >= 0 ? '+' : ''}${percentage.toFixed(2)}%`;
+
 
     document.getElementById("totalInvested").textContent = `$${totalCost.toFixed(2)}`
     document.getElementById("totalValue").textContent = `$${totalValue.toFixed(2)}`;
-    document.getElementById("totalProfit").textContent = `$${profit.toFixed(2)}, ${percentage.toFixed(2)}%`;
     document.getElementById("totalDividends").textContent = `$${totalDividends.toFixed(2)}`;
+
+    const tProfit = document.getElementById("totalProfit");
+
+    tProfit.textContent = positiveOrNegative;
+    tProfit.style.color = profit >= 0 ? "green" : "red";
+
+
 }
 
 let stockName= "";

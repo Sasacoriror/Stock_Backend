@@ -35,6 +35,8 @@ function renderTable(stocks) {
     });
 }
 
+
+// TODO: Add percentage of unrealised gain/loss, then color refplecting if it is positive or negative
 function renderSummary(stocks) {
     let totalValue = 0;
     let totalCost = 0;
@@ -52,10 +54,11 @@ function renderSummary(stocks) {
     });
 
     const profit = totalValue - totalCost;
+    const percentage = ((totalValue - totalCost) / totalCost) * 100;
 
     document.getElementById("totalInvested").textContent = `$${totalCost.toFixed(2)}`
     document.getElementById("totalValue").textContent = `$${totalValue.toFixed(2)}`;
-    document.getElementById("totalProfit").textContent = `$${profit.toFixed(2)}`;
+    document.getElementById("totalProfit").textContent = `$${profit.toFixed(2)}, ${percentage.toFixed(2)}%`;
     document.getElementById("totalDividends").textContent = `$${totalDividends.toFixed(2)}`;
 }
 

@@ -1,9 +1,11 @@
 package com.example.stocks.Controller;
 
+import com.example.stocks.DTO.ResultsFinancialDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Service.PriceService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -87,12 +89,13 @@ public class StockController {
     }
 
 
+
     /////////////////////////////////
 
-    @PostMapping("find/{ticker}")
-    public void findPrice(@PathVariable("ticker") String ticker) {
-        endpoints.setPriceAPI(ticker.toUpperCase());
-        endpoints.setDividendAPI(ticker.toUpperCase());
+    @GetMapping("search/{ticker}")
+    public ResultsFinancialDTO getCompanyFinancial(@PathVariable("ticker") String ticker) {
+        endpoints.setFinancialAPI(ticker);
+        return priceService.getFinancialData();
     }
 /*
     @GetMapping("TickerInfo")

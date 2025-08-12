@@ -8,28 +8,40 @@ public class Endpoints {
 
     private String priceAPI;
     private String dividendAPI;
-/*
-    @Value("${API_KEY}")
-    private String apiKey;
- */
+    private String financialAPI;
+
+    private String APIkey = "7k0sCkhL4aw1lSb0OhKRLibal5qpHV85";
+
+    // Setting the HTTP get calls to the API
 
     public void setPriceAPI(String ticker) {
-        String url = "https://api.polygon.io/v2/aggs/ticker/"+ticker+"/prev?adjusted=true&apiKey=7k0sCkhL4aw1lSb0OhKRLibal5qpHV85";
+        String url = "https://api.polygon.io/v2/aggs/ticker/"+ticker+"/prev?adjusted=true&apiKey="+APIkey;
         this.priceAPI = url;
     }
 
-    public String getPriceAPI() {
-        return priceAPI;
+    public void setDividendAPI(String ticker) {
+        String url = "https://api.polygon.io/v3/reference/dividends?ticker="+ticker+"&limit=1&apiKey="+APIkey;
+        this.dividendAPI = url;
     }
 
-    public void setDividendAPI(String ticker) {
-        String url = "https://api.polygon.io/v3/reference/dividends?ticker="+ticker+"&limit=1&apiKey=7k0sCkhL4aw1lSb0OhKRLibal5qpHV85";
-        this.dividendAPI = url;
+    public void setFinancialAPI(String ticker) {
+        String url = "https://api.polygon.io/vX/reference/financials?ticker="+ticker+"&order=desc&limit=20&sort=filing_date&apiKey="+APIkey;
+        this.financialAPI = url;
+    }
+
+
+    // Getting the HTTP get calls to the API
+
+    public String getPriceAPI() {
+        return priceAPI;
     }
 
     public String getDividendAPI() {
         return dividendAPI;
     }
 
+    public String getFinancialAPI() {
+        return financialAPI;
+    }
 
 }

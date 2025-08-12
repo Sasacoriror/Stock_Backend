@@ -1,5 +1,6 @@
 package com.example.stocks.Service;
 
+import com.example.stocks.DTO.ResultsFinancialDTO;
 import com.example.stocks.DTO.PriceDTO;
 import com.example.stocks.DTO.ResultsDividendDTO;
 import com.example.stocks.Link.Endpoints;
@@ -16,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class PriceService {
@@ -33,7 +33,7 @@ public class PriceService {
         this.objectMapper = objectMapper;
         this.endpoints = endpoints;
     }
-
+/*
     public String getTickerData() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
@@ -42,6 +42,7 @@ public class PriceService {
         //System.out.println("API response: " + response.getBody());
         return response.getBody();
     }
+ */
 
 
     ////////////////////////////////////////////////////////////////////////
@@ -77,7 +78,7 @@ public class PriceService {
             return objectMapper.treeToValue(root, PriceDTO.class);
 
         } catch (StockNotFoundException e) {
-            throw e; // Let it bubble to the controller
+            throw e;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error parsing JSON response");
@@ -96,12 +97,34 @@ public class PriceService {
         try {
             return objectMapper.readValue(response.getBody(), ResultsDividendDTO.class);
         } catch (StockNotFoundException e) {
-            throw e; // Let it bubble to the controller
+            throw e;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error parsing JSON response");
         }
     }
+
+    public ResultsFinancialDTO getFinancialData(){
+        ResponseEntity<String> response = restTemplate
+                .getForEntity(endpoints.getFinancialAPI(), String.class);
+
+        if (response.getBody() == null) {
+            throw new RuntimeException("No Response");
+        }
+
+        try {
+            return objectMapper.readValue(response.getBody(), ResultsFinancialDTO.class);
+        } catch (StockNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error parsing JSON response");
+        }
+    }
+
+
+
+
 
     public void oneMinutte() {
         try {
@@ -174,7 +197,6 @@ public class PriceService {
         int shares = stocks.get().getStockQuantity();
 
         double newTotalDividend = (dividend * 4) * shares;
-        //double newTotalValue = shares*stockPricePayd;
 
         stocks.get().setTotalDivided(newTotalDividend);
     }

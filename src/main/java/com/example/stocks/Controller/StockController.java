@@ -88,15 +88,14 @@ public class StockController {
         return ResponseEntity.ok("Stock with ticker symbol "+tickerSymbol+" updated successfully");
     }
 
-
-
-    /////////////////////////////////
-
-    @GetMapping("search/{ticker}")
+    @GetMapping("searchFinancialData/{ticker}")
     public ResultsFinancialDTO getCompanyFinancial(@PathVariable("ticker") String ticker) {
         endpoints.setFinancialAPI(ticker);
         return priceService.getFinancialData();
     }
+
+    /////////////////////////////////
+
 /*
     @GetMapping("TickerInfo")
     public String getStockPrice() {

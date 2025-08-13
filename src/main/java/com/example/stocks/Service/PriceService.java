@@ -123,9 +123,6 @@ public class PriceService {
     }
 
 
-
-
-
     public void oneMinutte() {
         try {
             Thread.sleep(61000);

@@ -27,6 +27,9 @@ public class Stocks {
     @JsonProperty("sharesInn")
     private int stockQuantity;
 
+    @JsonProperty("companyName")
+    private String companyName;
+
     @JsonProperty("currentPrice")
     private double currentPrice;
 
@@ -39,34 +42,31 @@ public class Stocks {
     @JsonProperty("totalPrice")
     private double totalPrice;
 
+    @JsonProperty("totalInvested")
+    private double totalInvested;
 
-    public Stocks(String stockName, int stockPrice, int stockQuantity,
-                  double currentPrice, double dividend, double totalDivided, double totalPrice) {
-        //this.id = id;
+    @JsonProperty("return")
+    private double returnValue;
+
+    @JsonProperty("percentageReturn")
+    private double percentageReturn;
+
+
+    public Stocks(String stockName, int stockPrice, int stockQuantity, String companyName,  double currentPrice,
+                  double dividend, double totalDivided, double totalPrice, double totalInvested, double returnValue, double percentageReturn) {
         this.stockName = stockName;
         this.stockPrice = stockPrice;
         this.stockQuantity = stockQuantity;
+        this.companyName = companyName;
         this.currentPrice = currentPrice;
         this.dividend = dividend;
         this.totalDivided = totalDivided;
         this.totalPrice = totalPrice;
+        this.totalInvested = totalInvested;
+        this.returnValue = returnValue;
+        this.percentageReturn = percentageReturn;
     }
 
     public Stocks() {}
 
-/*
-    @Override
-    public String toString() {
-        return "Stocks{" +
-                "id=" + id +
-                ", stockName='" + stockName + '\'' +
-                ", stockPrice=" + stockPrice +
-                ", stockQuantity=" + stockQuantity +
-                ", currentPrice=" + currentPrice +
-                ", dividend=" + dividend +
-                ", totalDivided=" + totalDivided +
-                ", totalPrice=" + totalPrice +
-                '}';
-    }
- */
 }

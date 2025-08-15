@@ -23,6 +23,27 @@ public class financialDTO {
     @JsonProperty("financials")
     private Financials financials;
 
+
+    public String getFiscalPeriod() {
+        return fiscalPeriod;
+    }
+
+    public String getFiscalYear() {
+        return fiscalYear;
+    }
+
+    public List<String> getTickers() {
+        return tickers;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public Financials getFinancials() {
+        return financials;
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Financials {
 

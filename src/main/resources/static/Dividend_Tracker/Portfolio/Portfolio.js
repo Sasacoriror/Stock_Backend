@@ -18,9 +18,21 @@ function renderTable(stocks) {
     stocks.forEach((stock) => {
         const tr = document.createElement('tr');
 
-        ['stockTickerInn', 'priceInn', 'sharesInn', 'currentPrice', 'dividend', 'totalDividend', 'totalPrice'].forEach(key => {
+        ['stockTickerInn', 'companyName', 'priceInn', 'sharesInn', 'currentPrice', 'dividend', 'totalDividend', 'totalPrice', 'totalInvested', 'return', 'percentageReturn'].forEach(key => {
             const td = document.createElement('td');
             td.textContent = stock[key];
+
+            if (key === 'return' || key === 'percentageReturn') {
+                const value = parseFloat(stock[key]);
+                if (!isNaN(value)){
+                    if (value >= 0){
+                        td.style.color = 'green';
+                    } else if (value < 0){
+                        td.style.color = 'red';
+                    }
+                }
+            }
+
             tr.appendChild(td);
         });
 
@@ -35,8 +47,6 @@ function renderTable(stocks) {
     });
 }
 
-
-// TODO: Add percentage of unrealised gain/loss, then color refplecting if it is positive or negative
 function renderSummary(stocks) {
     let totalValue = 0;
     let totalCost = 0;
@@ -67,8 +77,6 @@ function renderSummary(stocks) {
 
     tProfit.textContent = positiveOrNegative;
     tProfit.style.color = profit >= 0 ? "green" : "red";
-
-
 }
 
 let stockName= "";

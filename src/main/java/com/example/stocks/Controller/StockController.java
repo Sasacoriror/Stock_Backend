@@ -30,7 +30,7 @@ public class StockController {
     }
 
     @PostMapping("storeStockData")
-    public ResponseEntity<?> storeData(@Valid @RequestBody Stocks stocks, BindingResult result) {
+    public ResponseEntity<?> storeData(@Valid @RequestBody Stocks stocks, BindingResult result) throws InterruptedException {
         if (result.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             result.getFieldErrors().forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
@@ -40,12 +40,15 @@ public class StockController {
         String stockName = stocks.getStockName().toUpperCase();
         endpoints.setPriceAPI(stockName);
         endpoints.setDividendAPI(stockName);
+        endpoints.setFinancialAPI(stockName, 1);
 
         priceService.getPriceData();
         priceService.getDividendData();
+        priceService.getFinancialData();
 
 
         Stocks savedStock = stockRepository.save(stocks);
+        //Thread.sleep(61000);
         priceService.updateStockData();
         return ResponseEntity.ok("Stock saved successfully\n"+savedStock);
     }
@@ -90,7 +93,7 @@ public class StockController {
 
     @GetMapping("searchFinancialData/{ticker}")
     public ResultsFinancialDTO getCompanyFinancial(@PathVariable("ticker") String ticker) {
-        endpoints.setFinancialAPI(ticker);
+        endpoints.setFinancialAPI(ticker, 20);
         return priceService.getFinancialData();
     }
 

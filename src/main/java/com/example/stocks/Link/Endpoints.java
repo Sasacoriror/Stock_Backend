@@ -24,8 +24,8 @@ public class Endpoints {
         this.dividendAPI = url;
     }
 
-    public void setFinancialAPI(String ticker) {
-        String url = "https://api.polygon.io/vX/reference/financials?ticker="+ticker+"&order=desc&limit=20&sort=filing_date&apiKey="+APIkey;
+    public void setFinancialAPI(String ticker, int limit) {
+        String url = "https://api.polygon.io/vX/reference/financials?ticker="+ticker+"&order=desc&limit="+limit+"&sort=filing_date&apiKey="+APIkey;
         this.financialAPI = url;
     }
 

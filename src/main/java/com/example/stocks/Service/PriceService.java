@@ -14,7 +14,10 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -27,6 +30,7 @@ public class PriceService {
     private final RestTemplate restTemplate;
     private final Endpoints endpoints;
     private final ObjectMapper objectMapper;
+
 
     public PriceService(RestTemplate restTemplate, ObjectMapper objectMapper, Endpoints endpoints) {
         this.restTemplate = restTemplate;
@@ -136,25 +140,27 @@ public class PriceService {
     @Transactional
     public void updateStockData() {
         List<Stocks> stocks = stockRepository.findAll();
-        int counter = 0;
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("#.##", symbols);
 
         for (Stocks stock : stocks) {
 
-
-            if (counter == 2) {
-                oneMinutte();
-                counter = 0;
-                System.out.println("Stopped\ncounter = " + counter);
-            }
-
             endpoints.setPriceAPI(stock.getStockName().toUpperCase());
             endpoints.setDividendAPI(stock.getStockName().toUpperCase());
+            endpoints.setFinancialAPI(stock.getStockName().toUpperCase(), 1);
 
             PriceDTO priceData = getPriceData();
             ResultsDividendDTO dividendData = getDividendData();
+            ResultsFinancialDTO financialData = getFinancialData();
 
             Double newPrice = null;
             Double newDividend = null;
+
+
+            String name = financialData.getResults().get(0).getCompanyName();
+            stock.setCompanyName(name);
+
+
 
             if (priceData != null && priceData.getResults() != null && !priceData.getResults().isEmpty()) {
                 newPrice = priceData.getResults().get(0).getC();
@@ -172,6 +178,16 @@ public class PriceService {
                 hasChanges = true;
             }
 
+            double totalInvested = stock.getStockQuantity() * stock.getStockPrice();
+            double returns = (stock.getStockQuantity() * newPrice) - (stock.getStockQuantity() * stock.getStockPrice());
+            double percentage = (returns / totalInvested) * 100;
+
+            stock.setTotalInvested(totalInvested);
+            stock.setReturnValue(Double.parseDouble(df.format(returns)));
+            stock.setPercentageReturn(Double.parseDouble(df.format(percentage)));
+            System.out.println("The percentage: "+Double.parseDouble(df.format(percentage))+"%");
+
+
             if (newDividend != null && !Objects.equals(newDividend, stock.getDividend())) {
                 stock.setDividend(newDividend);
                 stock.setTotalDivided(stock.getStockQuantity() * newDividend * 4);
@@ -180,22 +196,35 @@ public class PriceService {
 
             if (hasChanges) {
                 stockRepository.save(stock);
-                UpdateDatabase(stock.getStockName());
+                //UpdateDatabase(stock.getStockName());
             }
-            counter++;
         }
     }
 
     @Transactional
     public void UpdateDatabase(String stockName){
         Optional<Stocks> stocks = stockRepository.findById(stockName);
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("#.##", symbols);
+
+        System.out.println("HOW IS EVERYONE");
 
         double dividend = stocks.get().getDividend();
         int shares = stocks.get().getStockQuantity();
+        double price = stocks.get().getCurrentPrice();
+        int paidPrice = stocks.get().getStockPrice();
 
         double newTotalDividend = (dividend * 4) * shares;
+        double newTotalPrice = (price * shares);
+        double newTotalInvested = paidPrice * shares;
+        double newReturnValue = (price * shares) - (paidPrice * shares);
+        double newPercentageReturn = (newReturnValue / newTotalInvested) * 100;
 
         stocks.get().setTotalDivided(newTotalDividend);
+        stocks.get().setTotalPrice(newTotalPrice);
+        stocks.get().setTotalInvested(Double.parseDouble(df.format(newTotalInvested)));
+        stocks.get().setReturnValue(Double.parseDouble(df.format(newReturnValue)));
+        stocks.get().setPercentageReturn(Double.parseDouble(df.format(newPercentageReturn)));
     }
 
 }

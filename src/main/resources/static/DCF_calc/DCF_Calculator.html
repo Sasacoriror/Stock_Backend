@@ -4,17 +4,20 @@
   <meta charset="UTF-8">
   <title>DCF Calculator</title>
   <script src="DCF_Calculator.js"></script>
+  <script src="../Index/theme.js" defer></script>
   <link rel="stylesheet" href="DCF.css">
-  <link rel="stylesheet" href="../index.css">
+  <!--<link rel="stylesheet" href="../index.css">-->
   <script>
       fetch("../Index/index.html")
-          .then(response => response.text())
+          .then(res => res.text())
           .then(data => {
               document.getElementById("navbar").innerHTML = data;
               const link = document.createElement("link");
               link.rel = "stylesheet";
-              link.href = "../Index/navbar.css";  // Adjust path accordingly
+              link.href = "../Index/navbar.css";
               document.head.appendChild(link);
+
+              initThemeToggle(); // call function AFTER navbar is ready
           });
   </script>
 

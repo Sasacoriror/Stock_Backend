@@ -1,6 +1,7 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     margin: 0;
     padding: 0;
     display: flex;
@@ -15,14 +16,15 @@ body {
 
 h1 {
     margin-top: 20px;
-    color: #333;
+    color: var(--text-color);;
 }
 
 .form-container {
-    background: white;
+    background: var(--bg-color);
+    color: var(--text-color);
     padding: 40px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     max-width: 400px;
     width: 100%;
     margin: 50px auto;
@@ -33,6 +35,7 @@ h1 {
 label {
     margin-top: 10px;
     font-weight: bold;
+    color: var(--text-color);
 }
 
 input, select {
@@ -41,9 +44,11 @@ input, select {
     margin-top: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    background: var(--bg-color);
+    color: var(--text-color);
 }
 
-button {
+.form-container button {
     background-color: #007bff;
     color: white;
     border: none;
@@ -54,7 +59,7 @@ button {
     border-radius: 10px;
 }
 
-button:hover {
+.form-container button:hover {
     background-color: #575757;
 }
 
@@ -62,9 +67,30 @@ button:hover {
     margin-top: 20px;
     width: 100%;
     max-width: 800px;
-    background: white;
+    background: var(--bg-color);
+    color: var(--text-color);
     padding: 20px;
     border-radius: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+thead th {
+    background-color: var(--navbar-bg);
+    color: var(--text-color);
+    padding: 10px;
+    text-align: left;
+}
+
+tbody td {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    padding: 10px;
+    border-top: 1px solid #ccc;
 }

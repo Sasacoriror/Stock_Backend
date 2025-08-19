@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!--<meta charset="UTF-8">-->
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Portfolio</title>
     <script src="Portfolio.js" defer></script>
+    <script src="../Sidebar/Sidebar.js" defer></script>
+    <script src="DividendTracker.js" defer></script>
     <link rel="stylesheet" href="Portfolio.css">
     <link rel="stylesheet" href="Edit.css">
+    <link rel="stylesheet" href="addStock.css">
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             fetch("../Sidebar/Sidebar.html")
                 .then(response => response.text())
                 .then(data => {
-                    document.getElementById("sidenav").innerHTML = data;
+                    document.getElementById("sidebar").innerHTML = data;
                     const link = document.createElement("link");
                     link.rel = "stylesheet";
                     link.href = "../Sidebar/Sidebar.css";
@@ -27,8 +30,9 @@
     </style>
 </head>
 <body>
-<div id="sidenav"></div>
+<div id="sidebar"></div>
 
+<div class="content1">
 <!-- Summary Section -->
 <h2>Portfolio Summary</h2>
 <table id="summaryTable">
@@ -49,7 +53,10 @@
     </tr>
     </tbody>
 </table>
+</div>
 
+<div class="content2">
+    <button class="add-btn" onclick="openAddStock()">Add stocks</button>
 <!-- Stocks Table -->
 <h2>Stock Table</h2>
 <table id="stocksTable">
@@ -57,15 +64,15 @@
     <tr>
         <th>Ticker</th>
         <th>Stock Name</th>
-        <th>Cost Per Share $</th>
+        <th>Cost Per Share</th>
         <th>Stock Quantity</th>
-        <th>Current Price $</th>
+        <th>Current Price</th>
         <th>Dividend Frequency</th>
-        <th>Total Dividend $</th>
-        <th>Total Value $</th>
-        <th>Total Invested $</th>
-        <th>Return $</th>
-        <th>Gain/Loss %</th>
+        <th>Total Dividend</th>
+        <th>Total Value</th>
+        <th>Total Invested</th>
+        <th>Return</th>
+        <th>Gain/Loss</th>
         <th>Actions</th>
     </tr>
     </thead>
@@ -73,6 +80,7 @@
     <!-- Rows will be inserted here -->
     </tbody>
 </table>
+</div>
 
 <div id="editModal" class="modal">
     <div class="modal-content">
@@ -85,6 +93,26 @@
         <input type="number" id="editPrice">
 
         <button onclick="editRow()">Save</button>
+    </div>
+</div>
+
+<div id="addStock" class="stock">
+    <div class="stock-content">
+        <span class="close" onclick="closeStockModal()">&times;</span>
+
+        <label>Stock ticker:
+            <input type="text" id="tickerSymbol" placeholder="Ex: MSFT" required>
+        </label>
+
+        <label>Stock Price:
+            <input type="number" id="theStockPrice" placeholder="Ex: 100$" required>
+        </label>
+
+        <label>How many shares:
+            <input type="number" id="shares" placeholder="Ex: 5" required>
+        </label>
+
+        <button onclick="sendData()">Add</button>
     </div>
 </div>
 

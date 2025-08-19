@@ -1,38 +1,73 @@
 body {
-    font-family: "Lato", sans-serif;
+    margin: 0;
+    font-family: "Arial", sans-serif;
+    display: flex;
 }
 
 .sidenav {
     height: 100%;
-    width: 160px;
+    width: 200px;
+    background: rgb(18, 18, 18); /* dark blue-gray */
     position: fixed;
-    z-index: 1;
-    top: 0;
     left: 0;
-    background-color: #111;
-    overflow-x: hidden;
-    padding-top: 20px;
-}
-
-.sidenav a {
-    padding: 6px 8px 6px 16px;
-    text-decoration: none;
+    transition: width 0.3s;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     font-size: 25px;
-    color: #818181;
-    display: block;
 }
 
-.sidenav a:hover {
-    color: #f1f1f1;
+/* Collapsed sidebar */
+.sidenav.collapsed {
+    width: 70px;
 }
 
-.main {
-    margin-left: 160px; /* Same as the width of the sidenav */
-    font-size: 28px; /* Increased text to enable scrolling */
-    padding: 0px 10px;
+/* Sidebar button */
+.toggle-btn {
+    background: #334155;
+    border: none;
+    color: white;
+    padding: 12px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 20px;
 }
 
-@media screen and (max-height: 450px) {
-    .sidenav {padding-top: 15px;}
-    .sidenav a {font-size: 18px;}
+/* Menu items */
+.menu {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu a {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    text-decoration: none;
+    color: white;
+    transition: background 0.2s;
+}
+
+.menu a:hover {
+    background: #475569;
+}
+
+/* Icons */
+.menu a i {
+    font-size: 20px;
+    width: 40px; /* keeps alignment */
+    text-align: center;
+}
+
+/* Hide text when collapsed */
+.sidenav.collapsed .menu a span {
+    display: none;
+}
+
+/* Content */
+.content {
+    flex: 1;
+    padding: 20px;
+    background: #f1f5f9;
 }

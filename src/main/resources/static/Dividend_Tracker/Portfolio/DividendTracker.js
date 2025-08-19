@@ -1,3 +1,7 @@
+function openAddStock() {
+    document.getElementById("addStock").style.display = "block";
+}
+
 async function sendData(){
     const stockTickerInn = document.getElementById("tickerSymbol").value.toUpperCase();
     let priceInn = document.getElementById("theStockPrice").value;
@@ -25,10 +29,23 @@ async function sendData(){
         await response.text();
         console.log("Stock successfully added")
         emptyField();
+        closeStockModal()
+        fetchStocks();
     }catch (error){
         alert(`Failed to send data: ${error.message}`)
     }
 }
+
+function closeStockModal(){
+    document.getElementById("addStock").style.display = "none";
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById("addStock");
+    if (event.target === modal) {
+        closeStockModal();
+    }
+};
 
 function noEmptyFields(ticker, price, shares){
 

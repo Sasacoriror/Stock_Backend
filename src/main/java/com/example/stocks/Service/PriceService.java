@@ -185,11 +185,11 @@ public class PriceService {
             stock.setTotalInvested(totalInvested);
             stock.setReturnValue(Double.parseDouble(df.format(returns)));
             stock.setPercentageReturn(Double.parseDouble(df.format(percentage)));
-            System.out.println("The percentage: "+Double.parseDouble(df.format(percentage))+"%");
+            stock.setDividend(dividendData.getResults().get(0).getFrequency());
 
 
             if (newDividend != null && !Objects.equals(newDividend, stock.getDividend())) {
-                stock.setDividend(newDividend);
+                //stock.setDividend(newDividend);
                 stock.setTotalDivided(stock.getStockQuantity() * newDividend * 4);
                 hasChanges = true;
             }
@@ -207,9 +207,10 @@ public class PriceService {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
 
-        System.out.println("HOW IS EVERYONE");
+        ResultsDividendDTO dividendData = getDividendData();
 
-        double dividend = stocks.get().getDividend();
+
+        double dividend = dividendData.getResults().get(0).getCash_amount();
         int shares = stocks.get().getStockQuantity();
         double price = stocks.get().getCurrentPrice();
         int paidPrice = stocks.get().getStockPrice();

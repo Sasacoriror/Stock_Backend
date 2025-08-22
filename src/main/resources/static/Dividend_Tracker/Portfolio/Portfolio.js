@@ -20,7 +20,17 @@ function renderTable(stocks) {
 
         ['stockTickerInn', 'companyName', 'priceInn', 'sharesInn', 'currentPrice', 'dividend', 'totalDividend', 'totalPrice', 'totalInvested', 'return', 'percentageReturn'].forEach(key => {
             const td = document.createElement('td');
-            td.textContent = stock[key];
+            let value = stock[key];
+
+            if (['priceInn', 'currentPrice', 'totalDividend', 'totalPrice', 'totalInvested', 'return'].includes(key)){
+                value = `${parseFloat(value).toFixed(2)}$`;
+            }
+
+            if (['percentageReturn'].includes(key)){
+                value = `${parseFloat(value).toFixed(2)}%`;
+            }
+
+            td.textContent = value;
 
             if (key === 'return' || key === 'percentageReturn') {
                 const value = parseFloat(stock[key]);

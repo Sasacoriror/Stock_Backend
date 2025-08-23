@@ -3,7 +3,10 @@ package com.example.stocks.Controller;
 import com.example.stocks.DTO.ResultsFinancialDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
+import com.example.stocks.Model.Watchlist;
 import com.example.stocks.Respository.StockRepository;
+import com.example.stocks.Respository.WatchlistRepository;
+import com.example.stocks.Service.DatabaseService;
 import com.example.stocks.Service.PriceService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
@@ -19,18 +22,22 @@ import java.util.*;
 public class StockController {
 
     private final PriceService priceService;
+    private final DatabaseService databaseService;
     private final Endpoints endpoints;
     private final StockRepository stockRepository;
+    private final WatchlistRepository watchlistRepository;
 
-    public StockController(PriceService priceService, Endpoints endpoints,
-                           StockRepository stockRepository) {
+    public StockController(PriceService priceService, DatabaseService databaseService, Endpoints endpoints,
+                           StockRepository stockRepository, WatchlistRepository watchlistRepository) {
         this.priceService = priceService;
+        this.databaseService = databaseService;
         this.endpoints = endpoints;
         this.stockRepository = stockRepository;
+        this.watchlistRepository = watchlistRepository;
     }
 
     @PostMapping("storeStockData")
-    public ResponseEntity<?> storeData(@Valid @RequestBody Stocks stocks, BindingResult result) throws InterruptedException {
+    public ResponseEntity<?> storeData(@Valid @RequestBody Stocks stocks, BindingResult result) {
         if (result.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             result.getFieldErrors().forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
@@ -46,11 +53,38 @@ public class StockController {
         priceService.getDividendData();
         priceService.getFinancialData();
 
-
         Stocks savedStock = stockRepository.save(stocks);
-        //Thread.sleep(61000);
-        priceService.updateStockData();
-        return ResponseEntity.ok("Stock saved successfully\n"+savedStock);
+
+        databaseService.updateStockData();
+
+        return ResponseEntity.ok("Stock saved successfully");
+    }
+
+    @PostMapping("addWatchlist")
+    public ResponseEntity<?> addWatchlist(@Valid @RequestBody Watchlist watchlist, BindingResult result) {
+        if (result.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            result.getFieldErrors().forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        String stockName = watchlist.getStockTickerInn().toUpperCase();
+        endpoints.setPriceAPI(stockName);
+        endpoints.setDividendAPI(stockName);
+        endpoints.setFinancialAPI(stockName, 1);
+
+        priceService.getPriceData();
+        priceService.getDividendData();
+        priceService.getFinancialData();
+
+        Watchlist watchlistSaved = watchlistRepository.save(watchlist);
+
+        return null;
+    }
+
+    @GetMapping("Watchlist")
+    public List<Watchlist> getWatchlist() {
+        return watchlistRepository.findAll();
     }
 
 
@@ -86,33 +120,15 @@ public class StockController {
 
         stockRepository.save(stocks1);
 
-        priceService.UpdateDatabase(tickerSymbol);
+        databaseService.UpdateDatabase(tickerSymbol);
 
         return ResponseEntity.ok("Stock with ticker symbol "+tickerSymbol+" updated successfully");
     }
 
     @GetMapping("searchFinancialData/{ticker}")
     public ResultsFinancialDTO getCompanyFinancial(@PathVariable("ticker") String ticker) {
-        endpoints.setFinancialAPI(ticker, 20);
+        String stockName = ticker.toUpperCase();
+        endpoints.setFinancialAPI(stockName, 20);
         return priceService.getFinancialData();
     }
-
-    /////////////////////////////////
-
-/*
-    @GetMapping("TickerInfo")
-    public String getStockPrice() {
-        return priceService.getTickerData();
-    }
-
-    @GetMapping("PriceInfo")
-    public PriceDTO getPriceData() {
-        return priceService.getPriceData();
-    }
-
-    @GetMapping("DividendInfo")
-    public ResultsDividendDTO getDividendData() {
-        return priceService.getDividendData();
-    }
- */
 }

@@ -5,7 +5,9 @@ import com.example.stocks.DTO.ResultsDividendDTO;
 import com.example.stocks.DTO.ResultsFinancialDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
+import com.example.stocks.Model.Watchlist;
 import com.example.stocks.Respository.StockRepository;
+import com.example.stocks.Respository.WatchlistRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class DatabaseService {
 
     @Autowired
     private StockRepository stockRepository;
+
+    @Autowired
+    private WatchlistRepository watchlistRepository;
 
     @Autowired
     private PriceService priceService;
@@ -112,6 +117,25 @@ public class DatabaseService {
 
     @Transactional
     public void addToWatchist(String stockName){
+        Optional<Watchlist> watchlist = watchlistRepository.findById(stockName);
 
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("#.##", symbols);
+
+        PriceDTO priceData = priceService.getPriceData();
+        ResultsDividendDTO dividendData = priceService.getDividendData();
+        ResultsFinancialDTO financialData = priceService.getFinancialData();
+
+        double pricePerShare = priceData.getResults().get(0).getC();
+        String name = financialData.getResults().get(0).getCompanyName();
+        double totalDividend = dividendData.getResults().get(0).getCash_amount();
+        int dividendFrequenzy = dividendData.getResults().get(0).getFrequency();
+
+        double dividendYield = ((totalDividend * dividendFrequenzy) / pricePerShare) * 100;
+
+        watchlist.get().setStockTickerInn(stockName);
+        watchlist.get().setNameStock(name);
+        watchlist.get().setPriceStock(pricePerShare);
+        watchlist.get().setDividendYield(Double.parseDouble(df.format(dividendYield)));
     }
 }

@@ -21,14 +21,17 @@ public class Watchlist {
 
     private String nameStock;
 
-    private double marketCap;
+    private double priceStock;
+
+    //private double marketCap;
 
     private double dividendYield;
 
-    public Watchlist(String stockTickerInn, String nameStock, double marketCap, double dividendYield) {
+    public Watchlist(String stockTickerInn, String nameStock, double priceStock, double dividendYield) {
         this.stockTickerInn = stockTickerInn;
         this.nameStock = nameStock;
-        this.marketCap = marketCap;
+        this.priceStock = priceStock;
+        //this.marketCap = marketCap;
         this.dividendYield = dividendYield;
     }
 

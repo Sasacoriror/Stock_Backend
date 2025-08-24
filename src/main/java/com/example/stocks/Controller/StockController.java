@@ -78,8 +78,9 @@ public class StockController {
         priceService.getFinancialData();
 
         Watchlist watchlistSaved = watchlistRepository.save(watchlist);
+        databaseService.addToWatchist(stockName);
 
-        return null;
+        return ResponseEntity.ok("Watchlist saved successfully");
     }
 
     @GetMapping("Watchlist")
@@ -97,6 +98,12 @@ public class StockController {
     public ResponseEntity<String> delete(@PathVariable String tickerSymbol) {
         stockRepository.deleteById(tickerSymbol);
         return ResponseEntity.ok("Stock with ticker symbol "+tickerSymbol+" deleted successfully");
+    }
+
+    @DeleteMapping("deleteWatchlist/{tickersymbol}")
+    public ResponseEntity<String> deleteWatchlist(@PathVariable String tickerSymbol) {
+        watchlistRepository.deleteById(tickerSymbol);
+        return ResponseEntity.ok("Watchlist with symbol "+tickerSymbol+" deleted successfully");
     }
 
 

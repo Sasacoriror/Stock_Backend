@@ -4,16 +4,19 @@
     <meta charset="UTF-8">
     <title>Review Stock</title>
     <link rel="stylesheet" href="Review.css">
+    <script src="../Sidebar/Sidebar.js" defer></script>
     <script>
-        fetch("../Sidebar/Sidebar.html")
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById("sidenav").innerHTML = data;
-                const link = document.createElement("link");
-                link.rel = "stylesheet";
-                link.href = "../Sidebar/Sidebar.css";  // Adjust path accordingly
-                document.head.appendChild(link);
-            });
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch("../Sidebar/Sidebar.html")
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("sidebar").innerHTML = data;
+                    const link = document.createElement("link");
+                    link.rel = "stylesheet";
+                    link.href = "../Sidebar/Sidebar.css";
+                    document.head.appendChild(link);
+                });
+        });
     </script>
     <style>
         h2{
@@ -22,7 +25,7 @@
     </style>
 </head>
 <body>
-<div id="sidenav"></div>
+<div id="sidebar"></div>
 <!--<h2>COMMING SOON</h2>-->
 <div class="search-container">
     <input type="text" id="searchInput" placeholder="Search stocks...">

@@ -43,6 +43,7 @@ function closeStockModal(){
 window.onclick = function(event) {
     const modal = document.getElementById("addStock");
     if (event.target === modal) {
+        emptyField();
         closeStockModal();
     }
 };

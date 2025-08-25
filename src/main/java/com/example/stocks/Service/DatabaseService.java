@@ -90,7 +90,7 @@ public class DatabaseService {
     }
 
     @Transactional
-    public void UpdateDatabase(String stockName){
+    public void UpdateDatabase(Long stockName){
         Optional<Stocks> stocks = stockRepository.findById(stockName);
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
@@ -116,7 +116,7 @@ public class DatabaseService {
     }
 
     @Transactional
-    public void addToWatchist(String stockName){
+    public void addToWatchist(Long stockName){
         Optional<Watchlist> watchlist = watchlistRepository.findById(stockName);
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
@@ -133,9 +133,19 @@ public class DatabaseService {
 
         double dividendYield = ((totalDividend * dividendFrequenzy) / pricePerShare) * 100;
 
-        watchlist.get().setStockTickerInn(stockName);
+        //watchlist.get().setStockTickerInn(stockName);
         watchlist.get().setNameStock(name);
         watchlist.get().setPriceStock(pricePerShare);
         watchlist.get().setDividendYield(Double.parseDouble(df.format(dividendYield)));
+    }
+
+    public void oneMinutte() {
+        try {
+            Thread.sleep(61000);
+        }catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+            System.out.println("oneMinute function was interrupted");
+        }
+
     }
 }

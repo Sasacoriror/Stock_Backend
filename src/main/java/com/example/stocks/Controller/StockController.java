@@ -36,6 +36,8 @@ public class StockController {
         this.watchlistRepository = watchlistRepository;
     }
 
+    ///////////////////////// POSTMAPPING ////////////////////////
+
     @PostMapping("storeStockData")
     public ResponseEntity<?> storeData(@Valid @RequestBody Stocks stocks, BindingResult result) {
         if (result.hasErrors()) {
@@ -78,10 +80,13 @@ public class StockController {
         priceService.getFinancialData();
 
         Watchlist watchlistSaved = watchlistRepository.save(watchlist);
-        databaseService.addToWatchist(stockName);
+        databaseService.addToWatchist(watchlistSaved.getId());
 
         return ResponseEntity.ok("Watchlist saved successfully");
     }
+
+
+    //////////////////////// GETMAPPING ////////////////////////
 
     @GetMapping("Watchlist")
     public List<Watchlist> getWatchlist() {
@@ -94,22 +99,32 @@ public class StockController {
         return stockRepository.findAll();
     }
 
+    @GetMapping("searchFinancialData/{ticker}")
+    public ResultsFinancialDTO getCompanyFinancial(@PathVariable("ticker") String ticker) {
+        String stockName = ticker.toUpperCase();
+        endpoints.setFinancialAPI(stockName, 20);
+        return priceService.getFinancialData();
+    }
+
+    //////////////////////// DELETEMAPPING ////////////////////////
+
     @DeleteMapping("delete/{tickerSymbol}")
-    public ResponseEntity<String> delete(@PathVariable String tickerSymbol) {
+    public ResponseEntity<String> delete(@PathVariable Long tickerSymbol) {
         stockRepository.deleteById(tickerSymbol);
         return ResponseEntity.ok("Stock with ticker symbol "+tickerSymbol+" deleted successfully");
     }
 
     @DeleteMapping("deleteWatchlist/{tickersymbol}")
-    public ResponseEntity<String> deleteWatchlist(@PathVariable String tickerSymbol) {
+    public ResponseEntity<String> deleteWatchlist(@PathVariable Long tickerSymbol) {
         watchlistRepository.deleteById(tickerSymbol);
         return ResponseEntity.ok("Watchlist with symbol "+tickerSymbol+" deleted successfully");
     }
 
+    //////////////////////// PUTMAPPING ////////////////////////
 
     @PutMapping("updateData/{tickerSymbol}")
     public ResponseEntity<String> update(
-            @PathVariable String tickerSymbol,
+            @PathVariable Long tickerSymbol,
             @RequestBody Map<String, Integer> data) {
 
         Optional<Stocks> stocks = stockRepository.findById(tickerSymbol);
@@ -122,7 +137,6 @@ public class StockController {
 
         if (data.containsKey("priceInn")){
             stocks1.setStockPrice(data.get("priceInn"));
-
         }
 
         stockRepository.save(stocks1);
@@ -130,12 +144,5 @@ public class StockController {
         databaseService.UpdateDatabase(tickerSymbol);
 
         return ResponseEntity.ok("Stock with ticker symbol "+tickerSymbol+" updated successfully");
-    }
-
-    @GetMapping("searchFinancialData/{ticker}")
-    public ResultsFinancialDTO getCompanyFinancial(@PathVariable("ticker") String ticker) {
-        String stockName = ticker.toUpperCase();
-        endpoints.setFinancialAPI(stockName, 20);
-        return priceService.getFinancialData();
     }
 }

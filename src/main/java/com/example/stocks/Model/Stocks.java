@@ -14,8 +14,11 @@ import jakarta.validation.constraints.Pattern;
 public class Stocks {
 
     @Id
-    @JsonProperty("stockTickerInn")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
+    private Long id;
+
+    @JsonProperty("stockTickerInn")
     @Pattern(regexp = "^[A-Za-z]+$")
     private String stockName;
 
@@ -51,6 +54,9 @@ public class Stocks {
     @JsonProperty("percentageReturn")
     private double percentageReturn;
 
+    //@ManyToOne
+    //@JoinColumn(name = "user_id")
+    //private User user;
 
     public Stocks(String stockName, int stockPrice, int stockQuantity, String companyName,  double currentPrice,
                   double dividend, double totalDivided, double totalPrice, double totalInvested, double returnValue, double percentageReturn) {

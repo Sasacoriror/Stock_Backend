@@ -9,7 +9,12 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface StockRepository extends JpaRepository<Stocks, String> {
+public interface StockRepository extends JpaRepository<Stocks, Long> {
+
+    //List<Stocks> findByUser(User user);
+
+    //Optional<Stocks> findByStockNameAndUser(String stockName, User user);
+
     Optional<Stocks> findByStockName(String stockName);
 
     @Query("SELECT s FROM Stocks s WHERE s.stockName = :StockName")

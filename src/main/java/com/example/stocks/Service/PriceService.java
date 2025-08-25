@@ -125,18 +125,4 @@ public class PriceService {
             throw new RuntimeException("Error parsing JSON response");
         }
     }
-
-
-    public void oneMinutte() {
-        try {
-            Thread.sleep(61000);
-        }catch (InterruptedException e){
-            Thread.currentThread().interrupt();
-            System.out.println("oneMinute function was interrupted");
-        }
-
-    }
-    //endpoints.setPriceAPI(stock.getStockName().toUpperCase());
-    //endpoints.setDividendAPI(stock.getStockName().toUpperCase());
-    //endpoints.setFinancialAPI(stock.getStockName().toUpperCase(), 1);
 }

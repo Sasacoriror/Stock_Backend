@@ -60,6 +60,8 @@ button {
     background: white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     margin-top: 5%;
+
+    width: 70%;
 }
 
 .content2 {
@@ -102,7 +104,7 @@ button {
 #summaryTable {
     border-collapse: collapse;
     width: 90%;
-    margin: 20px auto;
+    margin: 0 auto;
     display: block;
     overflow-x: auto;
 }

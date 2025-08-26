@@ -48,8 +48,8 @@ function renderTable(stocks) {
 
         const actionTd = document.createElement('td');
         actionTd.innerHTML = `
-            <button class="delete-btn" onclick="deleteRow('${stock.stockTickerInn}')">Delete</button>
-            <button class="edit-btn" onclick="openEditRow('${stock.stockTickerInn}', '${stock.sharesInn}', '${stock.priceInn}')">Edit</button>
+            <button class="delete-btn" onclick="deleteRow('${stock.id}')">Delete</button>
+            <button class="edit-btn" onclick="openEditRow('${stock.id}', '${stock.sharesInn}', '${stock.priceInn}')">Edit</button>
         `;
         tr.dataset.id = stock.id;
         tr.appendChild(actionTd);

@@ -57,7 +57,7 @@ public class StockController {
 
         Stocks savedStock = stockRepository.save(stocks);
 
-        databaseService.updateStockData();
+        databaseService.addToPortfolio(savedStock.getId());
 
         return ResponseEntity.ok("Stock saved successfully");
     }
@@ -108,16 +108,16 @@ public class StockController {
 
     //////////////////////// DELETEMAPPING ////////////////////////
 
-    @DeleteMapping("delete/{tickerSymbol}")
-    public ResponseEntity<String> delete(@PathVariable Long tickerSymbol) {
-        stockRepository.deleteById(tickerSymbol);
-        return ResponseEntity.ok("Stock with ticker symbol "+tickerSymbol+" deleted successfully");
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") Long id) {
+        stockRepository.deleteById(id);
+        return ResponseEntity.ok("Stock with ticker symbol "+id+" deleted successfully");
     }
 
-    @DeleteMapping("deleteWatchlist/{tickersymbol}")
-    public ResponseEntity<String> deleteWatchlist(@PathVariable Long tickerSymbol) {
-        watchlistRepository.deleteById(tickerSymbol);
-        return ResponseEntity.ok("Watchlist with symbol "+tickerSymbol+" deleted successfully");
+    @DeleteMapping("deleteWatchlist/{id}")
+    public ResponseEntity<String> deleteWatchlist(@PathVariable("id") Long id) {
+        watchlistRepository.deleteById(id);
+        return ResponseEntity.ok("Watchlist with symbol "+id+" deleted successfully");
     }
 
     //////////////////////// PUTMAPPING ////////////////////////

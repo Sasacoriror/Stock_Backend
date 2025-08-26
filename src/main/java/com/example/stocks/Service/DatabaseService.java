@@ -33,9 +33,18 @@ public class DatabaseService {
     @Autowired
     private PriceService priceService;
 
+    /*
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+    DecimalFormat df = new DecimalFormat("#.##", symbols);
+
+    PriceDTO priceData = priceService.getPriceData();
+    ResultsDividendDTO dividendData = priceService.getDividendData();
+    ResultsFinancialDTO financialData = priceService.getFinancialData();
+*/
     @Transactional
     public void updateStockData() {
         List<Stocks> stocks = stockRepository.findAll();
+
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
 
@@ -84,14 +93,48 @@ public class DatabaseService {
 
             if (hasChanges) {
                 stockRepository.save(stock);
-                //UpdateDatabase(stock.getStockName());
+                UpdateDatabase(stock.getId());
             }
         }
     }
 
     @Transactional
-    public void UpdateDatabase(Long stockName){
-        Optional<Stocks> stocks = stockRepository.findById(stockName);
+    public void addToPortfolio(Long id) {
+        Optional<Stocks> portfolio = stockRepository.findById(id);
+
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("#.##", symbols);
+
+        PriceDTO priceData = priceService.getPriceData();
+        ResultsDividendDTO dividendData = priceService.getDividendData();
+        ResultsFinancialDTO financialData = priceService.getFinancialData();
+
+        double price = portfolio.get().getStockPrice();
+        int shares = portfolio.get().getStockQuantity();
+
+        String companyName = financialData.getResults().get(0).getCompanyName();
+        double currentPrice = priceData.getResults().get(0).getC();
+        int frequenzy = dividendData.getResults().get(0).getFrequency();
+        double totalDividend = (dividendData.getResults().get(0).getCash_amount() * frequenzy) * shares;
+        double totalValue = shares * currentPrice;
+        double totalInvested = price * shares;
+        double returnValue = (currentPrice * shares) - (price * shares);
+        double percentage = (returnValue / totalInvested) * 100;
+
+        portfolio.get().setCompanyName(companyName);
+        portfolio.get().setCurrentPrice(currentPrice);
+        portfolio.get().setDividend(frequenzy);
+        portfolio.get().setTotalDivided(totalDividend);
+        portfolio.get().setTotalPrice(totalValue);
+        portfolio.get().setTotalInvested(Double.parseDouble(df.format(totalInvested)));
+        portfolio.get().setReturnValue(Double.parseDouble(df.format(returnValue)));
+        portfolio.get().setPercentageReturn(Double.parseDouble(df.format(percentage)));
+    }
+
+    @Transactional
+    public void UpdateDatabase(Long id){
+        Optional<Stocks> stocks = stockRepository.findById(id);
+
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
 
@@ -101,8 +144,9 @@ public class DatabaseService {
         int shares = stocks.get().getStockQuantity();
         double price = stocks.get().getCurrentPrice();
         int paidPrice = stocks.get().getStockPrice();
+        int dividendFrequenzy = dividendData.getResults().get(0).getFrequency();
 
-        double newTotalDividend = (dividend * 4) * shares;
+        double newTotalDividend = (dividend * dividendFrequenzy) * shares;
         double newTotalPrice = (price * shares);
         double newTotalInvested = paidPrice * shares;
         double newReturnValue = (price * shares) - (paidPrice * shares);
@@ -116,8 +160,8 @@ public class DatabaseService {
     }
 
     @Transactional
-    public void addToWatchist(Long stockName){
-        Optional<Watchlist> watchlist = watchlistRepository.findById(stockName);
+    public void addToWatchist(Long id){
+        Optional<Watchlist> watchlist = watchlistRepository.findById(id);
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);

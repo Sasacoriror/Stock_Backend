@@ -20,12 +20,15 @@ public class Watchlist {
     @Pattern(regexp = "^[A-Za-z]+$")
     private String stockTickerInn;
 
+    @JsonProperty("companyName")
     private String nameStock;
 
+    @JsonProperty("latestPrice")
     private double priceStock;
 
     //private double marketCap;
 
+    @JsonProperty("dividendYield")
     private double dividendYield;
 
     public Watchlist(String stockTickerInn, String nameStock, double priceStock, double dividendYield) {

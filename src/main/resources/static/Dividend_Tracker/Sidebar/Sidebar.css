@@ -9,6 +9,7 @@ body {
     width: 200px;
     background: rgb(18, 18, 18); /* dark blue-gray */
     position: fixed;
+    top: 0;
     left: 0;
     transition: width 0.3s;
     overflow: hidden;

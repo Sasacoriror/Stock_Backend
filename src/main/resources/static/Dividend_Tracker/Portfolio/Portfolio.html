@@ -8,6 +8,7 @@
     <script src="../Sidebar/Sidebar.js" defer></script>
     <script src="DividendTracker.js" defer></script>
     <link rel="stylesheet" href="Portfolio.css">
+    <link rel="stylesheet" href="../Sidebar/Sidebar.css">
     <link rel="stylesheet" href="Edit.css">
     <link rel="stylesheet" href="addStock.css">
     <script>
@@ -17,8 +18,8 @@
                 .then(data => {
                     document.getElementById("sidebar").innerHTML = data;
                     const link = document.createElement("link");
-                    link.rel = "stylesheet";
-                    link.href = "../Sidebar/Sidebar.css";
+                    //link.rel = "stylesheet";
+                    //link.href = "../Sidebar/Sidebar.css";
                     document.head.appendChild(link);
                 });
         });

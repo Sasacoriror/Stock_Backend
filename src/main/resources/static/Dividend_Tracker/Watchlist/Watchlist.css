@@ -47,7 +47,7 @@ button {
     padding: 40px 20px 20px 20px;  /* extra top padding for button space */
     background: white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    margin-top: 5%;
+    margin-top: 0;
 
     width: 50%;
     max-width: 1200px;            /* 👈 hard limit so it doesn’t stretch too wide */

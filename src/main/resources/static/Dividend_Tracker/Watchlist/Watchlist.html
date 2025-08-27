@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watchlist</title>
     <script src="../Sidebar/Sidebar.js" defer></script>
+    <link rel="stylesheet" href="../Sidebar/Sidebar.css">
     <link rel="stylesheet" href="Watchlist.css">
     <script src="Watchlist.js" defer></script>
     <script>
@@ -14,8 +15,8 @@
                 .then(data => {
                     document.getElementById("sidebar").innerHTML = data;
                     const link = document.createElement("link");
-                    link.rel = "stylesheet";
-                    link.href = "../Sidebar/Sidebar.css";
+                    //link.rel = "stylesheet";
+                    //link.href = "../Sidebar/Sidebar.css";
                     document.head.appendChild(link);
                 });
         });

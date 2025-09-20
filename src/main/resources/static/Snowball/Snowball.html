@@ -5,25 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projection Snapshot Table</title>
     <script src="Snowball.js"></script>
-    <script src="SnowballChart.js"></script>
     <script src="../Index/theme.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="../index.css">
     <link rel="stylesheet" href="snowball.css">
-    <script>
-        fetch("../Index/index.html")
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById("navbar").innerHTML = data;
-                const link = document.createElement("link");
-                link.rel = "stylesheet";
-                link.href = "../Index/navbar.css";
-                document.head.appendChild(link);
-
-                initThemeToggle(); // call function AFTER navbar is ready
-            });
-    </script>
-
 </head>
 <body>
 <div id="navbar"></div>
@@ -41,21 +26,13 @@
             <option value="monthly">Monthly</option>
         </select>
     </label>
-    <label>Dividend Frequency:
-        <select id="dividendFrequency" required>
-            <option value="quarterly">Quarterly</option>
-            <option value="monthly">Monthly</option>
-            <option value="semiAnnual">Semi-Annual</option>
-            <option value="annual">Annual</option>
-        </select>
-    </label>
     <label>Reinvest Dividends:
         <select id="dividendReinvestment" required>
             <option value="yes">Yes, reinvest</option>
             <option value="no">No, my money</option>
         </select>
     </label>
-    <button type="button" onclick="calculateProjection()">Generate Table</button>
+    <button type="button" onclick="run()">Generate Table</button>
 </div>
 
 <div id="tableContainer" class="container"></div>

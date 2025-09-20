@@ -1,100 +1,123 @@
-function calculateProjection() {
-    let stockPrice = parseFloat(document.getElementById('stockPrice').value);
-    let annualDividend = parseFloat(document.getElementById('annualDividend').value);
-    const dividendCAGR = parseFloat(document.getElementById('dividendCAGR').value) / 100;
-    const stockPriceCAGR = parseFloat(document.getElementById('stockPriceCAGR').value) / 100;
-    const amountToInvest = parseFloat(document.getElementById('amountToInvest').value);
-    const investmentFrequency = document.getElementById('investmentFrequency').value;
-    const dividendFrequency = document.getElementById('dividendFrequency').value.toLowerCase();
-    const dividendReinvestment = document.getElementById('dividendReinvestment').value === 'yes';
+fetch("../Index/index.html")
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById("navbar").innerHTML = data;
+                const link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = "../Index/navbar.css";
+                document.head.appendChild(link);
 
-    calculateProjection2()
+                initThemeToggle();
+            });
 
-    let periodsPerYear;
-    if (dividendFrequency === 'monthly') {
-        periodsPerYear = 12;
-    } else if (dividendFrequency === 'quarterly') {
-        periodsPerYear = 4;
-    } else if (dividendFrequency === 'semiannual' || dividendFrequency === 'semiAnnual') {
-        periodsPerYear = 2;
-    } else if (dividendFrequency === 'annual') {
-        periodsPerYear = 1;
-    } else {
-        console.error("Unknown dividend frequency: " + dividendFrequency);
+function run(){
+    genTableData();
+    genChartData();
+}
+
+function getData(){
+    let stockPrice = parseFloat(document.getElementById("stockPrice").value);
+    let annualDividend = parseFloat(document.getElementById("annualDividend").value);
+    const dividendCAGR = parseFloat(document.getElementById("dividendCAGR").value) / 100;
+    const stockPriceCAGR = parseFloat(document.getElementById("stockPriceCAGR").value) / 100;
+    const amountToInvest = parseFloat(document.getElementById("amountToInvest").value);
+    const investmentFrequency = document.getElementById("investmentFrequency").value;
+    const dividendReinvestment = document.getElementById("dividendReinvestment").value === "yes";
+
+    if(isNaN(stockPrice) || isNaN(annualDividend) || isNaN(dividendCAGR) || isNaN(stockPriceCAGR) || isNaN(amountToInvest)){
+        alert("All boxes must be filled inn!");
+        return null;
+    }
+
+    return {stockPrice, annualDividend, dividendCAGR, stockPriceCAGR, amountToInvest, investmentFrequency, dividendReinvestment}
+}
+
+function genTableData(){
+    let data = getData();
+    if(!data){
         return;
     }
 
-    const totalYears = 50;
-    const totalPeriods = totalYears * periodsPerYear;
+    let {stockPrice, annualDividend, dividendCAGR, stockPriceCAGR,
+     amountToInvest, investmentFrequency, dividendReinvestment} = data;
 
-    const periodStockPriceGrowth = Math.pow(1 + stockPriceCAGR, 1 / periodsPerYear);
+    const totalYears = 50;
+    let moneyPutInn = amountToInvest;
+    const stockPriceGrowth = Math.pow(1 + stockPriceCAGR, 1 / 1);
 
     let totalShares = 0;
-    if (investmentFrequency === 'oneTime') {
+    if (investmentFrequency === "oneTime") {
         totalShares = amountToInvest / stockPrice;
     }
 
     let results = [];
+    for(let period = 1; period <= totalYears; period++){
 
-    for (let period = 1; period <= totalPeriods; period++) {
-        stockPrice *= periodStockPriceGrowth;
-
-        if (dividendReinvestment) {
-            const dividendPayment = (annualDividend / periodsPerYear) * totalShares;
-            const newShares = dividendPayment / stockPrice;
-            totalShares += newShares;
+        if(investmentFrequency === "monthly") {
+            totalShares += (amountToInvest * 12) / stockPrice;
+            moneyPutInn += amountToInvest * 12;
         }
 
-        if (period % periodsPerYear === 0) {
-            let currentYear = period / periodsPerYear;
-            if (currentYear % 5 === 0) {  // Only store data every 5 years
+
+        stockPrice *= stockPriceGrowth;
+
+        if(dividendReinvestment){
+            const dividendPayment = annualDividend * totalShares;
+            const dripShares = dividendPayment / stockPrice;
+            totalShares += dripShares;
+        }
+
+
+
+        if(period % 1 === 0){
+            let currentYear = period / 1;
+            if(currentYear % 5 === 0){
                 let annualDividendIncome = totalShares * annualDividend;
+                console.log(currentYear+" invested: "+moneyPutInn);
                 results.push({
                     year: currentYear,
-                    investedAmount: amountToInvest.toFixed(2),
+                    investedAmount: moneyPutInn.toFixed(2),
                     annualDividendIncome: annualDividendIncome.toFixed(2)
                 });
             }
             annualDividend *= 1 + dividendCAGR;
         }
     }
-
-    generateTable(results);  // Generate the table with the results
-
-    console.log("Total Shares: " + totalShares.toFixed(4));
-    console.log("Final Stock Price: " + stockPrice.toFixed(2));
+    createTable(results);
 }
 
+function createTable(data){
+    const tableContainer = document.getElementById("tableContainer");
+    tableContainer.innerHTML = "";
 
-function generateTable(data) {
-    const tableContainer = document.getElementById('tableContainer');
-    tableContainer.innerHTML = ''; // Clear previous table
+    const table = document.createElement("table");
+    const thead = document.createElement("thead");
+    const tbody = document.createElement("tbody");
 
-    const table = document.createElement('table');
-    const thead = document.createElement('thead');
-    const tbody = document.createElement('tbody');
+   thead.innerHTML = `
+       <tr>
+           <th>Year</th>
+           <th>Invested Amount</th>
+           <th>Annual Dividend Income</th>
+       </tr>`;
 
-    // Add header row
-    thead.innerHTML = `
-    <tr>
-      <th>Year</th>
-      <th>Invested Amount</th>
-      <th>Annual Dividend Income</th>
-    </tr>
-  `;
+   data.forEach(row => {
+       const tr = document.createElement("tr");
+       tr.innerHTML = `
+           <td>${row.year}</td>
+           <td>${row.investedAmount}</td>
+           <td>${row.annualDividendIncome}</td>`;
+       tbody.appendChild(tr);
+   });
 
-    // Add rows for each year
-    data.forEach(row => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-      <td>${row.year}</td>
-      <td>${row.investedAmount}</td>
-      <td>${row.annualDividendIncome}</td>
-    `;
-        tbody.appendChild(tr);
-    });
+   table.appendChild(thead);
+   table.appendChild(tbody);
+   tableContainer.appendChild(table);
 
-    table.appendChild(thead);
-    table.appendChild(tbody);
-    tableContainer.appendChild(table);
+}
+
+function genChartData(){
+}
+
+function genChart(){
 }

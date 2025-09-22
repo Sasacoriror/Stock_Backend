@@ -1,14 +1,14 @@
 fetch("../Index/index.html")
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById("navbar").innerHTML = data;
-                const link = document.createElement("link");
-                link.rel = "stylesheet";
-                link.href = "../Index/navbar.css";
-                document.head.appendChild(link);
+    .then(res => res.text())
+    .then(data => {
+        document.getElementById("navbar").innerHTML = data;
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "../Index/navbar.css";
+        document.head.appendChild(link);
 
-                initThemeToggle();
-            });
+        initThemeToggle();
+    });
 
 function run(){
     genTableData();
@@ -43,6 +43,8 @@ function genTableData(){
 
     const totalYears = 50;
     let moneyPutInn = amountToInvest;
+    let YOC = 0;
+    let total_Value = 0;
     const stockPriceGrowth = Math.pow(1 + stockPriceCAGR, 1 / 1);
 
     let totalShares = 0;
@@ -56,6 +58,9 @@ function genTableData(){
         if(investmentFrequency === "monthly") {
             totalShares += (amountToInvest * 12) / stockPrice;
             moneyPutInn += amountToInvest * 12;
+            if(period == 1){
+                moneyPutInn -=amountToInvest;
+            }
         }
 
 
@@ -67,17 +72,20 @@ function genTableData(){
             totalShares += dripShares;
         }
 
+        total_Value = totalShares * stockPrice;
 
 
         if(period % 1 === 0){
             let currentYear = period / 1;
             if(currentYear % 5 === 0){
                 let annualDividendIncome = totalShares * annualDividend;
-                console.log(currentYear+" invested: "+moneyPutInn);
+                YOC = (annualDividendIncome / moneyPutInn) * 100;
                 results.push({
                     year: currentYear,
                     investedAmount: moneyPutInn.toFixed(2),
-                    annualDividendIncome: annualDividendIncome.toFixed(2)
+                    annualDividendIncome: annualDividendIncome.toFixed(2),
+                    yieldOnCost: YOC.toFixed(2),
+                    totalValue: total_Value.toFixed(2)
                 });
             }
             annualDividend *= 1 + dividendCAGR;
@@ -96,17 +104,21 @@ function createTable(data){
 
    thead.innerHTML = `
        <tr>
-           <th>Year</th>
+           <th>Years</th>
            <th>Invested Amount</th>
            <th>Annual Dividend Income</th>
+           <th>Yield On Cost</th>
+           <th>Total Value</th>
        </tr>`;
 
    data.forEach(row => {
        const tr = document.createElement("tr");
        tr.innerHTML = `
            <td>${row.year}</td>
-           <td>${row.investedAmount}</td>
-           <td>${row.annualDividendIncome}</td>`;
+           <td>$${row.investedAmount}</td>
+           <td>$${row.annualDividendIncome}</td>
+           <td>%${row.yieldOnCost}</td>
+           <td>$${row.totalValue}</td>`
        tbody.appendChild(tr);
    });
 

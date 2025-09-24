@@ -174,7 +174,7 @@ function genChartData(){
 
         if(period % 1 === 0){
             let currentYear = period / 1;
-            if(currentYear % 5 === 0){
+            if(currentYear % 2 === 0){
                 let annualDividendNoReinvestment = totalSharesNoReinvestment * annualDividend;
                 let annualDividendReinvestment = totalSharesReinvestment * annualDividend;
 
@@ -220,6 +220,7 @@ function genChartDividend(years, reinvestedDividends, noReinvestedDividends){
         },
         options: {
             responsive: true,
+            aspectRatio: 3,
             scales: {
                 x: { title: { display: true, text: "Year" } },
                 y: { title: { display: true, text: "Annual Dividend Income ($)" }, beginAtZero: true }
@@ -256,6 +257,7 @@ function genChartValue(years, valueWithReinvestment, valueWithNoReinvestment){
         },
         options: {
             responsive: true,
+            aspectRatio: 3,
             scales: {
                 x: { title: { display: true, text: "Year" } },
                 y: { title: { display: true, text: "Annual Value ($)" }, beginAtZero: true }

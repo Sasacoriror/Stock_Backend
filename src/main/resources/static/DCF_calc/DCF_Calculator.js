@@ -1,3 +1,15 @@
+fetch("../Index/index.html")
+      .then(res => res.text())
+      .then(data => {
+          document.getElementById("navbar").innerHTML = data;
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = "../Index/navbar.css";
+          document.head.appendChild(link);
+
+          initThemeToggle(); // call function AFTER navbar is ready
+      });
+
 function Input(){
 
     let current_Price = document.getElementById("currentSharePrice").value;

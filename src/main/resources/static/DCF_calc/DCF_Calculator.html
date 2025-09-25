@@ -6,22 +6,8 @@
   <script src="DCF_Calculator.js"></script>
   <script src="../Index/theme.js" defer></script>
   <link rel="stylesheet" href="DCF.css">
-  <!--<link rel="stylesheet" href="../index.css">-->
-  <script>
-      fetch("../Index/index.html")
-          .then(res => res.text())
-          .then(data => {
-              document.getElementById("navbar").innerHTML = data;
-              const link = document.createElement("link");
-              link.rel = "stylesheet";
-              link.href = "../Index/navbar.css";
-              document.head.appendChild(link);
-
-              initThemeToggle(); // call function AFTER navbar is ready
-          });
-  </script>
-
 </head>
+
 <body>
 <div id="navbar"></div>
 <h1>DCF = Discounted Cash Flow</h1>

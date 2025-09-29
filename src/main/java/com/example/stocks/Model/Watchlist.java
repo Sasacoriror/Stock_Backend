@@ -26,16 +26,17 @@ public class Watchlist {
     @JsonProperty("latestPrice")
     private double priceStock;
 
-    //private double marketCap;
+    @JsonProperty("marcet_Cap")
+    private Long marketCap;
 
     @JsonProperty("dividendYield")
     private double dividendYield;
 
-    public Watchlist(String stockTickerInn, String nameStock, double priceStock, double dividendYield) {
+    public Watchlist(String stockTickerInn, String nameStock, double priceStock, Long marketCap, double dividendYield) {
         this.stockTickerInn = stockTickerInn;
         this.nameStock = nameStock;
         this.priceStock = priceStock;
-        //this.marketCap = marketCap;
+        this.marketCap = marketCap;
         this.dividendYield = dividendYield;
     }
 

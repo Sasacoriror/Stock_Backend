@@ -9,6 +9,7 @@ public class Endpoints {
     private String priceAPI;
     private String dividendAPI;
     private String financialAPI;
+    private String watchListAPI;
 
     private String APIkey = "7k0sCkhL4aw1lSb0OhKRLibal5qpHV85";
 
@@ -29,6 +30,11 @@ public class Endpoints {
         this.financialAPI = url;
     }
 
+    public void setWatchListAPI(String ticker){
+        String url = "https://api.polygon.io/v3/reference/tickers/"+ticker+"?apiKey="+APIkey;
+        this.watchListAPI = url;
+    }
+
 
     // Getting the HTTP get calls to the API
 
@@ -44,4 +50,7 @@ public class Endpoints {
         return financialAPI;
     }
 
+    public String getWatchListAPI() {
+        return watchListAPI;
+    }
 }

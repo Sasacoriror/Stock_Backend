@@ -3,6 +3,7 @@ package com.example.stocks.Service;
 import com.example.stocks.DTO.ResultsFinancialDTO;
 import com.example.stocks.DTO.PriceDTO;
 import com.example.stocks.DTO.ResultsDividendDTO;
+import com.example.stocks.DTO.TickerOverviewDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Respository.StockRepository;
@@ -118,6 +119,24 @@ public class PriceService {
 
         try {
             return objectMapper.readValue(response.getBody(), ResultsFinancialDTO.class);
+        } catch (StockNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error parsing JSON response");
+        }
+    }
+
+    public TickerOverviewDTO getTickerOverviewlData(){
+        ResponseEntity<String> response = restTemplate
+                .getForEntity(endpoints.getWatchListAPI(), String.class);
+
+        if (response.getBody() == null) {
+            throw new RuntimeException("No Response");
+        }
+
+        try {
+            return objectMapper.readValue(response.getBody(), TickerOverviewDTO.class);
         } catch (StockNotFoundException e) {
             throw e;
         } catch (Exception e) {

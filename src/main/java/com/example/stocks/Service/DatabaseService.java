@@ -3,16 +3,14 @@ package com.example.stocks.Service;
 import com.example.stocks.DTO.PriceDTO;
 import com.example.stocks.DTO.ResultsDividendDTO;
 import com.example.stocks.DTO.ResultsFinancialDTO;
-import com.example.stocks.Link.Endpoints;
+import com.example.stocks.DTO.TickerOverviewDTO;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Model.Watchlist;
 import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Respository.WatchlistRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -33,14 +31,6 @@ public class DatabaseService {
     @Autowired
     private PriceService priceService;
 
-    /*
-    DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-    DecimalFormat df = new DecimalFormat("#.##", symbols);
-
-    PriceDTO priceData = priceService.getPriceData();
-    ResultsDividendDTO dividendData = priceService.getDividendData();
-    ResultsFinancialDTO financialData = priceService.getFinancialData();
-*/
     @Transactional
     public void updateStockData() {
         List<Stocks> stocks = stockRepository.findAll();
@@ -166,11 +156,11 @@ public class DatabaseService {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
 
-        PriceDTO priceData = priceService.getPriceData();
+        TickerOverviewDTO tickerOverview = priceService.getTickerOverviewlData();
         ResultsDividendDTO dividendData = priceService.getDividendData();
         ResultsFinancialDTO financialData = priceService.getFinancialData();
 
-        double pricePerShare = priceData.getResults().get(0).getC();
+        double pricePerShare = tickerOverview.getResults().getMarketCap() / tickerOverview.getResults().getWso();
         String name = financialData.getResults().get(0).getCompanyName();
         double totalDividend = dividendData.getResults().get(0).getCash_amount();
         int dividendFrequenzy = dividendData.getResults().get(0).getFrequency();
@@ -180,6 +170,7 @@ public class DatabaseService {
         //watchlist.get().setStockTickerInn(stockName);
         watchlist.get().setNameStock(name);
         watchlist.get().setPriceStock(pricePerShare);
+        watchlist.get().setMarketCap(tickerOverview.getResults().getMarketCap());
         watchlist.get().setDividendYield(Double.parseDouble(df.format(dividendYield)));
     }
 

@@ -74,10 +74,12 @@ public class StockController {
         endpoints.setPriceAPI(stockName);
         endpoints.setDividendAPI(stockName);
         endpoints.setFinancialAPI(stockName, 1);
+        endpoints.setWatchListAPI(stockName);
 
         priceService.getPriceData();
         priceService.getDividendData();
         priceService.getFinancialData();
+        priceService.getTickerOverviewlData();
 
         Watchlist watchlistSaved = watchlistRepository.save(watchlist);
         databaseService.addToWatchist(watchlistSaved.getId());
@@ -125,7 +127,7 @@ public class StockController {
     @PutMapping("updateData/{tickerSymbol}")
     public ResponseEntity<String> update(
             @PathVariable Long tickerSymbol,
-            @RequestBody Map<String, Integer> data) {
+            @Valid @RequestBody Map<String, Integer> data) {
 
         Optional<Stocks> stocks = stockRepository.findById(tickerSymbol);
 

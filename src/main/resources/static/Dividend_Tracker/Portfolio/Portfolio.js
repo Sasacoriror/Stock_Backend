@@ -22,24 +22,54 @@ function renderTable(stocks) {
             const td = document.createElement('td');
             let value = stock[key];
 
-            if (['priceInn', 'currentPrice', 'totalDividend', 'totalPrice', 'totalInvested', 'return'].includes(key)){
-                value = `${parseFloat(value).toFixed(2)}$`;
-            }
-
-            if (['percentageReturn'].includes(key)){
-                value = `${parseFloat(value).toFixed(2)}%`;
+            if (key === 'totalPrice') {
+                const shares = parseFloat(stock['sharesInn']);
+                const priceNow= parseFloat(stock['currentPrice']);
+                if (!isNaN(shares) && !isNaN(priceNow)){
+                    const invested = priceNow * shares;
+                    stock['totalInvested'] = invested;
+                    value = invested;
+                }
+            } else if (key === 'totalInvested') {
+                const shares = parseFloat(stock['sharesInn']);
+                const priceNow= parseFloat(stock['priceInn']);
+                if (!isNaN(shares) && !isNaN(priceNow)){
+                    const invested = priceNow * shares;
+                    stock['totalInvested'] = invested;
+                    value = invested;
+                }
+            } else if (key === 'return') {
+                const priceNow= parseFloat(stock['currentPrice']);
+                const shares = parseFloat(stock['sharesInn']);
+                const priceBought = parseFloat(stock['priceInn']);
+                if (!isNaN(priceNow) && !isNaN(shares) && !isNaN(priceBought)){
+                    const returnValue = ((priceNow * shares) - (priceBought * shares)).toFixed(2);
+                    stock['return'] = returnValue;
+                    value = returnValue;
+                } else {
+                    value = '$0.00'
+                }
+            } else if (key === 'percentageReturn') {
+                const totalInvested = parseFloat(stock['totalInvested']);
+                const totalReturn = parseFloat(stock['return']);
+                if (!isNaN(totalInvested) && totalInvested !== 0 && !isNaN(totalReturn)) {
+                    const percent = ((totalReturn / totalInvested) * 100).toFixed(2) + '%';
+                    stock['percentageReturn'] = percent;
+                    value = percent;
+                } else {
+                    value = '0.00%';
+                }
+            } else if (['priceInn', 'currentPrice', 'totalDividend', 'totalPrice', 'totalInvested', 'return'].includes(key)){
+                value = `$${parseFloat(value).toFixed(2)}`;
             }
 
             td.textContent = value;
 
             if (key === 'return' || key === 'percentageReturn') {
-                const value = parseFloat(stock[key]);
-                if (!isNaN(value)){
-                    if (value >= 0){
-                        td.style.color = 'green';
-                    } else if (value < 0){
-                        td.style.color = 'red';
-                    }
+                const numbers = parseFloat(value);
+                console.log(numbers);
+                if (!isNaN(numbers)){
+                    td.style.color = numbers >= 0 ? 'green' : 'red';
                 }
             }
 
@@ -76,7 +106,8 @@ function renderSummary(stocks) {
     const profit = totalValue - totalCost;
     const percentage = ((profit) / totalCost) * 100;
 
-    const positiveOrNegative = `${profit >= 0 ? '+' : ''}$${profit.toFixed(2)}, ${percentage >= 0 ? '+' : ''}${percentage.toFixed(2)}%`;
+    const positiveOrNegative = `$${profit >= 0 ? '+' : ''}${profit.toFixed(2)}`;
+    const percentagePoN = `${percentage >= 0 ? '+' : ''}${percentage.toFixed(2)}%`
 
 
     document.getElementById("totalInvested").textContent = `$${totalCost.toFixed(2)}`
@@ -84,9 +115,13 @@ function renderSummary(stocks) {
     document.getElementById("totalDividends").textContent = `$${totalDividends.toFixed(2)}`;
 
     const tProfit = document.getElementById("totalProfit");
+    const pProfit = document.getElementById("percentageProfit");
 
     tProfit.textContent = positiveOrNegative;
     tProfit.style.color = profit >= 0 ? "green" : "red";
+
+    pProfit.textContent = percentagePoN;
+    pProfit.style.color = percentage >= 0 ? "green" : "red";
 }
 
 let stockName= "";
@@ -97,7 +132,7 @@ function openEditRow(id, shares, price){
     document.getElementById("editShares").value = shares;
     document.getElementById("editPrice").value = price;
     document.getElementById("editModal").style.display = "block";
-    console.log("ticker: "+id+" | Shares: "+shares+" | Price: "+price);
+    //console.log("ticker: "+id+" | Shares: "+shares+" | Price: "+price);
 }
 
 async function editRow(){

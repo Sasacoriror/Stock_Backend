@@ -30,10 +30,13 @@ public class DatabaseService {
 
     @Autowired
     private PriceService priceService;
-
+/*
     @Transactional
     public void updateStockData() {
         List<Stocks> stocks = stockRepository.findAll();
+
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("#.##", symbols);
 
         for (Stocks stock : stocks) {
 
@@ -59,17 +62,17 @@ public class DatabaseService {
 
             if (newPrice != null && !Objects.equals(newPrice, stock.getCurrentPrice())) {
                 stock.setCurrentPrice(newPrice);
-                //stock.setTotalPrice(stock.getStockQuantity() * newPrice);
+                stock.setTotalPrice(stock.getStockQuantity() * newPrice);
                 hasChanges = true;
             }
 
-            //double totalInvested = stock.getStockQuantity() * stock.getStockPrice();
-            //double returns = (stock.getStockQuantity() * newPrice) - (stock.getStockQuantity() * stock.getStockPrice());
-            //double percentage = (returns / totalInvested) * 100;
+            double totalInvested = stock.getStockQuantity() * stock.getStockPrice();
+            double returns = (stock.getStockQuantity() * newPrice) - (stock.getStockQuantity() * stock.getStockPrice());
+            double percentage = (returns / totalInvested) * 100;
 
-            //stock.setTotalInvested(totalInvested);
-            //stock.setReturnValue(Double.parseDouble(df.format(returns)));
-            //stock.setPercentageReturn(Double.parseDouble(df.format(percentage)));
+            stock.setTotalInvested(totalInvested);
+            stock.setReturnValue(Double.parseDouble(df.format(returns)));
+            stock.setPercentageReturn(Double.parseDouble(df.format(percentage)));
             stock.setDividend(dividendData.getResults().get(0).getFrequency());
 
             if (newDividend != null && !Objects.equals(newDividend, stock.getDividend())) {
@@ -84,6 +87,7 @@ public class DatabaseService {
             }
         }
     }
+ */
 
     @Transactional
     public void addToPortfolio(Long id) {
@@ -96,50 +100,55 @@ public class DatabaseService {
         ResultsDividendDTO dividendData = priceService.getDividendData();
         ResultsFinancialDTO financialData = priceService.getFinancialData();
 
-        //double price = portfolio.get().getStockPrice();
+        double price = portfolio.get().getStockPrice();
         int shares = portfolio.get().getStockQuantity();
 
         String companyName = financialData.getResults().get(0).getCompanyName();
         double currentPrice = priceData.getResults().get(0).getC();
         int frequenzy = dividendData.getResults().get(0).getFrequency();
         double totalDividend = (dividendData.getResults().get(0).getCash_amount() * frequenzy) * shares;
-        //double totalValue = shares * currentPrice;
-        //double totalInvested = price * shares;
-        //double returnValue = (currentPrice * shares) - (price * shares);
+        double totalValue = shares * currentPrice;
+        double totalInvested = price * shares;
+        double returnValue = (currentPrice * shares) - (price * shares);
 
-        //double percentage = (returnValue / totalInvested) * 100;
+        double percentage = (returnValue / totalInvested) * 100;
 
         portfolio.get().setCompanyName(companyName);
         portfolio.get().setCurrentPrice(currentPrice);
         portfolio.get().setDividend(frequenzy);
         portfolio.get().setTotalDivided(totalDividend);
-        //portfolio.get().setTotalPrice(totalValue);
-        //portfolio.get().setTotalInvested(Double.parseDouble(df.format(totalInvested)));
-        //portfolio.get().setReturnValue(Double.parseDouble(df.format(returnValue)));
-        //portfolio.get().setPercentageReturn(Double.parseDouble(df.format(percentage)));
+        portfolio.get().setTotalPrice(totalValue);
+        portfolio.get().setTotalInvested(Double.parseDouble(df.format(totalInvested)));
+        portfolio.get().setReturnValue(Double.parseDouble(df.format(returnValue)));
+        portfolio.get().setPercentageReturn(Double.parseDouble(df.format(percentage)));
     }
 
     @Transactional
     public void UpdateDatabase(Long id){
         Optional<Stocks> stocks = stockRepository.findById(id);
 
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("#.##", symbols);
+
         ResultsDividendDTO dividendData = priceService.getDividendData();
 
         double dividend = dividendData.getResults().get(0).getCash_amount();
         int shares = stocks.get().getStockQuantity();
-        //double price = stocks.get().getCurrentPrice();
-        //int paidPrice = stocks.get().getStockPrice();
+        double price = stocks.get().getCurrentPrice();
+        int paidPrice = stocks.get().getStockPrice();
         int dividendFrequenzy = dividendData.getResults().get(0).getFrequency();
 
         double newTotalDividend = (dividend * dividendFrequenzy) * shares;
-        //double newTotalPrice = (price * shares);
-        //double newTotalInvested = paidPrice * shares;
-        //double newReturnValue = (price * shares) - (paidPrice * shares);
+        double newTotalPrice = (price * shares);
+        double newTotalInvested = paidPrice * shares;
+        double newReturnValue = (price * shares) - (paidPrice * shares);
+        double newPercentage = (newReturnValue / newTotalInvested) * 100;
 
         stocks.get().setTotalDivided(newTotalDividend);
-        //stocks.get().setTotalPrice(newTotalPrice);
-        //stocks.get().setTotalInvested(Double.parseDouble(df.format(newTotalInvested)));
-        //stocks.get().setReturnValue(Double.parseDouble(df.format(newReturnValue)));
+        stocks.get().setTotalPrice(newTotalPrice);
+        stocks.get().setTotalInvested(Double.parseDouble(df.format(newTotalInvested)));
+        stocks.get().setReturnValue(Double.parseDouble(df.format(newReturnValue)));
+        stocks.get().setPercentageReturn(Double.parseDouble(df.format(newPercentage)));
     }
 
     @Transactional

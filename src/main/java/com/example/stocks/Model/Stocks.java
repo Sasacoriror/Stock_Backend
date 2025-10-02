@@ -42,17 +42,25 @@ public class Stocks {
     @JsonProperty("totalDividend")
     private double totalDivided;
 
-    //@JsonProperty("totalPrice")
-    //private double totalPrice;
+    @JsonProperty("totalPrice")
+    private double totalPrice;
+
+    @JsonProperty("totalInvested")
+    private double totalInvested;
+
+    @JsonProperty("return")
+    private double returnValue;
+
+    @JsonProperty("percentageReturn")
+    private double percentageReturn;
 
     //@ManyToOne
     //@JoinColumn(name = "user_id")
     //private User user;
 
-    //double totalPrice
 
     public Stocks(String stockName, int stockPrice, int stockQuantity, String companyName,  double currentPrice,
-                  double dividend, double totalDivided) {
+                  double dividend, double totalDivided, double totalPrice, double totalInvested, double returnValue, double percentageReturn) {
         this.stockName = stockName;
         this.stockPrice = stockPrice;
         this.stockQuantity = stockQuantity;
@@ -60,7 +68,10 @@ public class Stocks {
         this.currentPrice = currentPrice;
         this.dividend = dividend;
         this.totalDivided = totalDivided;
-        //this.totalPrice = totalPrice;
+        this.totalPrice = totalPrice;
+        this.totalInvested = totalInvested;
+        this.returnValue = returnValue;
+        this.percentageReturn = percentageReturn;
     }
 
     public Stocks() {}

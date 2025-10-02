@@ -22,43 +22,8 @@ function renderTable(stocks) {
             const td = document.createElement('td');
             let value = stock[key];
 
-            if (key === 'totalPrice') {
-                const shares = parseFloat(stock['sharesInn']);
-                const priceNow= parseFloat(stock['currentPrice']);
-                if (!isNaN(shares) && !isNaN(priceNow)){
-                    const invested = priceNow * shares;
-                    stock['totalInvested'] = invested;
-                    value = invested;
-                }
-            } else if (key === 'totalInvested') {
-                const shares = parseFloat(stock['sharesInn']);
-                const priceNow= parseFloat(stock['priceInn']);
-                if (!isNaN(shares) && !isNaN(priceNow)){
-                    const invested = priceNow * shares;
-                    stock['totalInvested'] = invested;
-                    value = invested;
-                }
-            } else if (key === 'return') {
-                const priceNow= parseFloat(stock['currentPrice']);
-                const shares = parseFloat(stock['sharesInn']);
-                const priceBought = parseFloat(stock['priceInn']);
-                if (!isNaN(priceNow) && !isNaN(shares) && !isNaN(priceBought)){
-                    const returnValue = ((priceNow * shares) - (priceBought * shares)).toFixed(2);
-                    stock['return'] = returnValue;
-                    value = returnValue;
-                } else {
-                    value = '$0.00'
-                }
-            } else if (key === 'percentageReturn') {
-                const totalInvested = parseFloat(stock['totalInvested']);
-                const totalReturn = parseFloat(stock['return']);
-                if (!isNaN(totalInvested) && totalInvested !== 0 && !isNaN(totalReturn)) {
-                    const percent = ((totalReturn / totalInvested) * 100).toFixed(2) + '%';
-                    stock['percentageReturn'] = percent;
-                    value = percent;
-                } else {
-                    value = '0.00%';
-                }
+            if (['percentageReturn'].includes(key)) {
+                value = `${parseFloat(value).toFixed(2)}%`;
             } else if (['priceInn', 'currentPrice', 'totalDividend', 'totalPrice', 'totalInvested', 'return'].includes(key)){
                 value = `$${parseFloat(value).toFixed(2)}`;
             }

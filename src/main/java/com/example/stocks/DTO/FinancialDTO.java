@@ -2,46 +2,61 @@ package com.example.stocks.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class financialDTO {
+public class FinancialDTO {
 
-    @JsonProperty("fiscal_period")
-    private String fiscalPeriod;
+    @JsonProperty("results")
+    private List<Results> results;
 
-    @JsonProperty("fiscal_year")
-    private String fiscalYear;
-
-    @JsonProperty("tickers")
-    private List<String> tickers;
-
-    @JsonProperty("company_name")
-    private String companyName;
-
-    @JsonProperty("financials")
-    private Financials financials;
-
-
-    public String getFiscalPeriod() {
-        return fiscalPeriod;
+    public List<Results> getResults() {
+        return results;
     }
 
-    public String getFiscalYear() {
-        return fiscalYear;
-    }
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Results {
 
-    public List<String> getTickers() {
-        return tickers;
-    }
+        @JsonProperty("fiscal_period")
+        private String fiscalPeriod;
 
-    public String getCompanyName() {
-        return companyName;
-    }
+        @JsonProperty("fiscal_year")
+        private String fiscalYear;
 
-    public Financials getFinancials() {
-        return financials;
+        @JsonProperty("tickers")
+        private List<String> tickers;
+
+        @JsonProperty("company_name")
+        private String companyName;
+
+        @JsonProperty("financials")
+        private Financials financials;
+
+
+        public String getFiscalPeriod() {
+            return fiscalPeriod;
+        }
+
+        public String getFiscalYear() {
+            return fiscalYear;
+        }
+
+        public List<String> getTickers() {
+            return tickers;
+        }
+
+        public String getCompanyName() {
+            return companyName;
+        }
+
+        public Financials getFinancials() {
+            return financials;
+        }
+
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

@@ -1,26 +1,17 @@
 package com.example.stocks.Service;
 
-import com.example.stocks.DTO.ResultsFinancialDTO;
+import com.example.stocks.DTO.FinancialDTO;
 import com.example.stocks.DTO.PriceDTO;
-import com.example.stocks.DTO.ResultsDividendDTO;
+import com.example.stocks.DTO.DividendDTO;
 import com.example.stocks.DTO.TickerOverviewDTO;
 import com.example.stocks.Link.Endpoints;
-import com.example.stocks.Model.Stocks;
 import com.example.stocks.Respository.StockRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class PriceService {
@@ -91,7 +82,7 @@ public class PriceService {
     }
 
 
-    public ResultsDividendDTO getDividendData(){
+    public DividendDTO getDividendData(){
         ResponseEntity<String> response = restTemplate
                 .getForEntity(endpoints.getDividendAPI(), String.class);
 
@@ -100,7 +91,7 @@ public class PriceService {
         }
 
         try {
-            return objectMapper.readValue(response.getBody(), ResultsDividendDTO.class);
+            return objectMapper.readValue(response.getBody(), DividendDTO.class);
         } catch (StockNotFoundException e) {
             throw e;
         } catch (Exception e) {
@@ -109,7 +100,7 @@ public class PriceService {
         }
     }
 
-    public ResultsFinancialDTO getFinancialData(){
+    public FinancialDTO getFinancialData(){
         ResponseEntity<String> response = restTemplate
                 .getForEntity(endpoints.getFinancialAPI(), String.class);
 
@@ -118,7 +109,7 @@ public class PriceService {
         }
 
         try {
-            return objectMapper.readValue(response.getBody(), ResultsFinancialDTO.class);
+            return objectMapper.readValue(response.getBody(), FinancialDTO.class);
         } catch (StockNotFoundException e) {
             throw e;
         } catch (Exception e) {

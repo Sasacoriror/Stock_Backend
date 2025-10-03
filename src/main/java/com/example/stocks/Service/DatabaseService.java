@@ -1,8 +1,8 @@
 package com.example.stocks.Service;
 
+import com.example.stocks.DTO.FinancialDTO;
 import com.example.stocks.DTO.PriceDTO;
-import com.example.stocks.DTO.ResultsDividendDTO;
-import com.example.stocks.DTO.ResultsFinancialDTO;
+import com.example.stocks.DTO.DividendDTO;
 import com.example.stocks.DTO.TickerOverviewDTO;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Model.Watchlist;
@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -97,14 +95,14 @@ public class DatabaseService {
         DecimalFormat df = new DecimalFormat("#.##", symbols);
 
         PriceDTO priceData = priceService.getPriceData();
-        ResultsDividendDTO dividendData = priceService.getDividendData();
-        ResultsFinancialDTO financialData = priceService.getFinancialData();
+        DividendDTO dividendData = priceService.getDividendData();
+        FinancialDTO financialData = priceService.getFinancialData();
 
         double price = portfolio.get().getStockPrice();
         int shares = portfolio.get().getStockQuantity();
 
         String companyName = financialData.getResults().get(0).getCompanyName();
-        double currentPrice = priceData.getResults().get(0).getC();
+        double currentPrice = priceData.getResults(). get(0).getC();
         int frequenzy = dividendData.getResults().get(0).getFrequency();
         double totalDividend = (dividendData.getResults().get(0).getCash_amount() * frequenzy) * shares;
         double totalValue = shares * currentPrice;
@@ -130,7 +128,7 @@ public class DatabaseService {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
 
-        ResultsDividendDTO dividendData = priceService.getDividendData();
+        DividendDTO dividendData = priceService.getDividendData();
 
         double dividend = dividendData.getResults().get(0).getCash_amount();
         int shares = stocks.get().getStockQuantity();
@@ -159,8 +157,8 @@ public class DatabaseService {
         DecimalFormat df = new DecimalFormat("#.##", symbols);
 
         TickerOverviewDTO tickerOverview = priceService.getTickerOverviewlData();
-        ResultsDividendDTO dividendData = priceService.getDividendData();
-        ResultsFinancialDTO financialData = priceService.getFinancialData();
+        DividendDTO dividendData = priceService.getDividendData();
+        FinancialDTO financialData = priceService.getFinancialData();
 
         double pricePerShare = tickerOverview.getResults().getMarketCap() / tickerOverview.getResults().getWso();
         String name = financialData.getResults().get(0).getCompanyName();

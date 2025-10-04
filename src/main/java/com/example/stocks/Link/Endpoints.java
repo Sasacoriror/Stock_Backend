@@ -11,7 +11,8 @@ public class Endpoints {
     private String financialAPI;
     private String watchListAPI;
 
-    private String APIkey = "7k0sCkhL4aw1lSb0OhKRLibal5qpHV85";
+    @Value("${api.key}")
+    private String APIkey;
 
     // Setting the HTTP get calls to the API
 

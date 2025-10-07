@@ -1,6 +1,6 @@
 package com.example.stocks.Controller;
 
-import com.example.stocks.DTO.ResultsFinancialDTO;
+import com.example.stocks.DTO.FinancialDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Model.Watchlist;
@@ -8,7 +8,6 @@ import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Respository.WatchlistRepository;
 import com.example.stocks.Service.DatabaseService;
 import com.example.stocks.Service.PriceService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -47,17 +46,8 @@ public class StockController {
         }
 
         String stockName = stocks.getStockName().toUpperCase();
-        endpoints.setPriceAPI(stockName);
-        endpoints.setDividendAPI(stockName);
-        endpoints.setFinancialAPI(stockName, 1);
-
-        priceService.getPriceData();
-        priceService.getDividendData();
-        priceService.getFinancialData();
-
         Stocks savedStock = stockRepository.save(stocks);
-
-        databaseService.addToPortfolio(savedStock.getId());
+        databaseService.addToPortfolio(savedStock.getId(), stockName);
 
         return ResponseEntity.ok("Stock saved successfully");
     }
@@ -71,18 +61,8 @@ public class StockController {
         }
 
         String stockName = watchlist.getStockTickerInn().toUpperCase();
-        endpoints.setPriceAPI(stockName);
-        endpoints.setDividendAPI(stockName);
-        endpoints.setFinancialAPI(stockName, 1);
-        endpoints.setWatchListAPI(stockName);
-
-        priceService.getPriceData();
-        priceService.getDividendData();
-        priceService.getFinancialData();
-        priceService.getTickerOverviewlData();
-
         Watchlist watchlistSaved = watchlistRepository.save(watchlist);
-        databaseService.addToWatchist(watchlistSaved.getId());
+        databaseService.addToWatchist(watchlistSaved.getId(), stockName);
 
         return ResponseEntity.ok("Watchlist saved successfully");
     }
@@ -90,19 +70,18 @@ public class StockController {
 
     //////////////////////// GETMAPPING ////////////////////////
 
-    @GetMapping("Watchlist")
-    public List<Watchlist> getWatchlist() {
-        return watchlistRepository.findAll();
-    }
-
-
     @GetMapping("findAll")
     public List<Stocks> findAll() {
         return stockRepository.findAll();
     }
 
+    @GetMapping("Watchlist")
+    public List<Watchlist> getWatchlist() {
+        return watchlistRepository.findAll();
+    }
+
     @GetMapping("searchFinancialData/{ticker}")
-    public ResultsFinancialDTO getCompanyFinancial(@PathVariable("ticker") String ticker) {
+    public FinancialDTO getCompanyFinancial(@PathVariable("ticker") String ticker) {
         String stockName = ticker.toUpperCase();
         endpoints.setFinancialAPI(stockName, 20);
         return priceService.getFinancialData();

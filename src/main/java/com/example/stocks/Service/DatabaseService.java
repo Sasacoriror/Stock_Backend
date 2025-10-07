@@ -4,6 +4,7 @@ import com.example.stocks.DTO.FinancialDTO;
 import com.example.stocks.DTO.PriceDTO;
 import com.example.stocks.DTO.DividendDTO;
 import com.example.stocks.DTO.TickerOverviewDTO;
+import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Model.Watchlist;
 import com.example.stocks.Respository.StockRepository;
@@ -28,6 +29,9 @@ public class DatabaseService {
 
     @Autowired
     private PriceService priceService;
+
+    @Autowired
+    private Endpoints endpoints;
 /*
     @Transactional
     public void updateStockData() {
@@ -88,7 +92,16 @@ public class DatabaseService {
  */
 
     @Transactional
-    public void addToPortfolio(Long id) {
+    public void addToPortfolio(Long id, String stockName) {
+
+        endpoints.setPriceAPI(stockName);
+        endpoints.setDividendAPI(stockName);
+        endpoints.setFinancialAPI(stockName, 1);
+
+        priceService.getPriceData();
+        priceService.getDividendData();
+        priceService.getFinancialData();
+
         Optional<Stocks> portfolio = stockRepository.findById(id);
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
@@ -150,7 +163,18 @@ public class DatabaseService {
     }
 
     @Transactional
-    public void addToWatchist(Long id){
+    public void addToWatchist(Long id, String stockName){
+
+        //endpoints.setPriceAPI(stockName);
+        endpoints.setDividendAPI(stockName);
+        endpoints.setFinancialAPI(stockName, 1);
+        endpoints.setWatchListAPI(stockName);
+
+        //priceService.getPriceData();
+        priceService.getDividendData();
+        priceService.getFinancialData();
+        priceService.getTickerOverviewlData();
+
         Optional<Watchlist> watchlist = watchlistRepository.findById(id);
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);

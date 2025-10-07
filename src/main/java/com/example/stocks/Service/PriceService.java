@@ -40,7 +40,6 @@ public class PriceService {
     }
  */
 
-
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
@@ -57,21 +56,8 @@ public class PriceService {
         ResponseEntity<String> response = restTemplate
                 .getForEntity(endpoints.getPriceAPI(), String.class);
 
-        if (response.getBody() == null) {
-            throw new RuntimeException("No response from price API");
-        }
-
         try {
-            JsonNode root = objectMapper.readTree(response.getBody());
-
-
-            boolean isInvalid = root.has("resultsCount") && root.get("resultsCount").asInt() == 0;
-
-            if (isInvalid) {
-                throw new StockNotFoundException("Stock price data not found.");
-            }
-
-            return objectMapper.treeToValue(root, PriceDTO.class);
+            return objectMapper.readValue(response.getBody(), PriceDTO.class);
 
         } catch (StockNotFoundException e) {
             throw e;

@@ -8,9 +8,9 @@ import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Respository.WatchlistRepository;
 import com.example.stocks.Service.DatabaseService;
 import com.example.stocks.Service.PriceService;
+import com.example.stocks.Service.ValidateStock;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -25,40 +25,40 @@ public class StockController {
     private final Endpoints endpoints;
     private final StockRepository stockRepository;
     private final WatchlistRepository watchlistRepository;
+    private final ValidateStock validateStock;
 
     public StockController(PriceService priceService, DatabaseService databaseService, Endpoints endpoints,
-                           StockRepository stockRepository, WatchlistRepository watchlistRepository) {
+                           StockRepository stockRepository, WatchlistRepository watchlistRepository, ValidateStock validateStock) {
         this.priceService = priceService;
         this.databaseService = databaseService;
         this.endpoints = endpoints;
         this.stockRepository = stockRepository;
         this.watchlistRepository = watchlistRepository;
+        this.validateStock = validateStock;
     }
 
     ///////////////////////// POSTMAPPING ////////////////////////
 
     @PostMapping("storeStockData")
-    public ResponseEntity<?> storeData(@Valid @RequestBody Stocks stocks, BindingResult result) {
-        if (result.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
-            result.getFieldErrors().forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
-            return ResponseEntity.badRequest().body(errors);
+    public ResponseEntity<?> storeData(@Valid @RequestBody Stocks stocks) {
+        try {
+            String stockName = stocks.getStockName().toUpperCase();
+            if (!validateStock.isValid(stockName)) {
+                return ResponseEntity.badRequest().
+                        body(Map.of("Error", "Ticker: " + stockName + " does not exist"));
+            }
+            Stocks savedStock = stockRepository.save(stocks);
+            databaseService.addToPortfolio(savedStock.getId(), stockName);
+            return ResponseEntity.ok("Stock saved successfully");
+
+        } catch (Exception e){
+            return ResponseEntity.internalServerError().
+                    body(Map.of("Error","Failed to add stock: "+e.getMessage()));
         }
-
-        String stockName = stocks.getStockName().toUpperCase();
-        Stocks savedStock = stockRepository.save(stocks);
-        databaseService.addToPortfolio(savedStock.getId(), stockName);
-
-        return ResponseEntity.ok("Stock saved successfully");
     }
 
     @PostMapping("addWatchlist")
-    public ResponseEntity<?> addWatchlist(@Valid @RequestBody Watchlist watchlist, BindingResult result) {
-        if (result.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
-            result.getFieldErrors().forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
-            return ResponseEntity.badRequest().body(errors);
-        }
+    public ResponseEntity<?> addWatchlist(@Valid @RequestBody Watchlist watchlist) {
 
         String stockName = watchlist.getStockTickerInn().toUpperCase();
         Watchlist watchlistSaved = watchlistRepository.save(watchlist);

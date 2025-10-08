@@ -3,21 +3,23 @@ package com.example.stocks.Service;
 import com.example.stocks.Link.Endpoints;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+
 @Service
-public class ValidateStock {
+public class ValidateStockService {
 
     @Autowired
     private Endpoints endpoints;
 
     private final ObjectMapper objectMapper;
 
-    public ValidateStock(ObjectMapper objectMapper){
+    public ValidateStockService(ObjectMapper objectMapper){
         this.objectMapper = objectMapper;
     }
 
@@ -41,5 +43,13 @@ public class ValidateStock {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static ResponseEntity<?> ok(String message){
+        return ResponseEntity.ok(Map.of("Message", message));
+    }
+
+    public static ResponseEntity<?> error(String message, HttpStatus status){
+        return ResponseEntity.status(status).body(Map.of("Error",message));
     }
 }

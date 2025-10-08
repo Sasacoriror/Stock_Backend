@@ -28,7 +28,7 @@ public class DatabaseService {
     private WatchlistRepository watchlistRepository;
 
     @Autowired
-    private PriceService priceService;
+    private API_Service APIService;
 
     @Autowired
     private Endpoints endpoints;
@@ -98,18 +98,18 @@ public class DatabaseService {
         endpoints.setDividendAPI(stockName);
         endpoints.setFinancialAPI(stockName, 1);
 
-        priceService.getPriceData();
-        priceService.getDividendData();
-        priceService.getFinancialData();
+        APIService.getPriceData();
+        APIService.getDividendData();
+        APIService.getFinancialData();
 
         Optional<Stocks> portfolio = stockRepository.findById(id);
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
 
-        PriceDTO priceData = priceService.getPriceData();
-        DividendDTO dividendData = priceService.getDividendData();
-        FinancialDTO financialData = priceService.getFinancialData();
+        PriceDTO priceData = APIService.getPriceData();
+        DividendDTO dividendData = APIService.getDividendData();
+        FinancialDTO financialData = APIService.getFinancialData();
 
         double price = portfolio.get().getStockPrice();
         int shares = portfolio.get().getStockQuantity();
@@ -117,12 +117,12 @@ public class DatabaseService {
         String companyName = financialData.getResults().get(0).getCompanyName();
         double currentPrice = priceData.getResults(). get(0).getC();
         int frequenzy = dividendData.getResults().get(0).getFrequency();
-        double totalDividend = (dividendData.getResults().get(0).getCash_amount() * frequenzy) * shares;
-        double totalValue = shares * currentPrice;
-        double totalInvested = price * shares;
-        double returnValue = (currentPrice * shares) - (price * shares);
 
-        double percentage = (returnValue / totalInvested) * 100;
+        double totalDividend = (dividendData.getResults().get(0).getCash_amount() * frequenzy) * shares; //
+        double totalValue = shares * currentPrice; //
+        double totalInvested = price * shares; //
+        double returnValue = (currentPrice * shares) - (price * shares); //
+        double percentage = (returnValue / totalInvested) * 100; //
 
         portfolio.get().setCompanyName(companyName);
         portfolio.get().setCurrentPrice(currentPrice);
@@ -141,7 +141,7 @@ public class DatabaseService {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
 
-        DividendDTO dividendData = priceService.getDividendData();
+        DividendDTO dividendData = APIService.getDividendData();
 
         double dividend = dividendData.getResults().get(0).getCash_amount();
         int shares = stocks.get().getStockQuantity();
@@ -171,18 +171,18 @@ public class DatabaseService {
         endpoints.setWatchListAPI(stockName);
 
         //priceService.getPriceData();
-        priceService.getDividendData();
-        priceService.getFinancialData();
-        priceService.getTickerOverviewlData();
+        APIService.getDividendData();
+        APIService.getFinancialData();
+        APIService.getTickerOverviewlData();
 
         Optional<Watchlist> watchlist = watchlistRepository.findById(id);
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
 
-        TickerOverviewDTO tickerOverview = priceService.getTickerOverviewlData();
-        DividendDTO dividendData = priceService.getDividendData();
-        FinancialDTO financialData = priceService.getFinancialData();
+        TickerOverviewDTO tickerOverview = APIService.getTickerOverviewlData();
+        DividendDTO dividendData = APIService.getDividendData();
+        FinancialDTO financialData = APIService.getFinancialData();
 
         double pricePerShare = tickerOverview.getResults().getMarketCap() / tickerOverview.getResults().getWso();
         String name = financialData.getResults().get(0).getCompanyName();

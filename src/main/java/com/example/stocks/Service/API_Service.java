@@ -6,7 +6,6 @@ import com.example.stocks.DTO.DividendDTO;
 import com.example.stocks.DTO.TickerOverviewDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Respository.StockRepository;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class PriceService {
+public class API_Service {
 
     @Autowired
     private StockRepository stockRepository;
@@ -24,7 +23,7 @@ public class PriceService {
     private final ObjectMapper objectMapper;
 
 
-    public PriceService(RestTemplate restTemplate, ObjectMapper objectMapper, Endpoints endpoints) {
+    public API_Service(RestTemplate restTemplate, ObjectMapper objectMapper, Endpoints endpoints) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
         this.endpoints = endpoints;

@@ -13,6 +13,6 @@ public class UpdateAPI {
 
     @Scheduled(cron = "* * 5 * * *")
     public void UpdateAPI() {
-        //databaseService.updateStockData();
+        databaseService.updateStockData();
     }
 }

@@ -18,7 +18,6 @@ body {
     padding: 10px 0;
 }
 
-/* Ensure headings look good on all screens */
 h1 {
     margin: 20px 0;
     color: var(--text-color);

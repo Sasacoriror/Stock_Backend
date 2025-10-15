@@ -51,7 +51,7 @@ public class StockController {
             return validateStockService.
                     error("Ticker: "+stockName+" does not exist", HttpStatus.BAD_REQUEST);
         }
-        stockService.clearCache();
+        stockService.clearCachePortfolio();
         Stocks savedStock = stockRepository.save(stocks);
         databaseService.addToPortfolio(savedStock.getId(), stockName);
         return validateStockService.ok("Stock saved successfully");
@@ -60,6 +60,7 @@ public class StockController {
     @PostMapping("addWatchlist")
     public ResponseEntity<?> addWatchlist(@Valid @RequestBody Watchlist watchlist) {
 
+        stockService.clearCacheWatchlist();
         String stockName = watchlist.getStockTickerInn().toUpperCase();
         Watchlist watchlistSaved = watchlistRepository.save(watchlist);
         databaseService.addToWatchist(watchlistSaved.getId(), stockName);
@@ -76,8 +77,8 @@ public class StockController {
     }
 
     @GetMapping("Watchlist")
-    public List<Watchlist> getWatchlist() {
-        return watchlistRepository.findAll();
+    public ResponseEntity<List<Watchlist>> getWatchlist() {
+        return ResponseEntity.ok(stockService.getEntireWatchlist());
     }
 
     @GetMapping("searchFinancialData/{ticker}")

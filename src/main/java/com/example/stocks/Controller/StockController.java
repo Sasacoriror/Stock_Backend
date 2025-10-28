@@ -82,10 +82,14 @@ public class StockController {
     }
 
     @GetMapping("searchFinancialData/{ticker}")
-    public FinancialDTO getCompanyFinancial(@PathVariable("ticker") String ticker) {
+    public ResponseEntity<FinancialDTO> getCompanyFinancial(@PathVariable("ticker") String ticker) {
         String stockName = ticker.toUpperCase();
+        if (!validateStockService.isValid(stockName)) {
+            return (ResponseEntity<FinancialDTO>) validateStockService.
+                    error("Ticker: "+stockName+" does not exist", HttpStatus.BAD_REQUEST);
+        }
         endpoints.setFinancialAPI(stockName, 20);
-        return APIService.getFinancialData();
+        return ResponseEntity.ok(APIService.getFinancialData());
     }
 
     //////////////////////// DELETEMAPPING ////////////////////////
@@ -113,21 +117,16 @@ public class StockController {
 
         stockService.clearCachePortfolio();
         Optional<Stocks> stocks = stockRepository.findById(tickerSymbol);
-
         Stocks stocks1 = stocks.get();
 
-        if (data.containsKey("sharesInn")){
+        if (data.containsKey("sharesInn") && data.containsKey("priceInn")){
             stocks1.setStockQuantity(data.get("sharesInn"));
-        }
-
-        if (data.containsKey("priceInn")){
             stocks1.setStockPrice(data.get("priceInn"));
         }
 
         stockRepository.save(stocks1);
-
         databaseService.UpdateDatabase(tickerSymbol);
 
-        return ResponseEntity.ok("Stock with ticker symbol "+tickerSymbol+" updated successfully");
+        return ResponseEntity.ok("Updated successfully");
     }
 }

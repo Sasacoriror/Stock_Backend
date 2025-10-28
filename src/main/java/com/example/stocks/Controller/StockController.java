@@ -92,12 +92,14 @@ public class StockController {
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<String> delete(@PathVariable("id") Long id) {
+        stockService.clearCachePortfolio();
         stockRepository.deleteById(id);
         return ResponseEntity.ok("Stock with ticker symbol "+id+" deleted successfully");
     }
 
     @DeleteMapping("deleteWatchlist/{id}")
     public ResponseEntity<String> deleteWatchlist(@PathVariable("id") Long id) {
+        stockService.clearCacheWatchlist();
         watchlistRepository.deleteById(id);
         return ResponseEntity.ok("Watchlist with symbol "+id+" deleted successfully");
     }
@@ -109,6 +111,7 @@ public class StockController {
             @PathVariable Long tickerSymbol,
             @Valid @RequestBody Map<String, Integer> data) {
 
+        stockService.clearCachePortfolio();
         Optional<Stocks> stocks = stockRepository.findById(tickerSymbol);
 
         Stocks stocks1 = stocks.get();

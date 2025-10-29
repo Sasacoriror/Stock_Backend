@@ -7,18 +7,17 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface StockRepository extends JpaRepository<Stocks, Long> {
 
+
+    List<Stocks> findByPortfolioId(Long portfolioId);
+
     //List<Stocks> findByUser(User user);
 
     //Optional<Stocks> findByStockNameAndUser(String stockName, User user);
-
-    Optional<Stocks> findByStockName(String stockName);
-
-    @Query("SELECT s FROM Stocks s WHERE s.stockName = :StockName")
-    Stocks findStockByName(@Param("StockName") String stockName);
 
     @Modifying
     @Transactional

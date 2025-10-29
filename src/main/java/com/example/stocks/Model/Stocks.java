@@ -1,5 +1,6 @@
 package com.example.stocks.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -54,6 +55,11 @@ public class Stocks {
     @JsonProperty("percentageReturn")
     private double percentageReturn;
 
+    @ManyToOne
+    @JoinColumn(name = "portfolio_id")
+    @JsonBackReference
+    private Portfolio portfolio;
+
     //@ManyToOne
     //@JoinColumn(name = "user_id")
     //private User user;
@@ -74,6 +80,6 @@ public class Stocks {
         this.percentageReturn = percentageReturn;
     }
 
-    public Stocks() {}
+    protected Stocks() {}
 
 }

@@ -31,7 +31,7 @@ function renderTable(stocks) {
             td.textContent = value;
 
             if (key === 'return' || key === 'percentageReturn') {
-                const numbers = parseFloat(value);
+                const numbers = parseFloat(value.replace(/[^0-9.-]/g, ''));
                 console.log(numbers);
                 if (!isNaN(numbers)){
                     td.style.color = numbers >= 0 ? 'green' : 'red';

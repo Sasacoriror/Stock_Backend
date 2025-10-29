@@ -71,13 +71,19 @@ public class DatabaseService {
         FinancialDTO financialData = APIService.getFinancialData();
 
         double price = portfolio.get().getStockPrice();
-        double dividend = dividendData.getResults().get(0).getCash_amount();
+
         int shares = portfolio.get().getStockQuantity();
         String companyName = financialData.getResults().get(0).getCompanyName();
         double currentPrice = priceData.getResults(). get(0).getC();
-        int frequenzy = dividendData.getResults().get(0).getFrequency();
+        double totalDividend = 0;
+        int frequenzy = 0;
 
-        double totalDividend = calculateData.totalDividend(dividend, frequenzy, shares);
+        if (dividendData.getResults() != null && !dividendData.getResults().isEmpty()) {
+            double dividend = dividendData.getResults().get(0).getCash_amount();
+            frequenzy = dividendData.getResults().get(0).getFrequency();
+            totalDividend = calculateData.totalDividend(dividend, frequenzy, shares);
+        }
+
         double totalValue = calculateData.totalValue(shares, currentPrice);
         double totalInvested = calculateData.totalInvested(shares, price);
         double returnValue = calculateData.returns(currentPrice, shares, price);
@@ -106,9 +112,14 @@ public class DatabaseService {
         int shares = stocks.get().getStockQuantity();
         double price = stocks.get().getCurrentPrice();
         int paidPrice = stocks.get().getStockPrice();
-        int dividendFrequenzy = dividendData.getResults().get(0).getFrequency();
+        int dividendFrequenzy = 0;
+        double newTotalDividend = 0;
 
-        double newTotalDividend = calculateData.totalDividend(dividend, dividendFrequenzy, shares);
+        if (dividendData.getResults() != null && !dividendData.getResults().isEmpty()) {
+            dividendFrequenzy = dividendData.getResults().get(0).getFrequency();
+            newTotalDividend = calculateData.totalDividend(dividend, dividendFrequenzy, shares);
+        }
+
         double newTotalPrice = calculateData.totalValue(shares, price);
         double newTotalInvested = calculateData.totalInvested(shares, paidPrice);
         double newReturnValue = calculateData.returns(price, shares, paidPrice);

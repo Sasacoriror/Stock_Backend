@@ -18,7 +18,7 @@ function initThemeToggle() {
 
         if (body.classList.contains("dark-theme")) {
             toggleBtn.textContent = "☀️";
-            setCookie("theme", "dark", 365);  // save for 1 year
+            setCookie("theme", "dark", 365);
             localStorage.setItem("theme", "dark");
         } else {
             toggleBtn.textContent = "🌙";

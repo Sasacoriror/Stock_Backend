@@ -7,7 +7,9 @@ async function fetchWatchlist() {
         renderTable(data);
         renderSummary(data);
     } catch (error) {
-        console.error("Error fetching stock data:", error);
+         const summaryElement = document.getElementById("summary");
+            const count = data.length;
+            summaryElement.textContent = `You have ${count} stocks in your watchlist.`;
     }
 }
 

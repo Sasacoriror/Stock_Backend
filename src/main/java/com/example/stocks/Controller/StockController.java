@@ -19,7 +19,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("api/v1/")
-@CrossOrigin(origins = "http://localhost:63342")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class StockController {
 
     private final API_Service APIService;
@@ -110,13 +110,13 @@ public class StockController {
 
     //////////////////////// PUTMAPPING ////////////////////////
 
-    @PutMapping("updateData/{tickerSymbol}")
+    @PutMapping("updateData/{id}")
     public ResponseEntity<String> update(
-            @PathVariable Long tickerSymbol,
+            @PathVariable Long id,
             @Valid @RequestBody Map<String, Integer> data) {
 
         stockService.clearCachePortfolio();
-        Optional<Stocks> stocks = stockRepository.findById(tickerSymbol);
+        Optional<Stocks> stocks = stockRepository.findById(id);
         Stocks stocks1 = stocks.get();
 
         if (data.containsKey("sharesInn") && data.containsKey("priceInn")){
@@ -125,7 +125,7 @@ public class StockController {
         }
 
         stockRepository.save(stocks1);
-        databaseService.UpdateDatabase(tickerSymbol);
+        databaseService.UpdateDatabase(id);
 
         return ResponseEntity.ok("Updated successfully");
     }

@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v2/")
-@CrossOrigin(origins = "http://localhost:63342")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class StockController_V2 {
 
     private final API_Service APIService;
@@ -57,6 +57,7 @@ public class StockController_V2 {
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
         stock.setPortfolio(portfolio);
 
+        stockService.clearCachePortfolio();
         String stockName = stock.getStockName().toUpperCase();
         Stocks savedStock = stockRepository.save(stock);
         databaseService.addToPortfolio(savedStock.getId(), stockName);

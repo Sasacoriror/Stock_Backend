@@ -24,5 +24,10 @@ public class Portfolio {
     @JsonManagedReference
     private List<Stocks> stocks = new ArrayList<>();
 
-    protected Portfolio() {}
+    public Portfolio(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Portfolio(){}
 }

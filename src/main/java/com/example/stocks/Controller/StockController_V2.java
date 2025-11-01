@@ -69,8 +69,17 @@ public class StockController_V2 {
 
     //Shows all portfolios and stocks within them
     @GetMapping("allPortfolios")
-    public List<Portfolio> getPortfolios(){
+    public List<Portfolio> getPortfoliosAndStocks(){
         return portfolioRepository.findAll();
+    }
+
+    //Shows all portfolios and stocks within them
+    @GetMapping("portfolios")
+    public List<Portfolio> getPortfolios(){
+        return portfolioRepository.findAll()
+                .stream()
+                .map(p -> new Portfolio(p.getId(), p.getName()))
+                .toList();
     }
 
     //Shows a specific portfolio and shares within it

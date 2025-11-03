@@ -1,15 +1,11 @@
 package com.example.stocks.Controller;
 
-import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Portfolio;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Respository.PortfolioRepository;
 import com.example.stocks.Respository.StockRepository;
-import com.example.stocks.Respository.WatchlistRepository;
-import com.example.stocks.Service.API_Service;
 import com.example.stocks.Service.DatabaseService;
 import com.example.stocks.Service.StockService;
-import com.example.stocks.Service.ValidateStockService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,24 +16,16 @@ import java.util.List;
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class StockController_V2 {
 
-    private final API_Service APIService;
     private final DatabaseService databaseService;
-    private final Endpoints endpoints;
     private final StockRepository stockRepository;
-    private final WatchlistRepository watchlistRepository;
-    private final ValidateStockService validateStockService;
     private final StockService stockService;
     private final PortfolioRepository portfolioRepository;
 
-    public StockController_V2(API_Service APIService, DatabaseService databaseService, Endpoints endpoints,
-                           StockRepository stockRepository, WatchlistRepository watchlistRepository,
-                           ValidateStockService validateStockService, StockService stockService, PortfolioRepository portfolioRepository) {
-        this.APIService = APIService;
+    public StockController_V2(DatabaseService databaseService,
+                              StockRepository stockRepository, StockService stockService,
+                               PortfolioRepository portfolioRepository) {
         this.databaseService = databaseService;
-        this.endpoints = endpoints;
         this.stockRepository = stockRepository;
-        this.watchlistRepository = watchlistRepository;
-        this.validateStockService = validateStockService;
         this.stockService = stockService;
         this.portfolioRepository = portfolioRepository;
     }

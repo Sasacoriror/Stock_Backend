@@ -43,7 +43,7 @@ public class StockController {
     }
 
     ///////////////////////// POSTMAPPING ////////////////////////
-
+/*
     @PostMapping("storeStockData")
     public ResponseEntity<?> storeData(@Valid @RequestBody Stocks stocks) {
         String stockName = stocks.getStockName().toUpperCase();
@@ -56,6 +56,8 @@ public class StockController {
         databaseService.addToPortfolio(savedStock.getId(), stockName);
         return validateStockService.ok("Stock saved successfully");
     }
+
+ */
 
     @PostMapping("addWatchlist")
     public ResponseEntity<?> addWatchlist(@Valid @RequestBody Watchlist watchlist) {
@@ -70,11 +72,13 @@ public class StockController {
 
 
     //////////////////////// GETMAPPING ////////////////////////
-
+/*
     @GetMapping("findAll")
     public ResponseEntity<List<Stocks>> findAll() {
         return ResponseEntity.ok(stockService.getAllShares());
     }
+
+ */
 
     @GetMapping("Watchlist")
     public ResponseEntity<List<Watchlist>> getWatchlist() {
@@ -96,7 +100,7 @@ public class StockController {
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<String> delete(@PathVariable("id") Long id) {
-        stockService.clearCachePortfolio();
+        stockService.clearStocksPortfolio();
         stockRepository.deleteById(id);
         return ResponseEntity.ok("Stock with ticker symbol "+id+" deleted successfully");
     }
@@ -115,7 +119,7 @@ public class StockController {
             @PathVariable Long id,
             @Valid @RequestBody Map<String, Integer> data) {
 
-        stockService.clearCachePortfolio();
+        stockService.clearStocksPortfolio();
         Optional<Stocks> stocks = stockRepository.findById(id);
         Stocks stocks1 = stocks.get();
 

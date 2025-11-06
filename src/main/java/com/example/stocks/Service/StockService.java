@@ -2,6 +2,7 @@ package com.example.stocks.Service;
 
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Model.Watchlist;
+import com.example.stocks.Respository.PortfolioRepository;
 import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Respository.WatchlistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +19,17 @@ public class StockService {
     private StockRepository stockRepository;
 
     @Autowired
+    private PortfolioRepository portfolioRepository;
+
+    @Autowired
     private WatchlistRepository watchlistRepository;
 
-    @Cacheable("allStocks")
-    public List<Stocks> getAllShares(){
+    @Cacheable("getAllShares")
+    public List<Stocks> get_All_Shares(Long id){
         System.out.println("");
         System.out.println("Getting all portfolio data");
         System.out.println("");
-        return stockRepository.findAll();
+        return stockRepository.findByPortfolioId(id);
     }
 
     @Cacheable("allWatchlist")
@@ -36,13 +40,13 @@ public class StockService {
         return watchlistRepository.findAll();
     }
 
-    @CacheEvict(value = "allStocks", allEntries = true)
-    public void clearCachePortfolio(){
+    @CacheEvict(value = "allWatchlist", allEntries = true)
+    public void clearCacheWatchlist(){
         System.out.println("Cache cleared.");
     }
 
-    @CacheEvict(value = "allWatchlist", allEntries = true)
-    public void clearCacheWatchlist(){
+    @CacheEvict(value = "getAllShares", allEntries = true)
+    public void clearStocksPortfolio(){
         System.out.println("Cache cleared.");
     }
 }

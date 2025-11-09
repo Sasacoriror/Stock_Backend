@@ -98,9 +98,9 @@ public class StockController {
 
     //////////////////////// DELETEMAPPING ////////////////////////
 
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") Long id) {
-        stockService.clearStocksPortfolio();
+    @DeleteMapping("delete/{id}/{IDs}")
+    public ResponseEntity<String> delete(@PathVariable("id") Long id, @PathVariable Long IDs) {
+        stockService.clearStocksPortfolio(IDs);
         stockRepository.deleteById(id);
         return ResponseEntity.ok("Stock with ticker symbol "+id+" deleted successfully");
     }
@@ -114,12 +114,12 @@ public class StockController {
 
     //////////////////////// PUTMAPPING ////////////////////////
 
-    @PutMapping("updateData/{id}")
+    @PutMapping("updateData/{id}/{IDs}")
     public ResponseEntity<String> update(
-            @PathVariable Long id,
+            @PathVariable Long id, @PathVariable Long IDs,
             @Valid @RequestBody Map<String, Integer> data) {
 
-        stockService.clearStocksPortfolio();
+        stockService.clearStocksPortfolio(IDs);
         Optional<Stocks> stocks = stockRepository.findById(id);
         Stocks stocks1 = stocks.get();
 

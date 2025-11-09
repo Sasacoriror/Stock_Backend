@@ -20,7 +20,7 @@ public class Stocks {
     private Long id;
 
     @JsonProperty("stockTickerInn")
-    @Pattern(regexp = "^[A-Za-z]+$")
+    @Pattern(regexp = "^[A-Za-z]+$", message = "Stock name must only contain letters")
     private String stockName;
 
     @Min(value = 0, message = "The price cannot be lower than 0 (zero)")

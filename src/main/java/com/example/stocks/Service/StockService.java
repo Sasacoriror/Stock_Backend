@@ -24,19 +24,10 @@ public class StockService {
     @Autowired
     private WatchlistRepository watchlistRepository;
 
-    @Cacheable("getAllShares")
-    public List<Stocks> get_All_Shares(Long id){
-        System.out.println("");
-        System.out.println("Getting all portfolio data");
-        System.out.println("");
-        return stockRepository.findByPortfolioId(id);
-    }
 
     @Cacheable("allWatchlist")
     public List<Watchlist> getEntireWatchlist(){
-        System.out.println("");
-        System.out.println("Getting watchlist data");
-        System.out.println("");
+        System.out.println("\nGetting watchlist data\n");
         return watchlistRepository.findAll();
     }
 
@@ -45,8 +36,15 @@ public class StockService {
         System.out.println("Cache cleared.");
     }
 
-    @CacheEvict(value = "getAllShares", allEntries = true)
-    public void clearStocksPortfolio(){
-        System.out.println("Cache cleared.");
+    @Cacheable(value = "getAllShares", key = "#id")
+    public List<Stocks> get_All_Shares(Long id){
+        System.out.println("\nGetting all portfolio data\n");
+        return stockRepository.findByPortfolioId(id);
     }
+
+    @CacheEvict(value = "getAllShares", key = "#id")
+    public void clearStocksPortfolio(Long id){
+        System.out.println("Cache cleared for portfolio ID: "+id);
+    }
+
 }

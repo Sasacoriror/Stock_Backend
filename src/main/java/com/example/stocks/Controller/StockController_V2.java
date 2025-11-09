@@ -55,9 +55,8 @@ public class StockController_V2 {
         Portfolio portfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
-
+        stockService.clearStocksPortfolio(id);
         stock.setPortfolio(portfolio);
-        stockService.clearStocksPortfolio();
         Stocks savedStock = stockRepository.save(stock);
         databaseService.addToPortfolio(savedStock.getId(), stockName);
 

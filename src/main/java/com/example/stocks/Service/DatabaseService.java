@@ -19,6 +19,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class DatabaseService {
@@ -55,26 +56,28 @@ public class DatabaseService {
     }
 
     @Transactional
-    public void addToPortfolio(Long id, String stockName) {
+    public void addToPortfolio(Stocks stocks) {
 
+        Long stockId = stockRepository.insertStockNative(stocks.getStockName(), stocks.getStockPrice(), stocks.getStockQuantity(),  stocks.getPortfolio().getId());
+
+        String stockName = stocks.getStockName().toUpperCase();
         endpoints.setPriceAPI(stockName);
         endpoints.setDividendAPI(stockName);
         endpoints.setFinancialAPI(stockName, 1);
 
-        Optional<Stocks> portfolio = stockRepository.findById(id);
+        CompletableFuture<PriceDTO> priceFuture = CompletableFuture.supplyAsync(APIService::getPriceData);
+        CompletableFuture<DividendDTO> dividendFuture = CompletableFuture.supplyAsync(APIService::getDividendData);
+        CompletableFuture<FinancialDTO> financialFuture = CompletableFuture.supplyAsync(APIService::getFinancialData);
 
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        DecimalFormat df = new DecimalFormat("#.##", symbols);
+        PriceDTO priceData = priceFuture.join();
+        DividendDTO dividendData = dividendFuture.join();
+        FinancialDTO financialData = financialFuture.join();
 
-        PriceDTO priceData = APIService.getPriceData();
-        DividendDTO dividendData = APIService.getDividendData();
-        FinancialDTO financialData = APIService.getFinancialData();
-
-        double price = portfolio.get().getStockPrice();
-
-        int shares = portfolio.get().getStockQuantity();
+        Stocks portfolio = stockRepository.findById(stockId).orElseThrow();
         String companyName = financialData.getResults().get(0).getCompanyName();
-        double currentPrice = priceData.getResults(). get(0).getC();
+        double pricePaid = portfolio.getStockPrice();
+        int shares = portfolio.getStockQuantity();
+        double currentPrice = priceData.getResults().get(0).getC();
         double totalDividend = 0;
         int frequenzy = 0;
 
@@ -84,19 +87,24 @@ public class DatabaseService {
             totalDividend = calculateData.totalDividend(dividend, frequenzy, shares);
         }
 
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("#.##", symbols);
+
         double totalValue = calculateData.totalValue(shares, currentPrice);
-        double totalInvested = calculateData.totalInvested(shares, price);
-        double returnValue = calculateData.returns(currentPrice, shares, price);
+        double totalInvested = calculateData.totalInvested(shares, pricePaid);
+        double returnValue = calculateData.returns(currentPrice, shares, pricePaid);
         double percentage = calculateData.percentage(returnValue, totalInvested);
 
-        portfolio.get().setCompanyName(companyName);
-        portfolio.get().setCurrentPrice(currentPrice);
-        portfolio.get().setDividend(frequenzy);
-        portfolio.get().setTotalDivided(totalDividend);
-        portfolio.get().setTotalPrice(totalValue);
-        portfolio.get().setTotalInvested(Double.parseDouble(df.format(totalInvested)));
-        portfolio.get().setReturnValue(Double.parseDouble(df.format(returnValue)));
-        portfolio.get().setPercentageReturn(Double.parseDouble(df.format(percentage)));
+        portfolio.setCompanyName(companyName);
+        portfolio.setCurrentPrice(currentPrice);
+        portfolio.setDividend(frequenzy);
+        portfolio.setTotalDivided(totalDividend);
+        portfolio.setTotalPrice(totalValue);
+        portfolio.setTotalInvested(Double.parseDouble(df.format(totalInvested)));
+        portfolio.setReturnValue(Double.parseDouble(df.format(returnValue)));
+        portfolio.setPercentageReturn(Double.parseDouble(df.format(percentage)));
+
+        stockRepository.save(portfolio);
     }
 
     @Transactional
@@ -110,11 +118,9 @@ public class DatabaseService {
 
         DividendDTO dividendData = APIService.getDividendData();
 
-
-
         int shares = stock.getStockQuantity();
         double price = stock.getCurrentPrice();
-        int paidPrice = stock.getStockPrice();
+        double paidPrice = stock.getStockPrice();
 
         int dividendFrequenzy = 0;
         double dividend = 0.0;

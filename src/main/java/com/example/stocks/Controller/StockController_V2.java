@@ -57,8 +57,7 @@ public class StockController_V2 {
 
         stockService.clearStocksPortfolio(id);
         stock.setPortfolio(portfolio);
-        Stocks savedStock = stockRepository.save(stock);
-        databaseService.addToPortfolio(savedStock.getId(), stockName);
+        databaseService.addToPortfolio(stock);
 
         return validateStockService.ok("OK");
     }

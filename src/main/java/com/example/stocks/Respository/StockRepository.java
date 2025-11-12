@@ -12,18 +12,19 @@ import java.util.Optional;
 
 public interface StockRepository extends JpaRepository<Stocks, Long> {
 
-
     List<Stocks> findByPortfolioId(Long portfolioId);
 
-    //List<Stocks> findByUser(User user);
+    @Transactional
+    @Query(value = "INSERT INTO stocks (stock_Ticker, stock_price, stock_quantity, portfolio_id) VALUES (:name, :price, :quantity, :portfolioId) RETURNING id", nativeQuery = true)
+    Long insertStockNative(@Param("name") String name, @Param("price") double price, @Param("quantity") int quantity, @Param("portfolioId") Long portfolioId);
 
-    //Optional<Stocks> findByStockNameAndUser(String stockName, User user);
-
+/*
     @Modifying
     @Transactional
     @Query("UPDATE Stocks s SET s.currentPrice = :currentPrice, s.dividend = :dividend WHERE s.stockName = :StockName")
     void updateStockData(@Param("StockName") String stockName,
                          @Param("currentPrice") double currentPrice,
                          @Param("dividend") double dividend);
+ */
 
 }

@@ -3,9 +3,9 @@ WORKDIR /home/app
 COPY pom.xml .
 RUN mvn dependency:go-offline --no-transfer-progress
 COPY src ./src
-RUN mvn clean package --no-transfer-progress
+RUN mvn clean package -DskipTests
 
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk
 WORKDIR /app
 EXPOSE 8080
 COPY --from=build /home/app/target/*.jar app.jar

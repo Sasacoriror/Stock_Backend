@@ -50,6 +50,8 @@ public class StockController_V2 {
         if (!validateStockService.isValid(stockName)) {
             return validateStockService.
                     error("Ticker: "+stockName+" does not exist", HttpStatus.BAD_REQUEST);
+        } else if (stockRepository.existsByStockName(stockName)){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Stock already exists");
         }
 
         Portfolio portfolio = portfolioRepository.findById(id)

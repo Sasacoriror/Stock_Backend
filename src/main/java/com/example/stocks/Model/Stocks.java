@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Pattern;
 
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"stock_ticker"}))
 @Getter
 @Setter
 public class Stocks {
@@ -21,11 +22,13 @@ public class Stocks {
 
     @JsonProperty("stockTickerInn")
     @Pattern(regexp = "^[A-Za-z]+$", message = "Stock name must only contain letters")
+    @Column(name = "stock_Ticker", nullable = false)
     private String stockName;
 
     @Min(value = 0, message = "The price cannot be lower than 0 (zero)")
     @JsonProperty("priceInn")
-    private int stockPrice;
+
+    private double stockPrice;
 
     @Min(value = 1, message = "The number of shares cannot be lower than 1 (one)")
     @JsonProperty("sharesInn")
@@ -35,25 +38,25 @@ public class Stocks {
     private String companyName;
 
     @JsonProperty("currentPrice")
-    private double currentPrice;
+    private Double currentPrice;
 
     @JsonProperty("dividend")
-    private double dividend;
+    private Integer dividend;
 
     @JsonProperty("totalDividend")
-    private double totalDivided;
+    private Double totalDivided;
 
     @JsonProperty("totalPrice")
-    private double totalPrice;
+    private Double totalPrice;
 
     @JsonProperty("totalInvested")
-    private double totalInvested;
+    private Double totalInvested;
 
     @JsonProperty("return")
-    private double returnValue;
+    private Double returnValue;
 
     @JsonProperty("percentageReturn")
-    private double percentageReturn;
+    private Double percentageReturn;
 
     @ManyToOne
     @JoinColumn(name = "portfolio_id")
@@ -65,8 +68,8 @@ public class Stocks {
     //private User user;
 
 
-    public Stocks(String stockName, int stockPrice, int stockQuantity, String companyName,  double currentPrice,
-                  double dividend, double totalDivided, double totalPrice, double totalInvested, double returnValue, double percentageReturn) {
+    public Stocks(String stockName, double stockPrice, int stockQuantity, String companyName,  double currentPrice,
+                  Integer dividend, double totalDivided, double totalPrice, double totalInvested, double returnValue, double percentageReturn) {
         this.stockName = stockName;
         this.stockPrice = stockPrice;
         this.stockQuantity = stockQuantity;

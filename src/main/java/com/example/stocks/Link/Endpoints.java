@@ -10,6 +10,7 @@ public class Endpoints {
     private String dividendAPI;
     private String financialAPI;
     private String watchListAPI;
+    private String basicTickerInfo;
 
     @Value("${api.key}")
     private String APIkey;
@@ -36,6 +37,11 @@ public class Endpoints {
         this.watchListAPI = url;
     }
 
+    public void setBasicTickerInfo(String ticker){
+        String url = "https://api.massive.com/v3/reference/tickers?ticker="+ticker+"&market=stocks&active=true&order=asc&limit=1&sort=ticker&apiKey="+APIkey;
+        this.basicTickerInfo = url;
+    }
+
 
     // Getting the HTTP get calls to the API
 
@@ -53,5 +59,9 @@ public class Endpoints {
 
     public String getWatchListAPI() {
         return watchListAPI;
+    }
+
+    public String getBasicTickerInfo() {
+        return basicTickerInfo;
     }
 }

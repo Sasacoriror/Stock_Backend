@@ -1,10 +1,7 @@
 package com.example.stocks.Service;
 
 import com.example.stocks.Calculate.CalculateData;
-import com.example.stocks.DTO.FinancialDTO;
-import com.example.stocks.DTO.PriceDTO;
-import com.example.stocks.DTO.DividendDTO;
-import com.example.stocks.DTO.TickerOverviewDTO;
+import com.example.stocks.DTO.*;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Model.Watchlist;
@@ -63,18 +60,18 @@ public class DatabaseService {
         String stockName = stocks.getStockName().toUpperCase();
         endpoints.setPriceAPI(stockName);
         endpoints.setDividendAPI(stockName);
-        endpoints.setFinancialAPI(stockName, 1);
+        endpoints.setBasicTickerInfo(stockName);
 
         CompletableFuture<PriceDTO> priceFuture = CompletableFuture.supplyAsync(APIService::getPriceData);
         CompletableFuture<DividendDTO> dividendFuture = CompletableFuture.supplyAsync(APIService::getDividendData);
-        CompletableFuture<FinancialDTO> financialFuture = CompletableFuture.supplyAsync(APIService::getFinancialData);
+        CompletableFuture<BasicStockDataDTO> basicsFuture = CompletableFuture.supplyAsync(APIService::getBasicData);
 
         PriceDTO priceData = priceFuture.join();
         DividendDTO dividendData = dividendFuture.join();
-        FinancialDTO financialData = financialFuture.join();
+        BasicStockDataDTO basicData = basicsFuture.join();
 
         Stocks portfolio = stockRepository.findById(stockId).orElseThrow();
-        String companyName = financialData.getResults().get(0).getCompanyName();
+        String companyName = basicData.getResults().get(0).getName();
         double pricePaid = portfolio.getStockPrice();
         int shares = portfolio.getStockQuantity();
         double currentPrice = priceData.getResults().get(0).getC();

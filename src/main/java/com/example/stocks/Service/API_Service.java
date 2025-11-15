@@ -1,11 +1,9 @@
 package com.example.stocks.Service;
 
-import com.example.stocks.DTO.FinancialDTO;
-import com.example.stocks.DTO.PriceDTO;
-import com.example.stocks.DTO.DividendDTO;
-import com.example.stocks.DTO.TickerOverviewDTO;
+import com.example.stocks.DTO.*;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Respository.StockRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -94,7 +92,15 @@ public class API_Service {
         }
 
         try {
+            JsonNode root = objectMapper.readTree(response.getBody());
+            JsonNode result = root.get("result");
+
+            if (result == null || !result.isArray() || result.size() == 0){
+                throw new StockNotFoundException("No financial data available here");
+            }
+
             return objectMapper.readValue(response.getBody(), FinancialDTO.class);
+
         } catch (StockNotFoundException e) {
             throw e;
         } catch (Exception e) {
@@ -113,6 +119,24 @@ public class API_Service {
 
         try {
             return objectMapper.readValue(response.getBody(), TickerOverviewDTO.class);
+        } catch (StockNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error parsing JSON response");
+        }
+    }
+
+    public BasicStockDataDTO getBasicData(){
+        ResponseEntity<String> response = restTemplate
+                .getForEntity(endpoints.getBasicTickerInfo(), String.class);
+
+        if (response.getBody() == null) {
+            throw new RuntimeException("No Response");
+        }
+
+        try {
+            return objectMapper.readValue(response.getBody(), BasicStockDataDTO.class);
         } catch (StockNotFoundException e) {
             throw e;
         } catch (Exception e) {

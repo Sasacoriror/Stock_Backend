@@ -2,9 +2,11 @@ package com.example.stocks.Controller;
 
 import com.example.stocks.Model.Portfolio;
 import com.example.stocks.Model.Stocks;
+import com.example.stocks.Record.PortfolioSummary;
 import com.example.stocks.Respository.PortfolioRepository;
 import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Service.DatabaseService;
+import com.example.stocks.Service.PortfolioSummaryService;
 import com.example.stocks.Service.StockService;
 import com.example.stocks.Service.ValidateStockService;
 import jakarta.validation.Valid;
@@ -24,15 +26,18 @@ public class StockController_V2 {
     private final StockService stockService;
     private final PortfolioRepository portfolioRepository;
     private final ValidateStockService validateStockService;
+    private final PortfolioSummaryService portfolioSummaryService;
 
     public StockController_V2(DatabaseService databaseService,
                               StockRepository stockRepository, StockService stockService,
-                               PortfolioRepository portfolioRepository, ValidateStockService validateStockService) {
+                               PortfolioRepository portfolioRepository, ValidateStockService validateStockService,
+                              PortfolioSummaryService portfolioSummaryService) {
         this.databaseService = databaseService;
         this.stockRepository = stockRepository;
         this.stockService = stockService;
         this.portfolioRepository = portfolioRepository;
         this.validateStockService = validateStockService;
+        this.portfolioSummaryService = portfolioSummaryService;
     }
 
     ///////////////////////// POSTMAPPING ////////////////////////
@@ -47,11 +52,12 @@ public class StockController_V2 {
     @PostMapping("{id}/stocks")
     public ResponseEntity<?> addStockToPortfolio(@Valid @PathVariable Long id, @RequestBody Stocks stock){
         String stockName = stock.getStockName().toUpperCase();
-        if (!validateStockService.isValid(stockName)) {
+
+        if (stockRepository.existsByStockName(stockName)){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Stock already exists");
+        } else if (!validateStockService.isValid(stockName)) {
             return validateStockService.
                     error("Ticker: "+stockName+" does not exist", HttpStatus.BAD_REQUEST);
-        } else if (stockRepository.existsByStockName(stockName)){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Stock already exists");
         }
 
         Portfolio portfolio = portfolioRepository.findById(id)
@@ -85,5 +91,10 @@ public class StockController_V2 {
     @GetMapping("{id}/stocks")
     public ResponseEntity<List<Stocks>> getStocksFromPortfolio(@PathVariable Long id){
         return ResponseEntity.ok(stockService.get_All_Shares(id));
+    }
+
+    @GetMapping("{id}/summary")
+    public PortfolioSummary portfolioSummary(@PathVariable Long id){
+        return portfolioSummaryService.getPortfolioSummary(id);
     }
 }

@@ -29,10 +29,17 @@ public class PriceDTO {
     public static class Results{
 
         @JsonProperty("c")
-        private double c;
+        private double closePrice;
 
-        public double getC() {
-            return c;
+        @JsonProperty("o")
+        private double openPrice;
+
+        public double getClosePrice() {
+            return closePrice;
+        }
+
+        public double getOpenPrice() {
+            return openPrice;
         }
     }
 }

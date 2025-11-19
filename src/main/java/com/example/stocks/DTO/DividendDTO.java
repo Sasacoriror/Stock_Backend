@@ -30,16 +30,8 @@ public class DividendDTO {
             return cash_amount;
         }
 
-        public void setCash_amount(double cash_amount) {
-            this.cash_amount = cash_amount;
-        }
-
         public int getFrequency() {
             return frequency;
-        }
-
-        public void setFrequency(int frequency) {
-            this.frequency = frequency;
         }
 
     }

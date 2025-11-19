@@ -74,7 +74,8 @@ public class DatabaseService {
         String companyName = basicData.getResults().get(0).getName();
         double pricePaid = portfolio.getStockPrice();
         int shares = portfolio.getStockQuantity();
-        double currentPrice = priceData.getResults().get(0).getC();
+        double currentPrice = priceData.getResults().get(0).getClosePrice();
+        double opening_Price= priceData.getResults().get(0).getOpenPrice();
         double totalDividend = 0;
         int frequenzy = 0;
 
@@ -100,6 +101,7 @@ public class DatabaseService {
         portfolio.setTotalInvested(Double.parseDouble(df.format(totalInvested)));
         portfolio.setReturnValue(Double.parseDouble(df.format(returnValue)));
         portfolio.setPercentageReturn(Double.parseDouble(df.format(percentage)));
+        portfolio.setOpeningPrice(opening_Price);
 
         stockRepository.save(portfolio);
     }

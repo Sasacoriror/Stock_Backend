@@ -3,6 +3,9 @@ package com.example.stocks.Link;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+
 @Component
 public class Endpoints {
 
@@ -11,6 +14,7 @@ public class Endpoints {
     private String financialAPI;
     private String watchListAPI;
     private String basicTickerInfo;
+    private String weekRange;
 
     @Value("${api.key}")
     private String APIkey;
@@ -42,6 +46,14 @@ public class Endpoints {
         this.basicTickerInfo = url;
     }
 
+    public void setWeekRange(String ticker){
+        LocalDate to = LocalDate.now().with(DayOfWeek.FRIDAY);
+        LocalDate from = to.minusWeeks(52).with(DayOfWeek.MONDAY);
+
+        String url = "https://api.massive.com/v2/aggs/ticker/"+ticker+"/range/1/week/"+from+"/"+to+"?adjusted=true&sort=asc&limit=500&apiKey="+APIkey;
+        this.weekRange = url;
+    }
+
 
     // Getting the HTTP get calls to the API
 
@@ -63,5 +75,9 @@ public class Endpoints {
 
     public String getBasicTickerInfo() {
         return basicTickerInfo;
+    }
+
+    public String getWeekRange() {
+        return weekRange;
     }
 }

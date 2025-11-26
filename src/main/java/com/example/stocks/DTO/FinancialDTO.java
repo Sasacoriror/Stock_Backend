@@ -89,36 +89,27 @@ public class FinancialDTO {
         @JsonProperty("operating_income_loss")
         private Operating_Income_Loss operating_income_loss;
 
+        @JsonProperty("net_income_loss_available_to_common_stockholders_basic")
+        private NetIncome netIncome;
+
         public Revenues getRevenues() {
             return revenues;
-        }
-
-        public void setNRevenues(Revenues revenues) {
-            this.revenues = revenues;
         }
 
         public Net_Income_Loss getNet_income_loss() {
             return net_income_loss;
         }
 
-        public void setNet_income_loss(Net_Income_Loss net_income_loss) {
-            this.net_income_loss = net_income_loss;
-        }
-
         public Gross_Profit getGross_Profit() {
             return gross_Profit;
-        }
-
-        public void setGross_Profit(Gross_Profit gross_Profit) {
-            this.gross_Profit = gross_Profit;
         }
 
         public Operating_Income_Loss getOperating_income_loss() {
             return operating_income_loss;
         }
 
-        public void setOperating_income_loss(Operating_Income_Loss operating_income_loss) {
-            this.operating_income_loss = operating_income_loss;
+        public NetIncome getNetIncome() {
+            return netIncome;
         }
     }
 
@@ -139,14 +130,6 @@ public class FinancialDTO {
         public String getUnit() {
             return unit;
         }
-
-        public void setUnit(String unit) {
-            this.unit = unit;
-        }
-
-        public void setValue(Double value) {
-            this.value = value;
-        }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -164,14 +147,6 @@ public class FinancialDTO {
 
         public String getUnit() {
             return unit;
-        }
-
-        public void setUnit(String unit) {
-            this.unit = unit;
-        }
-
-        public void setValue(Double value) {
-            this.value = value;
         }
     }
 
@@ -191,14 +166,6 @@ public class FinancialDTO {
         public String getUnit() {
             return unit;
         }
-
-        public void setUnit(String unit) {
-            this.unit = unit;
-        }
-
-        public void setValue(Double value) {
-            this.value = value;
-        }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -217,13 +184,23 @@ public class FinancialDTO {
         public String getUnit() {
             return unit;
         }
+    }
 
-        public void setUnit(String unit) {
-            this.unit = unit;
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class NetIncome {
+        @JsonProperty("value")
+        private Double value;
+
+        @JsonProperty("unit")
+        private String unit;
+
+        public Double getValue() {
+            return value;
         }
 
-        public void setValue(Double value) {
-            this.value = value;
+        public String getUnit() {
+            return unit;
         }
+
     }
 }

@@ -148,34 +148,69 @@ public class DatabaseService {
     @Transactional
     public void addToWatchist(Long id, String stockName){
 
-        //endpoints.setPriceAPI(stockName);
+        endpoints.setPriceAPI(stockName);
         endpoints.setDividendAPI(stockName);
         endpoints.setFinancialAPI(stockName, 1);
         endpoints.setWatchListAPI(stockName);
+        endpoints.setWeekRange(stockName);
 
         Optional<Watchlist> watchlist = watchlistRepository.findById(id);
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
 
-        TickerOverviewDTO tickerOverview = APIService.getTickerOverviewlData();
-        DividendDTO dividendData = APIService.getDividendData();
-        FinancialDTO financialData = APIService.getFinancialData();
+        CompletableFuture<PriceDTO> priceFuture = CompletableFuture.supplyAsync(APIService::getPriceData);
+        CompletableFuture<TickerOverviewDTO> tickerOverviewFuture = CompletableFuture.supplyAsync(APIService::getTickerOverviewlData);
+        CompletableFuture<DividendDTO> dividendFuture = CompletableFuture.supplyAsync(APIService::getDividendData);
+        CompletableFuture<FinancialDTO> financialFuture = CompletableFuture.supplyAsync(APIService::getFinancialData);
+        CompletableFuture<WeekRangeDTO> rangeFuture = CompletableFuture.supplyAsync(APIService::getWeeksRangeData);
+
+        PriceDTO priceData = priceFuture.join();
+        TickerOverviewDTO tickerData = tickerOverviewFuture.join();
+        DividendDTO dividendData = dividendFuture.join();
+        FinancialDTO financialData = financialFuture.join();
+        WeekRangeDTO rangeData = rangeFuture.join();
+
 
         String name = financialData.getResults().get(0).getCompanyName();
         double pricePerShare = calculateData.pricePerShare(
-                tickerOverview.getResults().getMarketCap(),
-                tickerOverview.getResults().getWso());
+                tickerData.getResults().getMarketCap(),
+                tickerData.getResults().getWso());
         double dividendYield = calculateData.dividendYield(
                 dividendData.getResults().get(0).getCash_amount(),
                 dividendData.getResults().get(0).getFrequency(),
                 pricePerShare);
 
-        //watchlist.get().setStockTickerInn(stockName);
+        double openingPrice = priceData.getResults().get(0).getOpenPrice();
+
+        double priceChange = Double.parseDouble(df.format(pricePerShare - openingPrice));
+        double priceChangePercentage = Double.parseDouble(df.format(calculateData.percentage(priceChange, openingPrice)));
+
+        double EPS = Double.parseDouble(df.format(
+                financialData.getResults().get(0).getFinancials().getIncomeStatement().getNetIncome().getValue()
+                        / tickerData.getResults().getWso()));
+        double PE_Ratio = Double.parseDouble(df.format(priceData.getResults().get(0).getClosePrice() / EPS));
+
+        double highestPrice = rangeData.getResults()
+                .stream()
+                .mapToDouble(WeekRangeDTO.Results::getHigh)
+                .max()
+                .orElse(Double.NaN);
+        double lowestPrice = rangeData.getResults()
+                .stream()
+                .mapToDouble(WeekRangeDTO.Results::getLow)
+                .min()
+                .orElse(Double.NaN);
+
         watchlist.get().setNameStock(name);
         watchlist.get().setPriceStock(pricePerShare);
-        watchlist.get().setMarketCap(tickerOverview.getResults().getMarketCap());
+        watchlist.get().setChangePrice(priceChange);
+        watchlist.get().setChangePercentage(priceChangePercentage);
+        watchlist.get().setWeeksLow(lowestPrice);
+        watchlist.get().setWeeksHigh(highestPrice);
         watchlist.get().setDividendYield(Double.parseDouble(df.format(dividendYield)));
+        watchlist.get().setPERatio(PE_Ratio); // TODO: shows the wrong PE Ratio
+        watchlist.get().setMarketCap(tickerData.getResults().getMarketCap());
     }
 /*
     public void oneMinutte() {

@@ -26,18 +26,40 @@ public class Watchlist {
     @JsonProperty("latestPrice")
     private double priceStock;
 
-    @JsonProperty("marcet_Cap")
-    private Long marketCap;
+    @JsonProperty("change_Price")
+    private double changePrice;
+
+    @JsonProperty("change_Percentage")
+    private double changePercentage;
+
+    @JsonProperty("low")
+    private double weeksLow;
+
+    @JsonProperty("High")
+    private double weeksHigh;
 
     @JsonProperty("dividendYield")
     private double dividendYield;
 
-    public Watchlist(String stockTickerInn, String nameStock, double priceStock, Long marketCap, double dividendYield) {
+    @JsonProperty("PE_Ratio")
+    private double PERatio;
+
+    @JsonProperty("market_Cap")
+    private Long marketCap;
+
+
+
+    public Watchlist(String stockTickerInn, String nameStock, double priceStock, double changePrice, double changePercentage, double weeksLow, double weeksHigh, double dividendYield, double PERatio, Long marketCap) {
         this.stockTickerInn = stockTickerInn;
         this.nameStock = nameStock;
         this.priceStock = priceStock;
-        this.marketCap = marketCap;
+        this.changePrice = changePrice;
+        this.changePercentage = changePercentage;
+        this.weeksLow = weeksLow;
+        this.weeksHigh = weeksHigh;
         this.dividendYield = dividendYield;
+        this.PERatio = PERatio;
+        this.marketCap = marketCap;
     }
 
     public Watchlist() {}

@@ -93,7 +93,7 @@ public class API_Service {
 
         try {
             JsonNode root = objectMapper.readTree(response.getBody());
-            JsonNode result = root.get("result");
+            JsonNode result = root.get("results");
 
             if (result == null || !result.isArray() || result.size() == 0){
                 throw new StockNotFoundException("No financial data available here");
@@ -137,6 +137,24 @@ public class API_Service {
 
         try {
             return objectMapper.readValue(response.getBody(), BasicStockDataDTO.class);
+        } catch (StockNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error parsing JSON response");
+        }
+    }
+
+    public WeekRangeDTO getWeeksRangeData(){
+        ResponseEntity<String> response = restTemplate
+                .getForEntity(endpoints.getWeekRange(), String.class);
+
+        if (response.getBody() == null) {
+            throw new RuntimeException("No Response");
+        }
+
+        try {
+            return objectMapper.readValue(response.getBody(), WeekRangeDTO.class);
         } catch (StockNotFoundException e) {
             throw e;
         } catch (Exception e) {

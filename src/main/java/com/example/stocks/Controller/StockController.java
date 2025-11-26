@@ -4,12 +4,10 @@ import com.example.stocks.DTO.FinancialDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Model.Watchlist;
+import com.example.stocks.Record.SearchField;
 import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Respository.WatchlistRepository;
-import com.example.stocks.Service.DatabaseService;
-import com.example.stocks.Service.API_Service;
-import com.example.stocks.Service.StockService;
-import com.example.stocks.Service.ValidateStockService;
+import com.example.stocks.Service.*;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +27,11 @@ public class StockController {
     private final WatchlistRepository watchlistRepository;
     private final ValidateStockService validateStockService;
     private final StockService stockService;
+    private final RecordService recordService;
 
     public StockController(API_Service APIService, DatabaseService databaseService, Endpoints endpoints,
                            StockRepository stockRepository, WatchlistRepository watchlistRepository,
-                           ValidateStockService validateStockService, StockService stockService) {
+                           ValidateStockService validateStockService, StockService stockService, RecordService recordService) {
         this.APIService = APIService;
         this.databaseService = databaseService;
         this.endpoints = endpoints;
@@ -40,24 +39,10 @@ public class StockController {
         this.watchlistRepository = watchlistRepository;
         this.validateStockService = validateStockService;
         this.stockService = stockService;
+        this.recordService = recordService;
     }
 
     ///////////////////////// POSTMAPPING ////////////////////////
-/*
-    @PostMapping("storeStockData")
-    public ResponseEntity<?> storeData(@Valid @RequestBody Stocks stocks) {
-        String stockName = stocks.getStockName().toUpperCase();
-        if (!validateStockService.isValid(stockName)) {
-            return validateStockService.
-                    error("Ticker: "+stockName+" does not exist", HttpStatus.BAD_REQUEST);
-        }
-        stockService.clearCachePortfolio();
-        Stocks savedStock = stockRepository.save(stocks);
-        databaseService.addToPortfolio(savedStock.getId(), stockName);
-        return validateStockService.ok("Stock saved successfully");
-    }
-
- */
 
     @PostMapping("addWatchlist")
     public ResponseEntity<?> addWatchlist(@Valid @RequestBody Watchlist watchlist) {
@@ -72,13 +57,6 @@ public class StockController {
 
 
     //////////////////////// GETMAPPING ////////////////////////
-/*
-    @GetMapping("findAll")
-    public ResponseEntity<List<Stocks>> findAll() {
-        return ResponseEntity.ok(stockService.getAllShares());
-    }
-
- */
 
     @GetMapping("Watchlist")
     public ResponseEntity<List<Watchlist>> getWatchlist() {
@@ -86,14 +64,14 @@ public class StockController {
     }
 
     @GetMapping("searchFinancialData/{ticker}")
-    public ResponseEntity<FinancialDTO> getCompanyFinancial(@PathVariable("ticker") String ticker) {
+    public ResponseEntity<SearchField> getCompanyFinancial(@PathVariable("ticker") String ticker) {
         String stockName = ticker.toUpperCase();
         if (!validateStockService.isValid(stockName)) {
-            return (ResponseEntity<FinancialDTO>) validateStockService.
+            return (ResponseEntity<SearchField>) validateStockService.
                     error("Ticker: "+stockName+" does not exist", HttpStatus.BAD_REQUEST);
         }
-        endpoints.setFinancialAPI(stockName, 20);
-        return ResponseEntity.ok(APIService.getFinancialData());
+        //endpoints.setFinancialAPI(stockName, 20);
+        return ResponseEntity.ok(recordService.getSearchField(stockName));
     }
 
     //////////////////////// DELETEMAPPING ////////////////////////

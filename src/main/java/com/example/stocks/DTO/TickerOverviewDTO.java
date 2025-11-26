@@ -2,9 +2,11 @@ package com.example.stocks.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TickerOverviewDTO {
 
@@ -26,6 +28,8 @@ public class TickerOverviewDTO {
 
         @JsonProperty("weighted_shares_outstanding")
         private Long wso;
+
+        // TODO: Add name of the company and the stock type
 
         public Long getMarketCap() {
             return marketCap;

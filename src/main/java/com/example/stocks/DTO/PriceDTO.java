@@ -10,15 +10,15 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PriceDTO {
 
-    @JsonProperty("ticker")
-    private String ticker;
+    //@JsonProperty("ticker")
+    //private String ticker;
 
     @JsonProperty("results")
     private List<Results> results;
-
+/*
     public String getTicker() {
         return ticker;
-    }
+    }*/
 
     public List<Results> getResults() {
         return results;
@@ -33,6 +33,12 @@ public class PriceDTO {
 
         @JsonProperty("o")
         private double openPrice;
+/*
+        @JsonProperty("h")
+        private double highest;
+
+        @JsonProperty("l")
+        private double lowest;*/
 
         public double getClosePrice() {
             return closePrice;
@@ -41,5 +47,13 @@ public class PriceDTO {
         public double getOpenPrice() {
             return openPrice;
         }
+/*
+        public double getHighest() {
+            return highest;
+        }
+
+        public double getLowest() {
+            return lowest;
+        }*/
     }
 }

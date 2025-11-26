@@ -6,7 +6,7 @@ import com.example.stocks.Record.PortfolioSummary;
 import com.example.stocks.Respository.PortfolioRepository;
 import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Service.DatabaseService;
-import com.example.stocks.Service.PortfolioSummaryService;
+import com.example.stocks.Service.RecordService;
 import com.example.stocks.Service.StockService;
 import com.example.stocks.Service.ValidateStockService;
 import jakarta.validation.Valid;
@@ -26,18 +26,18 @@ public class StockController_V2 {
     private final StockService stockService;
     private final PortfolioRepository portfolioRepository;
     private final ValidateStockService validateStockService;
-    private final PortfolioSummaryService portfolioSummaryService;
+    private final RecordService recordService;
 
     public StockController_V2(DatabaseService databaseService,
                               StockRepository stockRepository, StockService stockService,
                                PortfolioRepository portfolioRepository, ValidateStockService validateStockService,
-                              PortfolioSummaryService portfolioSummaryService) {
+                              RecordService recordService) {
         this.databaseService = databaseService;
         this.stockRepository = stockRepository;
         this.stockService = stockService;
         this.portfolioRepository = portfolioRepository;
         this.validateStockService = validateStockService;
-        this.portfolioSummaryService = portfolioSummaryService;
+        this.recordService = recordService;
     }
 
     ///////////////////////// POSTMAPPING ////////////////////////
@@ -95,6 +95,6 @@ public class StockController_V2 {
 
     @GetMapping("{id}/summary")
     public PortfolioSummary portfolioSummary(@PathVariable Long id){
-        return portfolioSummaryService.getPortfolioSummary(id);
+        return recordService.getPortfolioSummary(id);
     }
 }

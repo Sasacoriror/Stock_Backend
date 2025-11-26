@@ -58,18 +58,17 @@ public class Stocks {
     @JsonProperty("percentageReturn")
     private Double percentageReturn;
 
+    @JsonProperty("openingPrice")
+    private Double openingPrice;
+
     @ManyToOne
     @JoinColumn(name = "portfolio_id")
     @JsonBackReference
     private Portfolio portfolio;
 
-    //@ManyToOne
-    //@JoinColumn(name = "user_id")
-    //private User user;
-
 
     public Stocks(String stockName, double stockPrice, int stockQuantity, String companyName,  double currentPrice,
-                  Integer dividend, double totalDivided, double totalPrice, double totalInvested, double returnValue, double percentageReturn) {
+                  Integer dividend, double totalDivided, double totalPrice, double totalInvested, double returnValue, double percentageReturn, double openingPrice) {
         this.stockName = stockName;
         this.stockPrice = stockPrice;
         this.stockQuantity = stockQuantity;
@@ -81,6 +80,7 @@ public class Stocks {
         this.totalInvested = totalInvested;
         this.returnValue = returnValue;
         this.percentageReturn = percentageReturn;
+        this.openingPrice = openingPrice;
     }
 
     protected Stocks() {}

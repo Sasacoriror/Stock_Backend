@@ -2,6 +2,7 @@ package com.example.stocks.Controller;
 
 import com.example.stocks.Model.Portfolio;
 import com.example.stocks.Model.Stocks;
+import com.example.stocks.Record.Dividends;
 import com.example.stocks.Record.PortfolioSummary;
 import com.example.stocks.Respository.PortfolioRepository;
 import com.example.stocks.Respository.StockRepository;
@@ -96,5 +97,10 @@ public class StockController_V2 {
     @GetMapping("{id}/summary")
     public PortfolioSummary portfolioSummary(@PathVariable Long id){
         return recordService.getPortfolioSummary(id);
+    }
+
+    @GetMapping("dividend_Summary")
+    public Dividends getDividendSummary(){
+        return recordService.dividendData();
     }
 }

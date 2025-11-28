@@ -6,6 +6,7 @@ import com.example.stocks.DTO.DividendDTO;
 import com.example.stocks.DTO.PriceDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
+import com.example.stocks.Record.Dividends;
 import com.example.stocks.Record.PortfolioSummary;
 import com.example.stocks.Record.SearchField;
 import com.example.stocks.Respository.StockRepository;
@@ -88,6 +89,10 @@ public class RecordService {
         String companyTicker = ticker;
         String companyName = basicData.getResults().get(0).getName();
 
+        boolean insideWatchlist = true;
+
+
+
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
 
@@ -101,7 +106,34 @@ public class RecordService {
                 companyName,
                 currentPrice,
                 daysChangeDollars,
-                daysChangePercentage
+                daysChangePercentage,
+                insideWatchlist
+        );
+    }
+
+    public Dividends dividendData(){
+
+        List<Stocks> stockData = stockRepository.findAll();
+
+        double fullDividend = 0.0;
+        double fullInvestemnt = 0.0;
+
+        for (Stocks stock: stockData){
+            fullDividend += stock.getDividend();
+            fullInvestemnt += stock.getTotalInvested();
+        }
+
+        double monthlyDividend = fullDividend / 12;
+        double dailyDividend = fullDividend / 365;
+        double hourlyDividend = fullDividend / 8765;
+        double yieldOnCost = (fullDividend / fullInvestemnt) * 100;
+
+        return new  Dividends(
+                fullDividend,
+                monthlyDividend,
+                dailyDividend,
+                hourlyDividend,
+                yieldOnCost
         );
     }
 }

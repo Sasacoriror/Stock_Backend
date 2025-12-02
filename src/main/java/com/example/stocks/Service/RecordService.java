@@ -10,13 +10,17 @@ import com.example.stocks.Record.Dividends;
 import com.example.stocks.Record.PortfolioSummary;
 import com.example.stocks.Record.SearchField;
 import com.example.stocks.Respository.StockRepository;
+import com.example.stocks.Respository.WatchlistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -24,6 +28,9 @@ public class RecordService {
 
     @Autowired
     private StockRepository stockRepository;
+
+    @Autowired
+    private WatchlistRepository watchlistRepository;
 
     @Autowired
     private CalculateData calculateData;
@@ -89,9 +96,9 @@ public class RecordService {
         String companyTicker = ticker;
         String companyName = basicData.getResults().get(0).getName();
 
-        boolean insideWatchlist = true;
+        Optional<Long> idOfStock = watchlistRepository.findIdByStockTickerInn(ticker.toUpperCase());
 
-
+        boolean insideWatchlist = idOfStock.isPresent();
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
@@ -107,7 +114,8 @@ public class RecordService {
                 currentPrice,
                 daysChangeDollars,
                 daysChangePercentage,
-                insideWatchlist
+                insideWatchlist,
+                idOfStock
         );
     }
 
@@ -119,14 +127,17 @@ public class RecordService {
         double fullInvestemnt = 0.0;
 
         for (Stocks stock: stockData){
-            fullDividend += stock.getDividend();
+            fullDividend += stock.getTotalDivided();
             fullInvestemnt += stock.getTotalInvested();
         }
 
-        double monthlyDividend = fullDividend / 12;
-        double dailyDividend = fullDividend / 365;
-        double hourlyDividend = fullDividend / 8765;
-        double yieldOnCost = (fullDividend / fullInvestemnt) * 100;
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("#.##", symbols);
+
+        double monthlyDividend = Double.parseDouble(df.format(fullDividend / 12));
+        double dailyDividend = Double.parseDouble(df.format(fullDividend / 365));
+        double hourlyDividend = Double.parseDouble(df.format(fullDividend / 8765));
+        double yieldOnCost = Double.parseDouble(df.format((fullDividend / fullInvestemnt) * 100));
 
         return new  Dividends(
                 fullDividend,

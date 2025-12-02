@@ -52,7 +52,7 @@ public class StockController {
         Watchlist watchlistSaved = watchlistRepository.save(watchlist);
         databaseService.addToWatchist(watchlistSaved.getId(), stockName);
 
-        return ResponseEntity.ok("Watchlist saved successfully");
+        return ResponseEntity.ok(watchlistSaved.getId());
     }
 
 

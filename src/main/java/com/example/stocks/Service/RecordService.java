@@ -41,25 +41,18 @@ public class RecordService {
     @Autowired
     private API_Service APIService;
 
-    public PortfolioSummary getPortfolioSummary(Long portfolioID){
 
-        List<Stocks> portfolios = stockRepository.findByPortfolioId(portfolioID);
+    public PortfolioSummary getPortfolioSummary2(Long portfolioID){
 
-        double totalInvested = 0.0;
-        double totalDividend = 0.0;
-        double returns = 0.0;
-        double value = 0.0;
+        Object[] raw = stockRepository.getPortfolioTotals(portfolioID);
 
-        double daysChange = 0.0;
+        Object[] data = (Object[]) raw[0];
 
-        for (Stocks item: portfolios){
-            totalInvested += item.getTotalInvested();
-            totalDividend += item.getTotalDivided();
-            returns += item.getReturnValue();
-            value += item.getTotalPrice();
-
-            daysChange = item.getOpeningPrice() * item.getStockQuantity();
-        }
+        double totalInvested = data[0] != null ? ((Number) data[0]).doubleValue() : 0.0;
+        double totalDividend = data[1] != null ? ((Number) data[1]).doubleValue() : 0.0;
+        double returns = data[2] != null ? ((Number) data[2]).doubleValue() : 0.0;
+        double value = data[3] != null ? ((Number) data[3]).doubleValue() : 0.0;
+        double daysChange = data[4] != null ? ((Number) data[4]).doubleValue() : 0.0;
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
@@ -68,8 +61,11 @@ public class RecordService {
         double dayChangeDollars = Double.parseDouble(df.format(value - daysChange));
 
         double totalProfit = Double.parseDouble(df.format(value - totalInvested));
-        double profitPercentage = Double.parseDouble(df.format(calculateData.percentage(totalProfit, totalInvested)));
-        double dayChangePercentage = Double.parseDouble(df.format(calculateData.percentage(dayChangeDollars, value)));
+        double profitPercentage = totalInvested == 0 ? 0 :
+                Double.parseDouble(df.format(calculateData.percentage(totalProfit, totalInvested)));
+
+        double dayChangePercentage = value == 0 ? 0 :
+                Double.parseDouble(df.format(calculateData.percentage(dayChangeDollars, value)));
 
         return new PortfolioSummary(
                 totalInvested,

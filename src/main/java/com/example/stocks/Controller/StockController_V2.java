@@ -11,6 +11,7 @@ import com.example.stocks.Service.RecordService;
 import com.example.stocks.Service.StockService;
 import com.example.stocks.Service.ValidateStockService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -90,13 +91,16 @@ public class StockController_V2 {
 
     //Shows a specific portfolio and shares within it
     @GetMapping("{id}/stocks")
-    public ResponseEntity<List<Stocks>> getStocksFromPortfolio(@PathVariable Long id){
-        return ResponseEntity.ok(stockService.get_All_Shares(id));
+    public ResponseEntity<Page<Stocks>> getStocksFromPortfolio(
+            @PathVariable Long id,
+            @RequestParam int page,
+            @RequestParam int size){
+        return ResponseEntity.ok(stockService.get_All_Shares(id, page, size));
     }
 
-    @GetMapping("{id}/summary")
-    public PortfolioSummary portfolioSummary(@PathVariable Long id){
-        return recordService.getPortfolioSummary(id);
+    @GetMapping("{id}/summary2")
+    public PortfolioSummary portfolioSummary2(@PathVariable Long id){
+        return recordService.getPortfolioSummary2(id);
     }
 
     @GetMapping("dividend_Summary")

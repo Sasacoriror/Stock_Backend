@@ -8,6 +8,10 @@ import com.example.stocks.Respository.WatchlistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,21 +29,25 @@ public class StockService {
     private WatchlistRepository watchlistRepository;
 
 
-    @Cacheable("allWatchlist")
-    public List<Watchlist> getEntireWatchlist(){
+    @Cacheable(value = "allWatchlist", key = "#page + '-' + #size")
+    public Page<Watchlist> getEntireWatchlist(int page, int size){
         System.out.println("\nGetting watchlist data\n");
-        return watchlistRepository.findAll();
+        Pageable pageable = PageRequest.of(page, size);
+        return watchlistRepository.findAll(pageable);
     }
+
 
     @CacheEvict(value = "allWatchlist", allEntries = true)
     public void clearCacheWatchlist(){
         System.out.println("Cache cleared.");
     }
 
-    @Cacheable(value = "getAllShares", key = "#id")
-    public List<Stocks> get_All_Shares(Long id){
+
+    @Cacheable(value = "getAllShares", key = "#id + '-' + #page + '-' + #size")
+    public Page<Stocks> get_All_Shares(Long id, int page, int size){
         System.out.println("\nGetting all portfolio data\n");
-        return stockRepository.findByPortfolioId(id);
+        Pageable pageable = PageRequest.of(page, size);
+        return stockRepository.findByPortfolioId(id, pageable);
     }
 
     @CacheEvict(value = "getAllShares", key = "#id")

@@ -1,6 +1,5 @@
 package com.example.stocks.Controller;
 
-import com.example.stocks.DTO.FinancialDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Model.Watchlist;
@@ -9,6 +8,9 @@ import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Respository.WatchlistRepository;
 import com.example.stocks.Service.*;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedModel;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,12 +61,14 @@ public class StockController {
     //////////////////////// GETMAPPING ////////////////////////
 
     @GetMapping("Watchlist")
-    public ResponseEntity<List<Watchlist>> getWatchlist() {
-        return ResponseEntity.ok(stockService.getEntireWatchlist());
+    public ResponseEntity<Page<Watchlist>> getWatchlist(
+            @RequestParam int page,
+            @RequestParam int size) {
+        return ResponseEntity.ok(stockService.getEntireWatchlist(page, size));
     }
 
     @GetMapping("searchFinancialData/{ticker}")
-    public ResponseEntity<SearchField> getCompanyFinancial(@PathVariable("ticker") String ticker) {
+    public ResponseEntity<SearchField> getCompanyInformation(@PathVariable("ticker") String ticker) {
         String stockName = ticker.toUpperCase();
         if (!validateStockService.isValid(stockName)) {
             return (ResponseEntity<SearchField>) validateStockService.

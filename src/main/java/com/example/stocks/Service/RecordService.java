@@ -143,16 +143,22 @@ public class RecordService {
         DividendDTO dividendData = APIService.getDividendData();
 
         if (dividendData.getResults() == null || dividendData.getResults().isEmpty()) {
-            return new DividendSearchSummary(0, null, null, 0.0, 0.0, List.of());
+            return new DividendSearchSummary(0, null, null, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, List.of());
         }
 
         var latestData = dividendData.getResults().get(0);
+        var laterData = dividendData.getResults();
 
         int frequenzy = latestData.getFrequency();
         double income = latestData.getCash_amount();
         double annualIncome = latestData.getCash_amount() * frequenzy;
         String payDate = latestData.getPayDate();
         String exDate = latestData.getExDate();
+
+        double dividendCagrOneYear = laterData != null && laterData.size() > frequenzy ? Math.pow(latestData.getCash_amount() / laterData.get(frequenzy).getCash_amount(), 1.0 / 1) - 1.0 : 0.0;
+        double dividendCagrTwoYear = laterData != null && laterData.size() > frequenzy * 2 ? Math.pow(latestData.getCash_amount() / laterData.get(frequenzy*2).getCash_amount(), 1.0 / 2) - 1.0 : 0.0;
+        double dividendCagrFiveYear = laterData != null && laterData.size() > frequenzy * 5 ? Math.pow(latestData.getCash_amount() / laterData.get(frequenzy*5).getCash_amount(), 1.0 / 5) - 1.0 : 0.0;
+        double dividendCagrTenYear = laterData != null && laterData.size() > frequenzy * 10 ? Math.pow(latestData.getCash_amount() / laterData.get(frequenzy*10).getCash_amount(), 1.0 / 10) - 1.0 : 0.0;
 
         List<DividendHistory> dividendHistory = new ArrayList<>();
         List<DividendDTO.Results> call = dividendData.getResults();
@@ -184,6 +190,10 @@ public class RecordService {
                 exDate,
                 annualIncome,
                 income,
+                dividendCagrOneYear * 100,
+                dividendCagrTwoYear * 100,
+                dividendCagrFiveYear* 100,
+                dividendCagrTenYear * 100,
                 dividendHistory
         );
     }

@@ -59,7 +59,7 @@ public class DatabaseService {
 
         String stockName = stocks.getStockName().toUpperCase();
         endpoints.setPriceAPI(stockName);
-        endpoints.setDividendAPI(stockName);
+        endpoints.setDividendAPI(stockName, 1);
         endpoints.setBasicTickerInfo(stockName);
 
         CompletableFuture<PriceDTO> priceFuture = CompletableFuture.supplyAsync(APIService::getPriceData);
@@ -149,7 +149,7 @@ public class DatabaseService {
     public void addToWatchist(Long id, String stockName){
 
         endpoints.setPriceAPI(stockName);
-        endpoints.setDividendAPI(stockName);
+        endpoints.setDividendAPI(stockName, 1);
         endpoints.setFinancialAPI(stockName, 1);
         endpoints.setWatchListAPI(stockName);
         endpoints.setWeekRange(stockName);

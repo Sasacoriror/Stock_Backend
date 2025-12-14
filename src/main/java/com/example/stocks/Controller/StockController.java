@@ -1,16 +1,17 @@
 package com.example.stocks.Controller;
 
+import com.example.stocks.DTO.DividendDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Model.Watchlist;
+import com.example.stocks.Record.DividendSearchSummary;
 import com.example.stocks.Record.SearchField;
+import com.example.stocks.Record.SearchSummary;
 import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Respository.WatchlistRepository;
 import com.example.stocks.Service.*;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.data.web.PagedModel;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -67,7 +68,7 @@ public class StockController {
         return ResponseEntity.ok(stockService.getEntireWatchlist(page, size));
     }
 
-    @GetMapping("searchFinancialData/{ticker}")
+    @GetMapping("search/{ticker}")
     public ResponseEntity<SearchField> getCompanyInformation(@PathVariable("ticker") String ticker) {
         String stockName = ticker.toUpperCase();
         if (!validateStockService.isValid(stockName)) {
@@ -77,6 +78,17 @@ public class StockController {
         //endpoints.setFinancialAPI(stockName, 20);
         return ResponseEntity.ok(recordService.getSearchField(stockName));
     }
+
+    @GetMapping("searchSummary/{ticker}")
+    public ResponseEntity<SearchSummary> getSummary(@PathVariable String ticker){
+        return ResponseEntity.ok(recordService.getSummary(ticker.toUpperCase()));
+    }
+
+    @GetMapping("searchDividendSummary/{ticker}")
+    public ResponseEntity<DividendSearchSummary> getDividendSummary(@PathVariable String ticker){
+        return ResponseEntity.ok(recordService.getDividendSummary(ticker.toUpperCase()));
+    }
+
 
     //////////////////////// DELETEMAPPING ////////////////////////
 

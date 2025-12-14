@@ -64,6 +64,21 @@ public class API_Service {
         }
     }
 
+    public PriceOverTimeDTO getPriceOverTimeData(){
+        ResponseEntity<String> response = restTemplate
+                .getForEntity(endpoints.getPriceOverTime(), String.class);
+
+        try {
+            return objectMapper.readValue(response.getBody(), PriceOverTimeDTO.class);
+
+        } catch (StockNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error parsing JSON response");
+        }
+    }
+
 
     public DividendDTO getDividendData(){
         ResponseEntity<String> response = restTemplate

@@ -10,6 +10,7 @@ import java.time.LocalDate;
 public class Endpoints {
 
     private String priceAPI;
+    private String priceOverTime;
     private String dividendAPI;
     private String financialAPI;
     private String watchListAPI;
@@ -26,8 +27,16 @@ public class Endpoints {
         this.priceAPI = url;
     }
 
-    public void setDividendAPI(String ticker) {
-        String url = "https://api.polygon.io/v3/reference/dividends?ticker="+ticker+"&limit=1&apiKey="+APIkey;
+    public void setPriceOverTime(String ticker) {
+        LocalDate to = LocalDate.now().with(DayOfWeek.FRIDAY);
+        LocalDate from = to.minusDays(730).with(DayOfWeek.MONDAY);
+
+        String url = "https://api.massive.com/v2/aggs/ticker/"+ticker+"/range/1/day/"+from+"/"+to+"?adjusted=true&sort=desc&limit=730&apiKey="+APIkey;
+        this.priceOverTime = url;
+    }
+
+    public void setDividendAPI(String ticker, int limit) {
+        String url = "https://api.massive.com/stocks/v1/dividends?ticker="+ticker+"&limit="+limit+"&sort=ticker.desc&apiKey="+APIkey;
         this.dividendAPI = url;
     }
 
@@ -59,6 +68,10 @@ public class Endpoints {
 
     public String getPriceAPI() {
         return priceAPI;
+    }
+
+    public String getPriceOverTime() {
+        return priceOverTime;
     }
 
     public String getDividendAPI() {

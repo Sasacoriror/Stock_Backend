@@ -1,23 +1,19 @@
 package com.example.stocks.Service;
 
 import com.example.stocks.Calculate.CalculateData;
-import com.example.stocks.DTO.BasicStockDataDTO;
-import com.example.stocks.DTO.DividendDTO;
-import com.example.stocks.DTO.PriceDTO;
+import com.example.stocks.DTO.*;
 import com.example.stocks.Link.Endpoints;
+import com.example.stocks.Model.DividendHistory;
 import com.example.stocks.Model.Stocks;
-import com.example.stocks.Record.Dividends;
-import com.example.stocks.Record.PortfolioSummary;
-import com.example.stocks.Record.SearchField;
+import com.example.stocks.Record.*;
 import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Respository.WatchlistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -42,7 +38,7 @@ public class RecordService {
     private API_Service APIService;
 
 
-    public PortfolioSummary getPortfolioSummary2(Long portfolioID){
+    public PortfolioSummary getPortfolioSummary2(Long portfolioID) {
 
         Object[] raw = stockRepository.getPortfolioTotals(portfolioID);
 
@@ -78,7 +74,7 @@ public class RecordService {
         );
     }
 
-    public SearchField getSearchField(String ticker){
+    public SearchField getSearchField(String ticker) {
 
         endpoints.setPriceAPI(ticker);
         endpoints.setBasicTickerInfo(ticker);
@@ -115,32 +111,111 @@ public class RecordService {
         );
     }
 
-    public Dividends dividendData(){
+    public SearchSummary getSummary(String ticker) {
 
-        List<Stocks> stockData = stockRepository.findAll();
+        endpoints.setPriceOverTime(ticker);
+        endpoints.setWatchListAPI(ticker);
 
-        double fullDividend = 0.0;
-        double fullInvestemnt = 0.0;
+        CompletableFuture<PriceOverTimeDTO> priceFuture = CompletableFuture.supplyAsync(APIService::getPriceOverTimeData);
+        CompletableFuture<TickerOverviewDTO> basicsFuture = CompletableFuture.supplyAsync(APIService::getTickerOverviewlData);
 
-        for (Stocks stock: stockData){
-            fullDividend += stock.getTotalDivided();
-            fullInvestemnt += stock.getTotalInvested();
-        }
+        PriceOverTimeDTO priceData = priceFuture.join();
+        TickerOverviewDTO basicData = basicsFuture.join();
 
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        DecimalFormat df = new DecimalFormat("#.##", symbols);
+        List<Double> prices = priceData.getResults()
+                .stream()
+                .map(PriceOverTimeDTO.Results::getClosePrice)
+                .toList();
 
-        double monthlyDividend = Double.parseDouble(df.format(fullDividend / 12));
-        double dailyDividend = Double.parseDouble(df.format(fullDividend / 365));
-        double hourlyDividend = Double.parseDouble(df.format(fullDividend / 8765));
-        double yieldOnCost = Double.parseDouble(df.format((fullDividend / fullInvestemnt) * 100));
+        String description = basicData.getResults().getDescription();
+        double eps = 0.0;
 
-        return new  Dividends(
-                fullDividend,
-                monthlyDividend,
-                dailyDividend,
-                hourlyDividend,
-                yieldOnCost
+        return new SearchSummary(
+                prices,
+                eps,
+                description
         );
     }
-}
+
+
+    public DividendSearchSummary getDividendSummary(String ticker) {
+        endpoints.setDividendAPI(ticker, 730);
+        DividendDTO dividendData = APIService.getDividendData();
+
+        if (dividendData.getResults() == null || dividendData.getResults().isEmpty()) {
+            return new DividendSearchSummary(0, null, null, 0.0, 0.0, List.of());
+        }
+
+        var latestData = dividendData.getResults().get(0);
+
+        int frequenzy = latestData.getFrequency();
+        double income = latestData.getCash_amount();
+        double annualIncome = latestData.getCash_amount() * frequenzy;
+        String payDate = latestData.getPayDate();
+        String exDate = latestData.getExDate();
+
+        List<DividendHistory> dividendHistory = new ArrayList<>();
+        List<DividendDTO.Results> call = dividendData.getResults();
+
+        for (int i = 0; i < call.size(); i++) {
+            var currentData = call.get(i);
+
+            Double change = null;
+            if (i + 1 < call.size()) {
+                double prevDividend = call.get(i + 1).getCash_amount();
+                if (prevDividend != 0.0) {
+                    change = ((currentData.getCash_amount() - prevDividend) / prevDividend) * 100;
+                }
+            }
+
+            dividendHistory.add(new DividendHistory(
+                    currentData.getDecDate(),
+                    currentData.getExDate(),
+                    currentData.getRecordDate(),
+                    currentData.getPayDate(),
+                    currentData.getFrequency(),
+                    currentData.getCash_amount(),
+                    change
+            ));
+        }
+        return new DividendSearchSummary(
+                frequenzy,
+                payDate,
+                exDate,
+                annualIncome,
+                income,
+                dividendHistory
+        );
+    }
+
+
+        public Dividends dividendData () {
+
+            List<Stocks> stockData = stockRepository.findAll();
+
+            double fullDividend = 0.0;
+            double fullInvestemnt = 0.0;
+
+            for (Stocks stock : stockData) {
+                fullDividend += stock.getTotalDivided();
+                fullInvestemnt += stock.getTotalInvested();
+            }
+
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+            DecimalFormat df = new DecimalFormat("#.##", symbols);
+
+            double monthlyDividend = Double.parseDouble(df.format(fullDividend / 12));
+            double dailyDividend = Double.parseDouble(df.format(fullDividend / 365));
+            double hourlyDividend = Double.parseDouble(df.format(fullDividend / 8765));
+            double yieldOnCost = Double.parseDouble(df.format((fullDividend / fullInvestemnt) * 100));
+
+            return new Dividends(
+                    fullDividend,
+                    monthlyDividend,
+                    dailyDividend,
+                    hourlyDividend,
+                    yieldOnCost
+            );
+        }
+    }
+

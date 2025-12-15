@@ -2,9 +2,11 @@ package com.example.stocks.Controller;
 
 import com.example.stocks.DTO.DividendDTO;
 import com.example.stocks.Link.Endpoints;
+import com.example.stocks.Model.DividendHistory;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Model.Watchlist;
 import com.example.stocks.Record.DividendSearchSummary;
+import com.example.stocks.Record.PageResponse;
 import com.example.stocks.Record.SearchField;
 import com.example.stocks.Record.SearchSummary;
 import com.example.stocks.Respository.StockRepository;
@@ -75,6 +77,7 @@ public class StockController {
             return (ResponseEntity<SearchField>) validateStockService.
                     error("Ticker: "+stockName+" does not exist", HttpStatus.BAD_REQUEST);
         }
+        stockService.clearCacheDividendHistory();
         //endpoints.setFinancialAPI(stockName, 20);
         return ResponseEntity.ok(recordService.getSearchField(stockName));
     }
@@ -87,6 +90,15 @@ public class StockController {
     @GetMapping("searchDividendSummary/{ticker}")
     public ResponseEntity<DividendSearchSummary> getDividendSummary(@PathVariable String ticker){
         return ResponseEntity.ok(recordService.getDividendSummary(ticker.toUpperCase()));
+    }
+
+    @GetMapping("searchDividendHistory/{ticker}")
+    public ResponseEntity<PageResponse<DividendHistory>> getDividendHistory(
+            @PathVariable String ticker,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "25") int size
+    ){
+        return ResponseEntity.ok(stockService.getDividendHistory(ticker.toUpperCase(), page, size));
     }
 
 

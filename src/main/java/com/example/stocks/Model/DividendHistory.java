@@ -30,7 +30,7 @@ public class DividendHistory {
     @JsonProperty("Amount")
     private Double amount;
 
-    @JsonProperty("change")
+    @JsonProperty("Change")
     private Double change;
 
     public DividendHistory(String decDate, String exDate, String recordDate, String payDate, int frequency, double cashAmount, Double change) {

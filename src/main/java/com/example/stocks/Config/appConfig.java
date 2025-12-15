@@ -37,7 +37,7 @@ public class appConfig {
 
     @Bean
     public CacheManager cacheManager(){
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("getAllShares", "allWatchlist");
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("getAllShares", "allWatchlist", "dividend_History");
         cacheManager.setCaffeine(
                 Caffeine.newBuilder()
                         .expireAfterWrite(10, TimeUnit.MINUTES)

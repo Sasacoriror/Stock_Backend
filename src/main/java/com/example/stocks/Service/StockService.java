@@ -1,7 +1,9 @@
 package com.example.stocks.Service;
 
+import com.example.stocks.Model.DividendHistory;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Model.Watchlist;
+import com.example.stocks.Record.PageResponse;
 import com.example.stocks.Respository.PortfolioRepository;
 import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Respository.WatchlistRepository;
@@ -28,6 +30,9 @@ public class StockService {
     @Autowired
     private WatchlistRepository watchlistRepository;
 
+    @Autowired
+    RecordService recordService;
+
 
     @Cacheable(value = "allWatchlist", key = "#page + '-' + #size")
     public Page<Watchlist> getEntireWatchlist(int page, int size){
@@ -53,6 +58,19 @@ public class StockService {
     @CacheEvict(value = "getAllShares", key = "#id")
     public void clearStocksPortfolio(Long id){
         System.out.println("Cache cleared for portfolio ID: "+id);
+    }
+
+    @Cacheable(value = "dividend_History", key = "#page + '-' + #size")
+    public PageResponse<DividendHistory> getDividendHistory(String ticker, int page, int size){
+        System.out.println("\nGetting watchlist data\n");
+        Pageable pageable = PageRequest.of(page, size);
+        return recordService.getDividendHistory(ticker, page, size);
+    }
+
+
+    @CacheEvict(value = "dividend_History", allEntries = true)
+    public void clearCacheDividendHistory(){
+        System.out.println("Cache cleared.");
     }
 
 }

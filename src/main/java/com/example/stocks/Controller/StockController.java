@@ -92,13 +92,12 @@ public class StockController {
         return ResponseEntity.ok(recordService.getDividendSummary(ticker.toUpperCase()));
     }
 
-    @GetMapping("searchDividendHistory/{ticker}")
+    @GetMapping("searchDividendHistory")
     public ResponseEntity<PageResponse<DividendHistory>> getDividendHistory(
-            @PathVariable String ticker,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "25") int size
     ){
-        return ResponseEntity.ok(stockService.getDividendHistory(ticker.toUpperCase(), page, size));
+        return ResponseEntity.ok(stockService.getDividendHistory(page, size));
     }
 
 

@@ -61,10 +61,9 @@ public class StockService {
     }
 
     @Cacheable(value = "dividend_History", key = "#page + '-' + #size")
-    public PageResponse<DividendHistory> getDividendHistory(String ticker, int page, int size){
-        System.out.println("\nGetting watchlist data\n");
-        Pageable pageable = PageRequest.of(page, size);
-        return recordService.getDividendHistory(ticker, page, size);
+    public PageResponse<DividendHistory> getDividendHistory(int page, int size){
+        System.out.println("\nGetting dividend history data\n");
+        return recordService.getDividendHistory(page, size);
     }
 
 

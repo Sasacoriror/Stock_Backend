@@ -4,6 +4,7 @@ import com.example.stocks.Calculate.CalculateData;
 import com.example.stocks.DTO.*;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.DividendHistory;
+import com.example.stocks.Model.Price;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Record.*;
 import com.example.stocks.Respository.StockRepository;
@@ -122,10 +123,19 @@ public class RecordService {
         PriceOverTimeDTO priceData = priceFuture.join();
         TickerOverviewDTO basicData = basicsFuture.join();
 
-        List<Double> prices = priceData.getResults()
-                .stream()
-                .map(PriceOverTimeDTO.Results::getClosePrice)
-                .toList();
+
+        List<PriceOverTimeDTO.Results> results = priceData.getResults();
+        List<Price> prices = new ArrayList<>();
+
+        for (int i = 0; i < results.size(); i++){
+            var currentData = results.get(i);
+
+            prices.add(new Price(
+                    currentData.getClosePrice()
+            ));
+        }
+
+
 
         String description = basicData.getResults().getDescription();
         double eps = 0.0;
@@ -156,34 +166,10 @@ public class RecordService {
         String exDate = latestData.getExDate();
 
         double dividendCagrOneYear = laterData != null && laterData.size() > frequenzy ? Math.pow(latestData.getCash_amount() / laterData.get(frequenzy).getCash_amount(), 1.0 / 1) - 1.0 : 0.0;
-        double dividendCagrTwoYear = laterData != null && laterData.size() > frequenzy * 2 ? Math.pow(latestData.getCash_amount() / laterData.get(frequenzy*2).getCash_amount(), 1.0 / 2) - 1.0 : 0.0;
+        double dividendCagrTwoYear = laterData != null && laterData.size() > frequenzy * 3 ? Math.pow(latestData.getCash_amount() / laterData.get(frequenzy*3).getCash_amount(), 1.0 / 3) - 1.0 : 0.0;
         double dividendCagrFiveYear = laterData != null && laterData.size() > frequenzy * 5 ? Math.pow(latestData.getCash_amount() / laterData.get(frequenzy*5).getCash_amount(), 1.0 / 5) - 1.0 : 0.0;
         double dividendCagrTenYear = laterData != null && laterData.size() > frequenzy * 10 ? Math.pow(latestData.getCash_amount() / laterData.get(frequenzy*10).getCash_amount(), 1.0 / 10) - 1.0 : 0.0;
-/*
-        List<DividendHistory> dividendHistory = new ArrayList<>();
-        List<DividendDTO.Results> call = dividendData.getResults();
 
-        for (int i = 0; i < call.size(); i++) {
-            var currentData = call.get(i);
-
-            Double change = null;
-            if (i + 1 < call.size()) {
-                double prevDividend = call.get(i + 1).getCash_amount();
-                if (prevDividend != 0.0) {
-                    change = ((currentData.getCash_amount() - prevDividend) / prevDividend) * 100;
-                }
-            }
-
-            dividendHistory.add(new DividendHistory(
-                    currentData.getDecDate(),
-                    currentData.getExDate(),
-                    currentData.getRecordDate(),
-                    currentData.getPayDate(),
-                    currentData.getFrequency(),
-                    currentData.getCash_amount(),
-                    change
-            ));
-        }*/
         return new DividendSearchSummary(
                 frequenzy,
                 payDate,
@@ -197,8 +183,7 @@ public class RecordService {
         );
     }
 
-    public PageResponse<DividendHistory> getDividendHistory(String ticker, int page, int size){
-        //endpoints.setDividendAPI(ticker, 730);
+    public PageResponse<DividendHistory> getDividendHistory(int page, int size){
         DividendDTO dividendData = APIService.getDividendData();
 
 

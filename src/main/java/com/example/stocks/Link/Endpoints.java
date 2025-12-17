@@ -31,7 +31,7 @@ public class Endpoints {
         LocalDate to = LocalDate.now().with(DayOfWeek.FRIDAY);
         LocalDate from = to.minusDays(730).with(DayOfWeek.MONDAY);
 
-        String url = "https://api.massive.com/v2/aggs/ticker/"+ticker+"/range/1/day/"+from+"/"+to+"?adjusted=true&sort=desc&limit=730&apiKey="+APIkey;
+        String url = "https://api.massive.com/v2/aggs/ticker/"+ticker+"/range/1/day/"+from+"/"+to+"?adjusted=true&sort=asc&limit=730&apiKey="+APIkey;
         this.priceOverTime = url;
     }
 

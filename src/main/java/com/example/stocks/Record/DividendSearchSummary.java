@@ -12,7 +12,7 @@ public record DividendSearchSummary(
         @JsonProperty("Annual_Income") Double annualIncome,
         @JsonProperty("Quarterly_income") Double quarterlyIncome,
         @JsonProperty("Dividend_Growth_1_year") Double dividend1Year,
-        @JsonProperty("Dividend_Growth_2_year") Double dividend2Year,
+        @JsonProperty("Dividend_Growth_3_year") Double dividend2Year,
         @JsonProperty("Dividend_Growth_5_year") Double dividend5Year,
         @JsonProperty("Dividend_Growth_10_year") Double dividend10Year
 ) {}

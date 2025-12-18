@@ -1,6 +1,5 @@
 package com.example.stocks.Controller;
 
-import com.example.stocks.DTO.DividendDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.DividendHistory;
 import com.example.stocks.Model.Stocks;
@@ -25,26 +24,22 @@ import java.util.*;
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class StockController {
 
-    private final API_Service APIService;
     private final DatabaseService databaseService;
-    private final Endpoints endpoints;
     private final StockRepository stockRepository;
     private final WatchlistRepository watchlistRepository;
     private final ValidateStockService validateStockService;
     private final StockService stockService;
-    private final RecordService recordService;
+    private final RecordSearchService recordSearchService;
 
-    public StockController(API_Service APIService, DatabaseService databaseService, Endpoints endpoints,
+    public StockController(DatabaseService databaseService,
                            StockRepository stockRepository, WatchlistRepository watchlistRepository,
-                           ValidateStockService validateStockService, StockService stockService, RecordService recordService) {
-        this.APIService = APIService;
+                           ValidateStockService validateStockService, StockService stockService, RecordSearchService recordSearchService) {
         this.databaseService = databaseService;
-        this.endpoints = endpoints;
         this.stockRepository = stockRepository;
         this.watchlistRepository = watchlistRepository;
         this.validateStockService = validateStockService;
         this.stockService = stockService;
-        this.recordService = recordService;
+        this.recordSearchService = recordSearchService;
     }
 
     ///////////////////////// POSTMAPPING ////////////////////////
@@ -79,17 +74,17 @@ public class StockController {
         }
         stockService.clearCacheDividendHistory();
         //endpoints.setFinancialAPI(stockName, 20);
-        return ResponseEntity.ok(recordService.getSearchField(stockName));
+        return ResponseEntity.ok(recordSearchService.getSearchField(stockName));
     }
 
     @GetMapping("searchSummary/{ticker}")
     public ResponseEntity<SearchSummary> getSummary(@PathVariable String ticker){
-        return ResponseEntity.ok(recordService.getSummary(ticker.toUpperCase()));
+        return ResponseEntity.ok(recordSearchService.getSummary(ticker.toUpperCase()));
     }
 
     @GetMapping("searchDividendSummary/{ticker}")
     public ResponseEntity<DividendSearchSummary> getDividendSummary(@PathVariable String ticker){
-        return ResponseEntity.ok(recordService.getDividendSummary(ticker.toUpperCase()));
+        return ResponseEntity.ok(recordSearchService.getDividendSummary(ticker.toUpperCase()));
     }
 
     @GetMapping("searchDividendHistory")

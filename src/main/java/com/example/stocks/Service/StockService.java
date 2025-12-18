@@ -13,10 +13,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class StockService {
@@ -31,7 +28,7 @@ public class StockService {
     private WatchlistRepository watchlistRepository;
 
     @Autowired
-    RecordService recordService;
+    RecordSearchService recordSearchService;
 
 
     @Cacheable(value = "allWatchlist", key = "#page + '-' + #size")
@@ -63,7 +60,7 @@ public class StockService {
     @Cacheable(value = "dividend_History", key = "#page + '-' + #size")
     public PageResponse<DividendHistory> getDividendHistory(int page, int size){
         System.out.println("\nGetting dividend history data\n");
-        return recordService.getDividendHistory(page, size);
+        return recordSearchService.getDividendHistory(page, size);
     }
 
 

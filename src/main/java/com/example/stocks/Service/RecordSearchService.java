@@ -5,9 +5,7 @@ import com.example.stocks.DTO.*;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.DividendHistory;
 import com.example.stocks.Model.Price;
-import com.example.stocks.Model.Stocks;
 import com.example.stocks.Record.*;
-import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Respository.WatchlistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,10 +19,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-public class RecordService {
-
-    @Autowired
-    private StockRepository stockRepository;
+public class RecordSearchService {
 
     @Autowired
     private WatchlistRepository watchlistRepository;
@@ -38,42 +33,6 @@ public class RecordService {
     @Autowired
     private API_Service APIService;
 
-
-    public PortfolioSummary getPortfolioSummary2(Long portfolioID) {
-
-        Object[] raw = stockRepository.getPortfolioTotals(portfolioID);
-
-        Object[] data = (Object[]) raw[0];
-
-        double totalInvested = data[0] != null ? ((Number) data[0]).doubleValue() : 0.0;
-        double totalDividend = data[1] != null ? ((Number) data[1]).doubleValue() : 0.0;
-        double returns = data[2] != null ? ((Number) data[2]).doubleValue() : 0.0;
-        double value = data[3] != null ? ((Number) data[3]).doubleValue() : 0.0;
-        double daysChange = data[4] != null ? ((Number) data[4]).doubleValue() : 0.0;
-
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        DecimalFormat df = new DecimalFormat("#.##", symbols);
-
-        double totalValue = Double.parseDouble(df.format(totalInvested + returns));
-        double dayChangeDollars = Double.parseDouble(df.format(value - daysChange));
-
-        double totalProfit = Double.parseDouble(df.format(value - totalInvested));
-        double profitPercentage = totalInvested == 0 ? 0 :
-                Double.parseDouble(df.format(calculateData.percentage(totalProfit, totalInvested)));
-
-        double dayChangePercentage = value == 0 ? 0 :
-                Double.parseDouble(df.format(calculateData.percentage(dayChangeDollars, value)));
-
-        return new PortfolioSummary(
-                totalInvested,
-                totalValue,
-                totalProfit,
-                profitPercentage,
-                totalDividend,
-                dayChangeDollars,
-                dayChangePercentage
-        );
-    }
 
     public SearchField getSearchField(String ticker) {
 
@@ -229,36 +188,6 @@ public class RecordService {
                 size,
                 total,
                 totalPages
-        );
-    }
-
-
-    public Dividends dividendData () {
-
-        List<Stocks> stockData = stockRepository.findAll();
-
-        double fullDividend = 0.0;
-        double fullInvestemnt = 0.0;
-
-        for (Stocks stock : stockData) {
-            fullDividend += stock.getTotalDivided();
-            fullInvestemnt += stock.getTotalInvested();
-        }
-
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        DecimalFormat df = new DecimalFormat("#.##", symbols);
-
-        double monthlyDividend = Double.parseDouble(df.format(fullDividend / 12));
-        double dailyDividend = Double.parseDouble(df.format(fullDividend / 365));
-        double hourlyDividend = Double.parseDouble(df.format(fullDividend / 8765));
-        double yieldOnCost = Double.parseDouble(df.format((fullDividend / fullInvestemnt) * 100));
-
-        return new Dividends(
-                fullDividend,
-                monthlyDividend,
-                dailyDividend,
-                hourlyDividend,
-                yieldOnCost
         );
     }
 }

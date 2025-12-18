@@ -6,10 +6,7 @@ import com.example.stocks.Record.Dividends;
 import com.example.stocks.Record.PortfolioSummary;
 import com.example.stocks.Respository.PortfolioRepository;
 import com.example.stocks.Respository.StockRepository;
-import com.example.stocks.Service.DatabaseService;
-import com.example.stocks.Service.RecordService;
-import com.example.stocks.Service.StockService;
-import com.example.stocks.Service.ValidateStockService;
+import com.example.stocks.Service.*;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -28,18 +25,20 @@ public class StockController_V2 {
     private final StockService stockService;
     private final PortfolioRepository portfolioRepository;
     private final ValidateStockService validateStockService;
-    private final RecordService recordService;
+    private final DividendSummaryService dividendData;
+    private final PortfolioSummaryService portfolioSummaryService;
 
     public StockController_V2(DatabaseService databaseService,
                               StockRepository stockRepository, StockService stockService,
-                               PortfolioRepository portfolioRepository, ValidateStockService validateStockService,
-                              RecordService recordService) {
+                              PortfolioRepository portfolioRepository, ValidateStockService validateStockService,
+                              DividendSummaryService dividendData, PortfolioSummaryService portfolioSummaryService) {
         this.databaseService = databaseService;
         this.stockRepository = stockRepository;
         this.stockService = stockService;
         this.portfolioRepository = portfolioRepository;
         this.validateStockService = validateStockService;
-        this.recordService = recordService;
+        this.dividendData = dividendData;
+        this.portfolioSummaryService = portfolioSummaryService;
     }
 
     ///////////////////////// POSTMAPPING ////////////////////////
@@ -100,11 +99,11 @@ public class StockController_V2 {
 
     @GetMapping("{id}/summary2")
     public PortfolioSummary portfolioSummary2(@PathVariable Long id){
-        return recordService.getPortfolioSummary2(id);
+        return portfolioSummaryService.getPortfolioSummary2(id);
     }
 
     @GetMapping("dividend_Summary")
     public Dividends getDividendSummary(){
-        return recordService.dividendData();
+        return dividendData.dividendData();
     }
 }

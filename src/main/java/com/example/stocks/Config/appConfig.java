@@ -7,6 +7,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +38,7 @@ public class appConfig {
 
     @Bean
     public CacheManager cacheManager(){
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("getAllShares", "allWatchlist", "dividend_History");
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("getAllShares", "allWatchlist", "dividend_History", "portfolioSummary");
         cacheManager.setCaffeine(
                 Caffeine.newBuilder()
                         .expireAfterWrite(10, TimeUnit.MINUTES)

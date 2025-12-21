@@ -10,11 +10,14 @@ import com.example.stocks.Respository.WatchlistRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -36,8 +39,11 @@ public class DatabaseService {
     @Autowired
     private CalculateData calculateData;
 
+    @Autowired
+    private StockService stockService;
+
     @Transactional
-    public void updateStockData() {
+    public void updatePortfolioData() {
         List<Stocks> stocks = stockRepository.findAll();
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
@@ -53,7 +59,10 @@ public class DatabaseService {
     }
 
     @Transactional
-    public void addToPortfolio(Stocks stocks) {
+    public void addToPortfolio(Stocks stocks, Long id) {
+
+        stockService.clearStocksPortfolio(id);
+        stockService.clearPortfolioCache(id);
 
         Long stockId = stockRepository.insertStockNative(stocks.getStockName(), stocks.getStockPrice(), stocks.getStockQuantity(),  stocks.getPortfolio().getId());
 
@@ -107,10 +116,20 @@ public class DatabaseService {
     }
 
     @Transactional
-    public void UpdateDatabase(Long id){
-        Optional<Stocks> stocks = stockRepository.findById(id);
+    public void updateStockData(Long id, Long IDs, Map<String, Integer> data){
 
-        Stocks stock = stocks.get();
+        Stocks stock = stockRepository.findById(id).orElseThrow(() -> new RuntimeException("Stock Not found"));
+
+        if (data.containsKey("sharesInn") && data.containsKey("priceInn")){
+            stock.setStockQuantity(data.get("sharesInn"));
+            stock.setStockPrice(data.get("priceInn"));
+        }
+
+        UpdateDatabase(stock);
+        stockService.clearStocksPortfolio(IDs);
+    }
+
+    public void UpdateDatabase(Stocks stock){
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.##", symbols);
@@ -142,7 +161,6 @@ public class DatabaseService {
         stock.setReturnValue(Double.parseDouble(df.format(newReturnValue)));
         stock.setPercentageReturn(Double.parseDouble(df.format(newPercentage)));
 
-        stockRepository.save(stock);
     }
 
     @Transactional

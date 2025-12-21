@@ -27,7 +27,6 @@ public class Stocks {
 
     @Min(value = 0, message = "The price cannot be lower than 0 (zero)")
     @JsonProperty("priceInn")
-
     private double stockPrice;
 
     @Min(value = 1, message = "The number of shares cannot be lower than 1 (one)")

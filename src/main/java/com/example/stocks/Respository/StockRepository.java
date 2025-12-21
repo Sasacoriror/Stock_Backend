@@ -16,9 +16,9 @@ import java.util.Optional;
 
 public interface StockRepository extends JpaRepository<Stocks, Long> {
 
-    List<Stocks> findByPortfolioId(Long portfolioId);
-
     Page<Stocks> findByPortfolioId(Long portfolioId, Pageable pageable);
+
+    List<Stocks> findByPortfolioId(Long portfolioId);
 
     boolean existsByStockName(String stockName);
 

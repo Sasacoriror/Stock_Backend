@@ -67,23 +67,20 @@ public class StockController {
 
     @GetMapping("search/{ticker}")
     public ResponseEntity<SearchField> getCompanyInformation(@PathVariable("ticker") String ticker) {
-        String stockName = ticker.toUpperCase();
-        if (!validateStockService.isValid(stockName)) {
-            return (ResponseEntity<SearchField>) validateStockService.
-                    error("Ticker: "+stockName+" does not exist", HttpStatus.BAD_REQUEST);
-        }
+        validateStockService.ifStockExist(ticker);
         stockService.clearCacheDividendHistory();
-        //endpoints.setFinancialAPI(stockName, 20);
-        return ResponseEntity.ok(recordSearchService.getSearchField(stockName));
+        return ResponseEntity.ok(recordSearchService.getSearchField(ticker.toUpperCase()));
     }
 
     @GetMapping("searchSummary/{ticker}")
     public ResponseEntity<SearchSummary> getSummary(@PathVariable String ticker){
+        validateStockService.ifStockExist(ticker);
         return ResponseEntity.ok(recordSearchService.getSummary(ticker.toUpperCase()));
     }
 
     @GetMapping("searchDividendSummary/{ticker}")
     public ResponseEntity<DividendSearchSummary> getDividendSummary(@PathVariable String ticker){
+        validateStockService.ifStockExist(ticker);
         return ResponseEntity.ok(recordSearchService.getDividendSummary(ticker.toUpperCase()));
     }
 
@@ -119,18 +116,7 @@ public class StockController {
             @PathVariable Long id, @PathVariable Long IDs,
             @Valid @RequestBody Map<String, Integer> data) {
 
-        stockService.clearStocksPortfolio(IDs);
-        Optional<Stocks> stocks = stockRepository.findById(id);
-        Stocks stocks1 = stocks.get();
-
-        if (data.containsKey("sharesInn") && data.containsKey("priceInn")){
-            stocks1.setStockQuantity(data.get("sharesInn"));
-            stocks1.setStockPrice(data.get("priceInn"));
-        }
-
-        stockRepository.save(stocks1);
-        databaseService.UpdateDatabase(id);
-
+        databaseService.updateStockData(id, IDs,data);
         return ResponseEntity.ok("Updated successfully");
     }
 }

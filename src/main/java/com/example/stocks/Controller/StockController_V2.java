@@ -52,21 +52,13 @@ public class StockController_V2 {
     //Adds stock to a specific portfolio
     @PostMapping("{id}/stocks")
     public ResponseEntity<?> addStockToPortfolio(@Valid @PathVariable Long id, @RequestBody Stocks stock){
-        String stockName = stock.getStockName().toUpperCase();
-
-        if (stockRepository.existsByStockName(stockName)){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Stock already exists");
-        } else if (!validateStockService.isValid(stockName)) {
-            return validateStockService.
-                    error("Ticker: "+stockName+" does not exist", HttpStatus.BAD_REQUEST);
-        }
+        validateStockService.stockValidation(stock.getStockName());
 
         Portfolio portfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
-        stockService.clearStocksPortfolio(id);
         stock.setPortfolio(portfolio);
-        databaseService.addToPortfolio(stock);
+        databaseService.addToPortfolio(stock, id);
 
         return validateStockService.ok("OK");
     }
@@ -99,7 +91,7 @@ public class StockController_V2 {
 
     @GetMapping("{id}/summary2")
     public PortfolioSummary portfolioSummary2(@PathVariable Long id){
-        return portfolioSummaryService.getPortfolioSummary2(id);
+        return stockService.getSummary(id);
     }
 
     @GetMapping("dividend_Summary")

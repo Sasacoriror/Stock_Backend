@@ -98,6 +98,7 @@ public class StockController {
     @DeleteMapping("delete/{id}/{IDs}")
     public ResponseEntity<String> delete(@PathVariable("id") Long id, @PathVariable Long IDs) {
         stockService.clearStocksPortfolio(IDs);
+        stockService.clearPortfolioCache(IDs);
         stockRepository.deleteById(id);
         return ResponseEntity.ok("Stock with ticker symbol "+id+" deleted successfully");
     }

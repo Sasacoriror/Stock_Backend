@@ -126,6 +126,7 @@ public class DatabaseService {
         }
 
         UpdateDatabase(stock);
+        stockService.clearPortfolioCache(IDs);
         stockService.clearStocksPortfolio(IDs);
     }
 

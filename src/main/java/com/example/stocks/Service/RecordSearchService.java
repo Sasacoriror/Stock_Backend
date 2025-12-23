@@ -82,7 +82,6 @@ public class RecordSearchService {
         PriceOverTimeDTO priceData = priceFuture.join();
         TickerOverviewDTO basicData = basicsFuture.join();
 
-
         List<PriceOverTimeDTO.Results> results = priceData.getResults();
         List<Price> prices = new ArrayList<>();
 
@@ -93,8 +92,6 @@ public class RecordSearchService {
                     currentData.getClosePrice()
             ));
         }
-
-
 
         String description = basicData.getResults().getDescription();
         double eps = 0.0;

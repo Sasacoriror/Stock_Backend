@@ -85,13 +85,15 @@ public class DatabaseService {
         int shares = portfolio.getStockQuantity();
         double currentPrice = priceData.getResults().get(0).getClosePrice();
         double opening_Price= priceData.getResults().get(0).getOpenPrice();
-        double totalDividend = 0;
+        double totalDividend = 0.0;
         int frequenzy = 0;
+        double drip = 0.0;
 
         if (dividendData.getResults() != null && !dividendData.getResults().isEmpty()) {
             double dividend = dividendData.getResults().get(0).getCash_amount();
             frequenzy = dividendData.getResults().get(0).getFrequency();
             totalDividend = calculateData.totalDividend(dividend, frequenzy, shares);
+            drip = totalDividend / opening_Price;
         }
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
@@ -101,16 +103,22 @@ public class DatabaseService {
         double totalInvested = calculateData.totalInvested(shares, pricePaid);
         double returnValue = calculateData.returns(currentPrice, shares, pricePaid);
         double percentage = calculateData.percentage(returnValue, totalInvested);
+        double dayChangeDollars = calculateData.calculateDaysChange(totalValue, (opening_Price * shares));
+
+        double dayChangePercentage = calculateData.percentage(dayChangeDollars, totalValue);
 
         portfolio.setCompanyName(companyName);
         portfolio.setCurrentPrice(currentPrice);
         portfolio.setDividend(frequenzy);
         portfolio.setTotalDivided(totalDividend);
+        portfolio.setDrip(drip);
         portfolio.setTotalPrice(totalValue);
         portfolio.setTotalInvested(Double.parseDouble(df.format(totalInvested)));
         portfolio.setReturnValue(Double.parseDouble(df.format(returnValue)));
         portfolio.setPercentageReturn(Double.parseDouble(df.format(percentage)));
         portfolio.setOpeningPrice(opening_Price);
+        portfolio.setTodaysReturnDollars(dayChangeDollars);
+        portfolio.setTodaysReturnPercentage(dayChangePercentage);
 
         stockRepository.save(portfolio);
     }

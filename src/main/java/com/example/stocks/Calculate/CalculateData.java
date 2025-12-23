@@ -32,4 +32,8 @@ public class CalculateData {
     public double pricePerShare(double marketCap, Long outstandingShares){
         return marketCap / outstandingShares;
     }
+
+    public double calculateDaysChange(double tall1, double tall2){
+        return tall1 - tall2;
+    }
 }

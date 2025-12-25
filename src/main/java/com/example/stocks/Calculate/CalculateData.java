@@ -2,6 +2,9 @@ package com.example.stocks.Calculate;
 
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 @Service
 public class CalculateData {
 
@@ -35,5 +38,12 @@ public class CalculateData {
 
     public double calculateDaysChange(double tall1, double tall2){
         return tall1 - tall2;
+    }
+
+    public double roundNumbers(double tall1){
+        return BigDecimal
+                .valueOf(tall1)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
     }
 }

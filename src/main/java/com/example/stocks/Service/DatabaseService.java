@@ -10,8 +10,6 @@ import com.example.stocks.Respository.WatchlistRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -20,6 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 @Service
 public class DatabaseService {
@@ -40,29 +39,89 @@ public class DatabaseService {
     private CalculateData calculateData;
 
     @Autowired
-    private StockService stockService;
+    private CacheService cacheService;
 
     @Transactional
     public void updatePortfolioData() {
-        List<Stocks> stocks = stockRepository.findAll();
 
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        DecimalFormat df = new DecimalFormat("#.##", symbols);
+        int i = 0;
+
+        List<Stocks> stocks = stockRepository.findAll();
 
         for (Stocks stock : stocks) {
 
-            PriceDTO priceData = APIService.getPriceData();
-            DividendDTO dividendData = APIService.getDividendData();
-            FinancialDTO financialData = APIService.getFinancialData();
+            if (i == 2) {
+                oneMinutte();
+                i = 0;
+            }
 
+            String stockName = stock.getStockName();
+
+            endpoints.setPriceAPI(stockName);
+            endpoints.setDividendAPI(stockName, 1);
+            endpoints.setBasicTickerInfo(stockName);
+
+            CompletableFuture<PriceDTO> priceFuture = CompletableFuture.supplyAsync(APIService::getPriceData);
+            CompletableFuture<DividendDTO> dividendFuture = CompletableFuture.supplyAsync(APIService::getDividendData);
+
+            try {
+                PriceDTO priceData = priceFuture.join();
+                DividendDTO dividendData = dividendFuture.join();
+
+                applyPortfolioData(stock, priceData, dividendData);
+                stockRepository.save(stock);
+            } catch (CompletionException e){
+                System.out.println("Failed to update stocks: "+e);
+            }
+            i++;
         }
+    }
+
+
+    public void applyPortfolioData(Stocks stock, PriceDTO priceData, DividendDTO dividendData) {
+
+            double pricePaid = stock.getStockPrice();
+            int shares = stock.getStockQuantity();
+            double currentPrice = priceData.getResults().get(0).getClosePrice();
+            double opening_Price= priceData.getResults().get(0).getOpenPrice();
+            double totalDividend = 0.0;
+            int frequenzy = 0;
+            double drip = 0.0;
+
+            if (dividendData.getResults() != null && !dividendData.getResults().isEmpty()) {
+                double dividend = dividendData.getResults().get(0).getCash_amount();
+                frequenzy = dividendData.getResults().get(0).getFrequency();
+                totalDividend = calculateData.totalDividend(dividend, frequenzy, shares);
+                drip = totalDividend / currentPrice;
+            }
+
+            double totalValue = calculateData.totalValue(shares, currentPrice);
+            double totalInvested = calculateData.totalInvested(shares, pricePaid);
+            double returnValue = calculateData.returns(currentPrice, shares, pricePaid);
+            double percentage = calculateData.percentage(returnValue, totalInvested);
+            double dayChangeDollars = calculateData.calculateDaysChange(totalValue, (opening_Price * shares));
+            double dayChangePercentage = calculateData.percentage(dayChangeDollars, totalValue);
+
+            stock.setCurrentPrice(currentPrice);
+            stock.setDividend(frequenzy);
+            stock.setTotalDivided(totalDividend);
+            stock.setDrip(drip);
+            stock.setTotalPrice(totalValue);
+            stock.setTotalInvested(calculateData.roundNumbers(totalInvested));
+            stock.setReturnValue(calculateData.roundNumbers(returnValue));
+            stock.setPercentageReturn(calculateData.roundNumbers(percentage));
+            stock.setOpeningPrice(opening_Price);
+            stock.setTodaysReturnDollars(dayChangeDollars);
+            stock.setTodaysReturnPercentage(dayChangePercentage);
+
+
     }
 
     @Transactional
     public void addToPortfolio(Stocks stocks, Long id) {
 
-        stockService.clearStocksPortfolio(id);
-        stockService.clearPortfolioCache(id);
+        cacheService.clearStocksPortfolio(id);
+        cacheService.clearPortfolioCache(id);
 
         Long stockId = stockRepository.insertStockNative(stocks.getStockName(), stocks.getStockPrice(), stocks.getStockQuantity(),  stocks.getPortfolio().getId());
 
@@ -93,18 +152,14 @@ public class DatabaseService {
             double dividend = dividendData.getResults().get(0).getCash_amount();
             frequenzy = dividendData.getResults().get(0).getFrequency();
             totalDividend = calculateData.totalDividend(dividend, frequenzy, shares);
-            drip = totalDividend / opening_Price;
+            drip = totalDividend / currentPrice;
         }
-
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        DecimalFormat df = new DecimalFormat("#.##", symbols);
 
         double totalValue = calculateData.totalValue(shares, currentPrice);
         double totalInvested = calculateData.totalInvested(shares, pricePaid);
         double returnValue = calculateData.returns(currentPrice, shares, pricePaid);
         double percentage = calculateData.percentage(returnValue, totalInvested);
         double dayChangeDollars = calculateData.calculateDaysChange(totalValue, (opening_Price * shares));
-
         double dayChangePercentage = calculateData.percentage(dayChangeDollars, totalValue);
 
         portfolio.setCompanyName(companyName);
@@ -113,9 +168,9 @@ public class DatabaseService {
         portfolio.setTotalDivided(totalDividend);
         portfolio.setDrip(drip);
         portfolio.setTotalPrice(totalValue);
-        portfolio.setTotalInvested(Double.parseDouble(df.format(totalInvested)));
-        portfolio.setReturnValue(Double.parseDouble(df.format(returnValue)));
-        portfolio.setPercentageReturn(Double.parseDouble(df.format(percentage)));
+        portfolio.setTotalInvested(calculateData.roundNumbers(totalInvested));
+        portfolio.setReturnValue(calculateData.roundNumbers(returnValue));
+        portfolio.setPercentageReturn(calculateData.roundNumbers(percentage));
         portfolio.setOpeningPrice(opening_Price);
         portfolio.setTodaysReturnDollars(dayChangeDollars);
         portfolio.setTodaysReturnPercentage(dayChangePercentage);
@@ -134,42 +189,47 @@ public class DatabaseService {
         }
 
         UpdateDatabase(stock);
-        stockService.clearPortfolioCache(IDs);
-        stockService.clearStocksPortfolio(IDs);
+        cacheService.clearPortfolioCache(IDs);
+        cacheService.clearStocksPortfolio(IDs);
     }
 
     public void UpdateDatabase(Stocks stock){
-
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        DecimalFormat df = new DecimalFormat("#.##", symbols);
 
         DividendDTO dividendData = APIService.getDividendData();
 
         int shares = stock.getStockQuantity();
         double price = stock.getCurrentPrice();
         double paidPrice = stock.getStockPrice();
+        double opening_Price = stock.getOpeningPrice();
+        double totalValue = stock.getTotalPrice();
 
         int dividendFrequenzy = 0;
         double dividend = 0.0;
         double newTotalDividend = 0.0;
+        double drip = 0.0;
 
         if (dividendData.getResults() != null && !dividendData.getResults().isEmpty()) {
             dividendFrequenzy = dividendData.getResults().get(0).getFrequency();
             dividend = dividendData.getResults().get(0).getCash_amount();
             newTotalDividend = calculateData.totalDividend(dividend, dividendFrequenzy, shares);
+            drip = newTotalDividend / opening_Price;
         }
 
         double newTotalPrice = calculateData.totalValue(shares, price);
         double newTotalInvested = calculateData.totalInvested(shares, paidPrice);
         double newReturnValue = calculateData.returns(price, shares, paidPrice);
         double newPercentage = calculateData.percentage(newReturnValue, newTotalInvested);
+        double dayChangeDollars = calculateData.calculateDaysChange(newTotalPrice, (opening_Price * shares));
+        double dayChangePercentage = calculateData.percentage(dayChangeDollars, totalValue);
 
         stock.setTotalDivided(newTotalDividend);
+        stock.setDrip(drip);
         stock.setTotalPrice(newTotalPrice);
-        stock.setTotalInvested(Double.parseDouble(df.format(newTotalInvested)));
-        stock.setReturnValue(Double.parseDouble(df.format(newReturnValue)));
-        stock.setPercentageReturn(Double.parseDouble(df.format(newPercentage)));
-
+        stock.setTotalInvested(calculateData.roundNumbers(newTotalInvested));
+        stock.setReturnValue(calculateData.roundNumbers(newReturnValue));
+        stock.setPercentageReturn(calculateData.roundNumbers(newPercentage));
+        stock.setTodaysReturnDollars(calculateData.roundNumbers(dayChangeDollars));
+        stock.setTodaysReturnPercentage(calculateData.roundNumbers(dayChangePercentage));
     }
 
     @Transactional
@@ -182,9 +242,6 @@ public class DatabaseService {
         endpoints.setWeekRange(stockName);
 
         Optional<Watchlist> watchlist = watchlistRepository.findById(id);
-
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        DecimalFormat df = new DecimalFormat("#.##", symbols);
 
         CompletableFuture<PriceDTO> priceFuture = CompletableFuture.supplyAsync(APIService::getPriceData);
         CompletableFuture<TickerOverviewDTO> tickerOverviewFuture = CompletableFuture.supplyAsync(APIService::getTickerOverviewlData);
@@ -210,13 +267,13 @@ public class DatabaseService {
 
         double openingPrice = priceData.getResults().get(0).getOpenPrice();
 
-        double priceChange = Double.parseDouble(df.format(pricePerShare - openingPrice));
-        double priceChangePercentage = Double.parseDouble(df.format(calculateData.percentage(priceChange, openingPrice)));
+        double priceChange = calculateData.roundNumbers(pricePerShare - openingPrice);
+        double priceChangePercentage = calculateData.roundNumbers(calculateData.percentage(priceChange, openingPrice));
 
-        double EPS = Double.parseDouble(df.format(
+        double EPS = calculateData.roundNumbers(
                 financialData.getResults().get(0).getFinancials().getIncomeStatement().getNetIncome().getValue()
-                        / tickerData.getResults().getWso()));
-        double PE_Ratio = Double.parseDouble(df.format(priceData.getResults().get(0).getClosePrice() / EPS));
+                        / tickerData.getResults().getWso());
+        double PE_Ratio = calculateData.roundNumbers(priceData.getResults().get(0).getClosePrice() / EPS);
 
         double highestPrice = rangeData.getResults()
                 .stream()
@@ -235,11 +292,11 @@ public class DatabaseService {
         watchlist.get().setChangePercentage(priceChangePercentage);
         watchlist.get().setWeeksLow(lowestPrice);
         watchlist.get().setWeeksHigh(highestPrice);
-        watchlist.get().setDividendYield(Double.parseDouble(df.format(dividendYield)));
+        watchlist.get().setDividendYield(calculateData.roundNumbers(dividendYield));
         watchlist.get().setPERatio(PE_Ratio); // TODO: shows the wrong PE Ratio
         watchlist.get().setMarketCap(tickerData.getResults().getMarketCap());
     }
-/*
+
     public void oneMinutte() {
         try {
             Thread.sleep(61000);
@@ -248,5 +305,4 @@ public class DatabaseService {
             System.out.println("oneMinute function was interrupted");
         }
     }
- */
 }

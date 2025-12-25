@@ -9,7 +9,6 @@ import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Service.*;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,19 +21,19 @@ public class StockController_V2 {
 
     private final DatabaseService databaseService;
     private final StockRepository stockRepository;
-    private final StockService stockService;
+    private final CacheService cacheService;
     private final PortfolioRepository portfolioRepository;
     private final ValidateStockService validateStockService;
     private final DividendSummaryService dividendData;
     private final PortfolioSummaryService portfolioSummaryService;
 
     public StockController_V2(DatabaseService databaseService,
-                              StockRepository stockRepository, StockService stockService,
+                              StockRepository stockRepository, CacheService cacheService,
                               PortfolioRepository portfolioRepository, ValidateStockService validateStockService,
                               DividendSummaryService dividendData, PortfolioSummaryService portfolioSummaryService) {
         this.databaseService = databaseService;
         this.stockRepository = stockRepository;
-        this.stockService = stockService;
+        this.cacheService = cacheService;
         this.portfolioRepository = portfolioRepository;
         this.validateStockService = validateStockService;
         this.dividendData = dividendData;
@@ -86,12 +85,12 @@ public class StockController_V2 {
             @PathVariable Long id,
             @RequestParam int page,
             @RequestParam int size){
-        return ResponseEntity.ok(stockService.get_All_Shares(id, page, size));
+        return ResponseEntity.ok(cacheService.get_All_Shares(id, page, size));
     }
 
     @GetMapping("{id}/summary2")
     public PortfolioSummary portfolioSummary2(@PathVariable Long id){
-        return stockService.getSummary(id);
+        return cacheService.getSummary(id);
     }
 
     @GetMapping("dividend_Summary")

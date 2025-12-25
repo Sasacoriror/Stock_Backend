@@ -1,19 +1,14 @@
 package com.example.stocks.Controller;
 
-import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.DividendHistory;
-import com.example.stocks.Model.Stocks;
+import com.example.stocks.Model.PortfolioStockView;
 import com.example.stocks.Model.Watchlist;
-import com.example.stocks.Record.DividendSearchSummary;
-import com.example.stocks.Record.PageResponse;
-import com.example.stocks.Record.SearchField;
-import com.example.stocks.Record.SearchSummary;
+import com.example.stocks.Record.*;
 import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Respository.WatchlistRepository;
 import com.example.stocks.Service.*;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,18 +23,21 @@ public class StockController {
     private final StockRepository stockRepository;
     private final WatchlistRepository watchlistRepository;
     private final ValidateStockService validateStockService;
-    private final StockService stockService;
+    private final CacheService cacheService;
     private final RecordSearchService recordSearchService;
+    private final PortfolioSummaryService portfolioSummaryService;
 
     public StockController(DatabaseService databaseService,
                            StockRepository stockRepository, WatchlistRepository watchlistRepository,
-                           ValidateStockService validateStockService, StockService stockService, RecordSearchService recordSearchService) {
+                           ValidateStockService validateStockService, CacheService cacheService, RecordSearchService recordSearchService,
+                           PortfolioSummaryService portfolioSummaryService) {
         this.databaseService = databaseService;
         this.stockRepository = stockRepository;
         this.watchlistRepository = watchlistRepository;
         this.validateStockService = validateStockService;
-        this.stockService = stockService;
+        this.cacheService = cacheService;
         this.recordSearchService = recordSearchService;
+        this.portfolioSummaryService = portfolioSummaryService;
     }
 
     ///////////////////////// POSTMAPPING ////////////////////////
@@ -47,7 +45,7 @@ public class StockController {
     @PostMapping("addWatchlist")
     public ResponseEntity<?> addWatchlist(@Valid @RequestBody Watchlist watchlist) {
 
-        stockService.clearCacheWatchlist();
+        cacheService.clearCacheWatchlist();
         String stockName = watchlist.getStockTickerInn().toUpperCase();
         Watchlist watchlistSaved = watchlistRepository.save(watchlist);
         databaseService.addToWatchist(watchlistSaved.getId(), stockName);
@@ -62,13 +60,13 @@ public class StockController {
     public ResponseEntity<Page<Watchlist>> getWatchlist(
             @RequestParam int page,
             @RequestParam int size) {
-        return ResponseEntity.ok(stockService.getEntireWatchlist(page, size));
+        return ResponseEntity.ok(cacheService.getEntireWatchlist(page, size));
     }
 
     @GetMapping("search/{ticker}")
     public ResponseEntity<SearchField> getCompanyInformation(@PathVariable("ticker") String ticker) {
         validateStockService.ifStockExist(ticker);
-        stockService.clearCacheDividendHistory();
+        cacheService.clearCacheDividendHistory();
         return ResponseEntity.ok(recordSearchService.getSearchField(ticker.toUpperCase()));
     }
 
@@ -89,23 +87,32 @@ public class StockController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "25") int size
     ){
-        return ResponseEntity.ok(stockService.getDividendHistory(page, size));
+        return ResponseEntity.ok(cacheService.getDividendHistory(page, size));
     }
 
+
+    @GetMapping("getPortfolio/{id}")
+    public ResponseEntity<PortfolioView<PortfolioStockView>> getPortfolio(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "25") int size
+    ){
+        return ResponseEntity.ok(portfolioSummaryService.getPortfolio(id, page, size));
+    }
 
     //////////////////////// DELETEMAPPING ////////////////////////
 
     @DeleteMapping("delete/{id}/{IDs}")
     public ResponseEntity<String> delete(@PathVariable("id") Long id, @PathVariable Long IDs) {
-        stockService.clearStocksPortfolio(IDs);
-        stockService.clearPortfolioCache(IDs);
+        cacheService.clearStocksPortfolio(IDs);
+        cacheService.clearPortfolioCache(IDs);
         stockRepository.deleteById(id);
         return ResponseEntity.ok("Stock with ticker symbol "+id+" deleted successfully");
     }
 
     @DeleteMapping("deleteWatchlist/{id}")
     public ResponseEntity<String> deleteWatchlist(@PathVariable("id") Long id) {
-        stockService.clearCacheWatchlist();
+        cacheService.clearCacheWatchlist();
         watchlistRepository.deleteById(id);
         return ResponseEntity.ok("Watchlist with symbol "+id+" deleted successfully");
     }

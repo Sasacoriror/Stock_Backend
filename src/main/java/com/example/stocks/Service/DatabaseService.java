@@ -41,6 +41,9 @@ public class DatabaseService {
     @Autowired
     private CacheService cacheService;
 
+    @Autowired
+    private MarketDataService marketDataService;
+
     @Transactional
     public void updatePortfolioData() {
 
@@ -57,12 +60,9 @@ public class DatabaseService {
 
             String stockName = stock.getStockName();
 
-            endpoints.setPriceAPI(stockName);
-            endpoints.setDividendAPI(stockName, 1);
-            endpoints.setBasicTickerInfo(stockName);
-
-            CompletableFuture<PriceDTO> priceFuture = CompletableFuture.supplyAsync(APIService::getPriceData);
-            CompletableFuture<DividendDTO> dividendFuture = CompletableFuture.supplyAsync(APIService::getDividendData);
+            CompletableFuture<PriceDTO> priceFuture = marketDataService.fetchPrice(stockName);
+            CompletableFuture<DividendDTO> dividendFuture = marketDataService.fetchDividend(stockName, 1);
+            CompletableFuture.allOf(priceFuture, dividendFuture).join();
 
             try {
                 PriceDTO priceData = priceFuture.join();
@@ -126,13 +126,11 @@ public class DatabaseService {
         Long stockId = stockRepository.insertStockNative(stocks.getStockName(), stocks.getStockPrice(), stocks.getStockQuantity(),  stocks.getPortfolio().getId());
 
         String stockName = stocks.getStockName().toUpperCase();
-        endpoints.setPriceAPI(stockName);
-        endpoints.setDividendAPI(stockName, 1);
-        endpoints.setBasicTickerInfo(stockName);
 
-        CompletableFuture<PriceDTO> priceFuture = CompletableFuture.supplyAsync(APIService::getPriceData);
-        CompletableFuture<DividendDTO> dividendFuture = CompletableFuture.supplyAsync(APIService::getDividendData);
-        CompletableFuture<BasicStockDataDTO> basicsFuture = CompletableFuture.supplyAsync(APIService::getBasicData);
+        CompletableFuture<PriceDTO> priceFuture = marketDataService.fetchPrice(stockName);
+        CompletableFuture<DividendDTO> dividendFuture = marketDataService.fetchDividend(stockName, 1);
+        CompletableFuture<BasicStockDataDTO> basicsFuture = marketDataService.fetchBasics(stockName);
+        CompletableFuture.allOf(priceFuture, dividendFuture, basicsFuture).join();
 
         PriceDTO priceData = priceFuture.join();
         DividendDTO dividendData = dividendFuture.join();
@@ -195,7 +193,7 @@ public class DatabaseService {
 
     public void UpdateDatabase(Stocks stock){
 
-        DividendDTO dividendData = APIService.getDividendData();
+        DividendDTO dividendData = APIService.getDividendData(stock.getStockName(), 1, true);
 
         int shares = stock.getStockQuantity();
         double price = stock.getCurrentPrice();
@@ -235,19 +233,14 @@ public class DatabaseService {
     @Transactional
     public void addToWatchist(Long id, String stockName){
 
-        endpoints.setPriceAPI(stockName);
-        endpoints.setDividendAPI(stockName, 1);
-        endpoints.setFinancialAPI(stockName, 1);
-        endpoints.setWatchListAPI(stockName);
-        endpoints.setWeekRange(stockName);
-
         Optional<Watchlist> watchlist = watchlistRepository.findById(id);
 
-        CompletableFuture<PriceDTO> priceFuture = CompletableFuture.supplyAsync(APIService::getPriceData);
-        CompletableFuture<TickerOverviewDTO> tickerOverviewFuture = CompletableFuture.supplyAsync(APIService::getTickerOverviewlData);
-        CompletableFuture<DividendDTO> dividendFuture = CompletableFuture.supplyAsync(APIService::getDividendData);
-        CompletableFuture<FinancialDTO> financialFuture = CompletableFuture.supplyAsync(APIService::getFinancialData);
-        CompletableFuture<WeekRangeDTO> rangeFuture = CompletableFuture.supplyAsync(APIService::getWeeksRangeData);
+        CompletableFuture<PriceDTO> priceFuture = marketDataService.fetchPrice(stockName);
+        CompletableFuture<TickerOverviewDTO> tickerOverviewFuture = marketDataService.fetchTickerData(stockName);
+        CompletableFuture<DividendDTO> dividendFuture = marketDataService.fetchDividend(stockName, 1);
+        CompletableFuture<FinancialDTO> financialFuture = marketDataService.fetchFinancials(stockName, 1);
+        CompletableFuture<WeekRangeDTO> rangeFuture = marketDataService.fetchWeeksRange(stockName);
+        CompletableFuture.allOf(priceFuture, tickerOverviewFuture, dividendFuture, financialFuture, rangeFuture).join();
 
         PriceDTO priceData = priceFuture.join();
         TickerOverviewDTO tickerData = tickerOverviewFuture.join();

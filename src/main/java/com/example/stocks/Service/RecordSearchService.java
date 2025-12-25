@@ -33,14 +33,18 @@ public class RecordSearchService {
     @Autowired
     private API_Service APIService;
 
+    @Autowired
+    private MarketDataService marketDataService;
+
 
     public SearchField getSearchField(String ticker) {
 
         endpoints.setPriceAPI(ticker);
         endpoints.setBasicTickerInfo(ticker);
 
-        CompletableFuture<PriceDTO> priceFuture = CompletableFuture.supplyAsync(APIService::getPriceData);
-        CompletableFuture<BasicStockDataDTO> basicsFuture = CompletableFuture.supplyAsync(APIService::getBasicData);
+        CompletableFuture<PriceDTO> priceFuture = marketDataService.fetchPrice(ticker);
+        CompletableFuture<BasicStockDataDTO> basicsFuture = marketDataService.fetchBasics(ticker);
+        CompletableFuture.allOf(priceFuture, basicsFuture).join();
 
         PriceDTO priceData = priceFuture.join();
         BasicStockDataDTO basicData = basicsFuture.join();
@@ -52,13 +56,10 @@ public class RecordSearchService {
 
         boolean insideWatchlist = idOfStock.isPresent();
 
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        DecimalFormat df = new DecimalFormat("#.##", symbols);
-
         double currentPrice = priceData.getResults().get(0).getClosePrice();
         double openingPrice = priceData.getResults().get(0).getOpenPrice();
-        double daysChangeDollars = Double.parseDouble(df.format(currentPrice - openingPrice));
-        double daysChangePercentage = Double.parseDouble(df.format(calculateData.percentage(daysChangeDollars, openingPrice)));
+        double daysChangeDollars = calculateData.roundNumbers(currentPrice - openingPrice);
+        double daysChangePercentage = calculateData.roundNumbers(calculateData.percentage(daysChangeDollars, openingPrice));
 
         return new SearchField(
                 companyTicker,
@@ -73,11 +74,9 @@ public class RecordSearchService {
 
     public SearchSummary getSummary(String ticker) {
 
-        endpoints.setPriceOverTime(ticker);
-        endpoints.setWatchListAPI(ticker);
-
-        CompletableFuture<PriceOverTimeDTO> priceFuture = CompletableFuture.supplyAsync(APIService::getPriceOverTimeData);
-        CompletableFuture<TickerOverviewDTO> basicsFuture = CompletableFuture.supplyAsync(APIService::getTickerOverviewlData);
+        CompletableFuture<PriceOverTimeDTO> priceFuture = marketDataService.fetchPriceOverTime(ticker);
+        CompletableFuture<TickerOverviewDTO> basicsFuture = marketDataService.fetchTickerData(ticker);
+        CompletableFuture.allOf(priceFuture, basicsFuture).join();
 
         PriceOverTimeDTO priceData = priceFuture.join();
         TickerOverviewDTO basicData = basicsFuture.join();
@@ -106,7 +105,8 @@ public class RecordSearchService {
 
     public DividendSearchSummary getDividendSummary(String ticker) {
         endpoints.setDividendAPI(ticker, 730);
-        DividendDTO dividendData = APIService.getDividendData();
+
+        DividendDTO dividendData = APIService.getDividendData(ticker, 730, false);
 
         if (dividendData.getResults() == null || dividendData.getResults().isEmpty()) {
             return new DividendSearchSummary(0, null, null, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -140,7 +140,7 @@ public class RecordSearchService {
     }
 
     public PageResponse<DividendHistory> getDividendHistory(int page, int size){
-        DividendDTO dividendData = APIService.getDividendData();
+        DividendDTO dividendData = APIService.getDividendData("", 730, false);
 
 
         List<DividendDTO.Results> call = dividendData.getResults();

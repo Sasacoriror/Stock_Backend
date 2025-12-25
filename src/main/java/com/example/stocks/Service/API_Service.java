@@ -49,7 +49,9 @@ public class API_Service {
     }
 
 
-    public PriceDTO getPriceData(){
+    public PriceDTO getPriceData(String ticker){
+        endpoints.setPriceAPI(ticker);
+
         ResponseEntity<String> response = restTemplate
                 .getForEntity(endpoints.getPriceAPI(), String.class);
 
@@ -64,7 +66,9 @@ public class API_Service {
         }
     }
 
-    public PriceOverTimeDTO getPriceOverTimeData(){
+    public PriceOverTimeDTO getPriceOverTimeData(String ticker){
+        endpoints.setPriceOverTime(ticker);
+
         ResponseEntity<String> response = restTemplate
                 .getForEntity(endpoints.getPriceOverTime(), String.class);
 
@@ -80,7 +84,13 @@ public class API_Service {
     }
 
 
-    public DividendDTO getDividendData(){
+    public DividendDTO getDividendData(String ticker, int limit, boolean value){
+
+        if (value == true){
+            endpoints.setDividendAPI(ticker, limit);
+        }
+
+
         ResponseEntity<String> response = restTemplate
                 .getForEntity(endpoints.getDividendAPI(), String.class);
 
@@ -98,7 +108,9 @@ public class API_Service {
         }
     }
 
-    public FinancialDTO getFinancialData(){
+    public FinancialDTO getFinancialData(String ticekr, int limit){
+        endpoints.setFinancialAPI(ticekr, limit);
+
         ResponseEntity<String> response = restTemplate
                 .getForEntity(endpoints.getFinancialAPI(), String.class);
 
@@ -124,7 +136,9 @@ public class API_Service {
         }
     }
 
-    public TickerOverviewDTO getTickerOverviewlData(){
+    public TickerOverviewDTO getTickerOverviewlData(String ticker){
+        endpoints.setWatchListAPI(ticker);
+
         ResponseEntity<String> response = restTemplate
                 .getForEntity(endpoints.getWatchListAPI(), String.class);
 
@@ -142,7 +156,9 @@ public class API_Service {
         }
     }
 
-    public BasicStockDataDTO getBasicData(){
+    public BasicStockDataDTO getBasicData(String ticker){
+        endpoints.setBasicTickerInfo(ticker);
+
         ResponseEntity<String> response = restTemplate
                 .getForEntity(endpoints.getBasicTickerInfo(), String.class);
 
@@ -160,7 +176,9 @@ public class API_Service {
         }
     }
 
-    public WeekRangeDTO getWeeksRangeData(){
+    public WeekRangeDTO getWeeksRangeData(String ticker){
+        endpoints.setWeekRange(ticker);
+
         ResponseEntity<String> response = restTemplate
                 .getForEntity(endpoints.getWeekRange(), String.class);
 

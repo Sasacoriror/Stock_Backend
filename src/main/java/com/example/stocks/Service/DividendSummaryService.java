@@ -1,5 +1,8 @@
 package com.example.stocks.Service;
 
+import com.example.stocks.DTO.DividendDTO;
+import com.example.stocks.Link.Endpoints;
+import com.example.stocks.Model.DividendCalender;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Record.Dividends;
 import com.example.stocks.Respository.StockRepository;
@@ -8,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -16,6 +20,12 @@ public class DividendSummaryService {
 
     @Autowired
     private StockRepository stockRepository;
+
+    @Autowired
+    private Endpoints endpoints;
+
+    @Autowired
+    private API_Service APIService;
 
     public Dividends dividendData() {
 
@@ -37,12 +47,35 @@ public class DividendSummaryService {
         double hourlyDividend = Double.parseDouble(df.format(fullDividend / 8765));
         double yieldOnCost = Double.parseDouble(df.format((fullDividend / fullInvestemnt) * 100));
 
+        List<DividendCalender> calenders = new ArrayList<>();
+
+        for (Stocks stock: stockData){
+
+            String stockName = stock.getStockName();
+            endpoints.setDividendAPI(stockName, 1);
+            DividendDTO dividendData = APIService.getDividendData(stockName, 1, true);
+            List<DividendDTO.Results> call = dividendData.getResults();
+
+            Double yield = ((call.get(0).getCash_amount() * stock.getDividend()) / stock.getCurrentPrice()) * 100;
+
+            calenders.add(new DividendCalender(
+                    stockName,
+                    stock.getCompanyName(),
+                    call.get(0).getPayDate(),
+                    call.get(0).getCash_amount() * stock.getStockQuantity(),
+                    stock.getDividend(),
+                    yield,
+                    call.get(0).getExDate()
+            ));
+        }
+
         return new Dividends(
                 fullDividend,
                 monthlyDividend,
                 dailyDividend,
                 hourlyDividend,
-                yieldOnCost
+                yieldOnCost,
+                calenders
         );
     }
 }

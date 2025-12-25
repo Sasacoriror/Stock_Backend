@@ -4,19 +4,21 @@ import com.example.stocks.Model.Portfolio;
 import com.example.stocks.Respository.PortfolioRepository;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
+@EnableAsync
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 public class appConfig {
 
@@ -45,5 +47,16 @@ public class appConfig {
                         .maximumSize(1000)
         );
         return cacheManager;
+    }
+
+    @Bean(name = "marketDataExecutor")
+    public Executor marketDataExecutor(){
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(4);
+        executor.setMaxPoolSize(8);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("market-data-");
+        executor.initialize();
+        return executor;
     }
 }

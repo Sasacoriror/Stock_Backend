@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public record DividendSearchSummary(
-        @JsonProperty("Frequenzy") int frequenzy,
+        @JsonProperty("Frequenzy") String frequenzy,
         @JsonProperty("Latest_Dividend_Date") String latDivDate,
         @JsonProperty("Ex_Dividend_Date") String exDivDate,
         @JsonProperty("Annual_Income") Double annualIncome,

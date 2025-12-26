@@ -108,14 +108,27 @@ public class RecordSearchService {
 
         DividendDTO dividendData = APIService.getDividendData(ticker, 730, false);
 
-        if (dividendData.getResults() == null || dividendData.getResults().isEmpty()) {
-            return new DividendSearchSummary(0, null, null, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        if (dividendData.getResults() == null || dividendData.getResults().isEmpty() || dividendData.getResults().size() == 0) {
+            return new DividendSearchSummary("", "", "", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
         }
 
         var latestData = dividendData.getResults().get(0);
         var laterData = dividendData.getResults();
 
         int frequenzy = latestData.getFrequency();
+        String frequencyWord = "";
+
+        if (frequenzy == 1){
+            frequencyWord = "Annual";
+        } else if (frequenzy == 2) {
+            frequencyWord = "Semi-Annual";
+        } else if (frequenzy == 4) {
+            frequencyWord = "Quarterly";
+        } else if (frequenzy == 12) {
+            frequencyWord = "Monthly";
+        }
+
+
         double income = latestData.getCash_amount();
         double annualIncome = latestData.getCash_amount() * frequenzy;
         String payDate = latestData.getPayDate();
@@ -127,7 +140,7 @@ public class RecordSearchService {
         double dividendCagrTenYear = laterData != null && laterData.size() > frequenzy * 10 ? Math.pow(latestData.getCash_amount() / laterData.get(frequenzy*10).getCash_amount(), 1.0 / 10) - 1.0 : 0.0;
 
         return new DividendSearchSummary(
-                frequenzy,
+                frequencyWord,
                 payDate,
                 exDate,
                 annualIncome,

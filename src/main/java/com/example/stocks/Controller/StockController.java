@@ -65,20 +65,20 @@ public class StockController {
 
     @GetMapping("search/{ticker}")
     public ResponseEntity<SearchField> getCompanyInformation(@PathVariable("ticker") String ticker) {
-        validateStockService.ifStockExist(ticker);
+        validateStockService.ifStockExist(ticker.toUpperCase());
         cacheService.clearCacheDividendHistory();
         return ResponseEntity.ok(recordSearchService.getSearchField(ticker.toUpperCase()));
     }
 
     @GetMapping("searchSummary/{ticker}")
     public ResponseEntity<SearchSummary> getSummary(@PathVariable String ticker){
-        validateStockService.ifStockExist(ticker);
+        validateStockService.ifStockExist(ticker.toUpperCase());
         return ResponseEntity.ok(recordSearchService.getSummary(ticker.toUpperCase()));
     }
 
     @GetMapping("searchDividendSummary/{ticker}")
     public ResponseEntity<DividendSearchSummary> getDividendSummary(@PathVariable String ticker){
-        validateStockService.ifStockExist(ticker);
+        validateStockService.ifStockExist(ticker.toUpperCase());
         return ResponseEntity.ok(recordSearchService.getDividendSummary(ticker.toUpperCase()));
     }
 

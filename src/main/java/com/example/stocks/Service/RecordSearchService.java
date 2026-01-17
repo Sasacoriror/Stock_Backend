@@ -72,31 +72,26 @@ public class RecordSearchService {
         );
     }
 
+
     public SearchSummary getSummary(String ticker) {
-
-        CompletableFuture<PriceOverTimeDTO> priceFuture = marketDataService.fetchPriceOverTime(ticker);
         CompletableFuture<TickerOverviewDTO> basicsFuture = marketDataService.fetchTickerData(ticker);
-        CompletableFuture.allOf(priceFuture, basicsFuture).join();
+        CompletableFuture.allOf(/*priceFuture,*/ basicsFuture).join();
 
-        PriceOverTimeDTO priceData = priceFuture.join();
         TickerOverviewDTO basicData = basicsFuture.join();
 
-        List<PriceOverTimeDTO.Results> results = priceData.getResults();
-        List<Price> prices = new ArrayList<>();
+        String exchangeCode = basicData.getResults().getExchange();
 
-        for (int i = 0; i < results.size(); i++){
-            var currentData = results.get(i);
-
-            prices.add(new Price(
-                    currentData.getClosePrice()
-            ));
-        }
+        String exchange = switch (exchangeCode) {
+            case "XNAS" -> "NASDAQ";
+            case "XNYS" -> "NYSE";
+            default -> "NASDAQ";
+        }+":"+ticker;
 
         String description = basicData.getResults().getDescription();
         double eps = 0.0;
 
         return new SearchSummary(
-                prices,
+                exchange,
                 eps,
                 description
         );

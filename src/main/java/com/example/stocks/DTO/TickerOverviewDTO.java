@@ -20,6 +20,9 @@ public class TickerOverviewDTO {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public class Results{
 
+        @JsonProperty("primary_exchange")
+        private String exchange;
+
         @JsonProperty("description")
         private String description;
 
@@ -30,6 +33,11 @@ public class TickerOverviewDTO {
         private Long wso;
 
         // TODO: Add name of the company and the stock type
+
+
+        public String getExchange() {
+            return exchange;
+        }
 
         public Long getMarketCap() {
             return marketCap;

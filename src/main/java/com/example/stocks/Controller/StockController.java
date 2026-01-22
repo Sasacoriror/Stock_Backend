@@ -122,9 +122,9 @@ public class StockController {
     @PutMapping("updateData/{id}/{IDs}")
     public ResponseEntity<String> update(
             @PathVariable Long id, @PathVariable Long IDs,
-            @Valid @RequestBody Map<String, Integer> data) {
+            @Valid @RequestBody Map<String, Double> data) {
 
-        databaseService.updateStockData(id, IDs,data);
+        databaseService.updateStockData(id, IDs, data);
         return ResponseEntity.ok("Updated successfully");
     }
 }

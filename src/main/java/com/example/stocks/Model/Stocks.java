@@ -31,7 +31,7 @@ public class Stocks {
 
     @Min(value = 1, message = "The number of shares cannot be lower than 1 (one)")
     @JsonProperty("sharesInn")
-    private int stockQuantity;
+    private Double stockQuantity;
 
     @JsonProperty("companyName")
     private String companyName;
@@ -75,7 +75,7 @@ public class Stocks {
     private Portfolio portfolio;
 
 
-    public Stocks(String stockName, double stockPrice, int stockQuantity, String companyName,  double currentPrice,
+    public Stocks(String stockName, double stockPrice, Double stockQuantity, String companyName,  double currentPrice,
                   Integer dividend, Double drip, double totalDivided, double totalPrice, double totalInvested,
                   double returnValue, double percentageReturn, double openingPrice, Double todaysReturnDollars, Double todaysReturnPercentage) {
         this.stockName = stockName;

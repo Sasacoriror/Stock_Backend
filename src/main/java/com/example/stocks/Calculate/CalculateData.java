@@ -8,7 +8,7 @@ import java.math.RoundingMode;
 @Service
 public class CalculateData {
 
-    public double totalDividend(double cashAmount, int frequenzy, int shares){
+    public double totalDividend(double cashAmount, int frequenzy, double shares){
         return (cashAmount * frequenzy) * shares;
     } 
 
@@ -16,15 +16,15 @@ public class CalculateData {
         return ((dividend * dividendFrequenzy) / pricePerShare) * 100;
     }
 
-    public double totalValue(int shares, double currentPrice){
+    public double totalValue(double shares, double currentPrice){
         return currentPrice * shares;
     }
 
-    public double totalInvested(int shares, double price){
+    public double totalInvested(double shares, double price){
         return price * shares;
     }
 
-    public double returns(double currentPrice, int shares, double price){
+    public double returns(double currentPrice, double shares, double price){
         return  (currentPrice * shares) - (price * shares);
     }
 

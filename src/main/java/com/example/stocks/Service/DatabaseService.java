@@ -81,7 +81,7 @@ public class DatabaseService {
     public void applyPortfolioData(Stocks stock, PriceDTO priceData, DividendDTO dividendData) {
 
             double pricePaid = stock.getStockPrice();
-            int shares = stock.getStockQuantity();
+            double shares = stock.getStockQuantity();
             double currentPrice = priceData.getResults().get(0).getClosePrice();
             double opening_Price= priceData.getResults().get(0).getOpenPrice();
             double totalDividend = 0.0;
@@ -139,7 +139,7 @@ public class DatabaseService {
         Stocks portfolio = stockRepository.findById(stockId).orElseThrow();
         String companyName = basicData.getResults().get(0).getName();
         double pricePaid = portfolio.getStockPrice();
-        int shares = portfolio.getStockQuantity();
+        double shares = portfolio.getStockQuantity();
         double currentPrice = priceData.getResults().get(0).getClosePrice();
         double opening_Price= priceData.getResults().get(0).getOpenPrice();
         double totalDividend = 0.0;
@@ -177,7 +177,7 @@ public class DatabaseService {
     }
 
     @Transactional
-    public void updateStockData(Long id, Long IDs, Map<String, Integer> data){
+    public void updateStockData(Long id, Long IDs, Map<String, Double> data){
 
         Stocks stock = stockRepository.findById(id).orElseThrow(() -> new RuntimeException("Stock Not found"));
 
@@ -195,7 +195,7 @@ public class DatabaseService {
 
         DividendDTO dividendData = APIService.getDividendData(stock.getStockName(), 1, true);
 
-        int shares = stock.getStockQuantity();
+        double shares = stock.getStockQuantity();
         double price = stock.getCurrentPrice();
         double paidPrice = stock.getStockPrice();
         double opening_Price = stock.getOpeningPrice();

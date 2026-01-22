@@ -93,7 +93,7 @@ public class PortfolioSummaryService {
         for (Stocks stock: stocks.getContent()) {
 
             double price_Paid = stock.getStockPrice();
-            int shares = stock.getStockQuantity();
+            double shares = stock.getStockQuantity();
             double openingPrice = stock.getOpeningPrice();
 
             double currentPrice = stock.getCurrentPrice();

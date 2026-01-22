@@ -39,6 +39,6 @@ public interface StockRepository extends JpaRepository<Stocks, Long> {
 
     @Transactional
     @Query(value = "INSERT INTO stocks (stock_Ticker, stock_price, stock_quantity, portfolio_id) VALUES (:name, :price, :quantity, :portfolioId) RETURNING id", nativeQuery = true)
-    Long insertStockNative(@Param("name") String name, @Param("price") double price, @Param("quantity") int quantity, @Param("portfolioId") Long portfolioId);
+    Long insertStockNative(@Param("name") String name, @Param("price") double price, @Param("quantity") double quantity, @Param("portfolioId") Long portfolioId);
 
 }

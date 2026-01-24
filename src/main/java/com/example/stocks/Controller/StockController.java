@@ -24,19 +24,17 @@ public class StockController {
     private final WatchlistRepository watchlistRepository;
     private final ValidateStockService validateStockService;
     private final CacheService cacheService;
-    private final RecordSearchService recordSearchService;
     private final PortfolioSummaryService portfolioSummaryService;
 
     public StockController(DatabaseService databaseService,
                            StockRepository stockRepository, WatchlistRepository watchlistRepository,
-                           ValidateStockService validateStockService, CacheService cacheService, RecordSearchService recordSearchService,
+                           ValidateStockService validateStockService, CacheService cacheService,
                            PortfolioSummaryService portfolioSummaryService) {
         this.databaseService = databaseService;
         this.stockRepository = stockRepository;
         this.watchlistRepository = watchlistRepository;
         this.validateStockService = validateStockService;
         this.cacheService = cacheService;
-        this.recordSearchService = recordSearchService;
         this.portfolioSummaryService = portfolioSummaryService;
     }
 
@@ -45,8 +43,9 @@ public class StockController {
     @PostMapping("addWatchlist")
     public ResponseEntity<?> addWatchlist(@Valid @RequestBody Watchlist watchlist) {
 
-        cacheService.clearCacheWatchlist();
         String stockName = watchlist.getStockTickerInn().toUpperCase();
+        cacheService.clearCacheWatchlist();
+        cacheService.clearBasicStockData(stockName);
         Watchlist watchlistSaved = watchlistRepository.save(watchlist);
         databaseService.addToWatchist(watchlistSaved.getId(), stockName);
 
@@ -66,28 +65,28 @@ public class StockController {
     @GetMapping("search/{ticker}")
     public ResponseEntity<SearchField> getCompanyInformation(@PathVariable("ticker") String ticker) {
         validateStockService.ifStockExist(ticker.toUpperCase());
-        cacheService.clearCacheDividendHistory();
-        return ResponseEntity.ok(recordSearchService.getSearchField(ticker.toUpperCase()));
+        return ResponseEntity.ok(cacheService.basicStockData(ticker.toUpperCase()));
     }
 
     @GetMapping("searchSummary/{ticker}")
     public ResponseEntity<SearchSummary> getSummary(@PathVariable String ticker){
         validateStockService.ifStockExist(ticker.toUpperCase());
-        return ResponseEntity.ok(recordSearchService.getSummary(ticker.toUpperCase()));
+        return ResponseEntity.ok(cacheService.searchSummary(ticker.toUpperCase()));
     }
 
     @GetMapping("searchDividendSummary/{ticker}")
     public ResponseEntity<DividendSearchSummary> getDividendSummary(@PathVariable String ticker){
         validateStockService.ifStockExist(ticker.toUpperCase());
-        return ResponseEntity.ok(recordSearchService.getDividendSummary(ticker.toUpperCase()));
+        return ResponseEntity.ok(cacheService.dividendSummary(ticker.toUpperCase()));
     }
 
     @GetMapping("searchDividendHistory")
     public ResponseEntity<PageResponse<DividendHistory>> getDividendHistory(
+            @RequestParam String ticker,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "25") int size
     ){
-        return ResponseEntity.ok(cacheService.getDividendHistory(page, size));
+        return ResponseEntity.ok(cacheService.getDividendHistory(ticker, page, size));
     }
 
 

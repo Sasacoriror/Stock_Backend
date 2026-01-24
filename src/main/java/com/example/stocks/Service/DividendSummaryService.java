@@ -53,20 +53,29 @@ public class DividendSummaryService {
 
             String stockName = stock.getStockName();
             endpoints.setDividendAPI(stockName, 1);
+
+
             DividendDTO dividendData = APIService.getDividendData(stockName, 1, true);
             List<DividendDTO.Results> call = dividendData.getResults();
 
-            Double yield = ((call.get(0).getCash_amount() * stock.getDividend()) / stock.getCurrentPrice()) * 100;
+            if (dividendData.getResults() != null && !dividendData.getResults().isEmpty()) {
 
-            calenders.add(new DividendCalender(
-                    stockName,
-                    stock.getCompanyName(),
-                    call.get(0).getPayDate(),
-                    call.get(0).getCash_amount() * stock.getStockQuantity(),
-                    stock.getDividend(),
-                    yield,
-                    call.get(0).getExDate()
-            ));
+
+
+                Double yield = ((call.get(0).getCash_amount() * stock.getDividend()) / stock.getCurrentPrice()) * 100;
+
+                calenders.add(new DividendCalender(
+                        stockName,
+                        stock.getCompanyName(),
+                        call.get(0).getPayDate(),
+                        call.get(0).getCash_amount() * stock.getStockQuantity(),
+                        stock.getDividend(),
+                        yield,
+                        call.get(0).getExDate()
+                ));
+            } else {
+                System.out.println("No dividend data");
+            }
         }
 
         return new Dividends(

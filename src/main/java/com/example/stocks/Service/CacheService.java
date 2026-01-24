@@ -3,8 +3,7 @@ package com.example.stocks.Service;
 import com.example.stocks.Model.DividendHistory;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Model.Watchlist;
-import com.example.stocks.Record.PageResponse;
-import com.example.stocks.Record.PortfolioSummary;
+import com.example.stocks.Record.*;
 import com.example.stocks.Respository.PortfolioRepository;
 import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Respository.WatchlistRepository;
@@ -66,11 +65,31 @@ public class CacheService {
 
     @CacheEvict(value = "portfolioSummary", key = "#id")
     public void clearPortfolioCache(Long id){
-        System.out.println("Portfolio summary cache cleared fro ID: "+id);
+        System.out.println("Portfolio summary cache cleared from ID: "+id);
     }
 
-    @Cacheable(value = "dividend_History", key = "#page + '-' + #size")
-    public PageResponse<DividendHistory> getDividendHistory(int page, int size){
+    @Cacheable(value = "BasicStockData", key = "#ticker")
+    public SearchField basicStockData(String ticker){
+        return recordSearchService.getSearchField(ticker);
+    }
+
+    @CacheEvict(value = "BasicStockData", key = "#ticker")
+    public void clearBasicStockData(String ticker){
+        System.out.println("Basic Stock Data cleared for "+ticker);
+    }
+
+    @Cacheable(value = "searchSummary", key = "#ticker")
+    public SearchSummary searchSummary(String ticker) {
+        return recordSearchService.getSummary(ticker);
+    }
+
+    @Cacheable(value = "dividendSummary", key = "#ticker")
+    public DividendSearchSummary dividendSummary(String ticker){
+        return recordSearchService.getDividendSummary(ticker);
+    }
+
+    @Cacheable(value = "dividend_History", key = "#ticker.toUpperCase() + ':' + #page + '-' + #size")
+    public PageResponse<DividendHistory> getDividendHistory(String ticker, int page, int size){
         System.out.println("\nGetting dividend history data\n");
         return recordSearchService.getDividendHistory(page, size);
     }

@@ -4,8 +4,8 @@ import com.example.stocks.Model.Portfolio;
 import com.example.stocks.Model.Stocks;
 import com.example.stocks.Record.Dividends;
 import com.example.stocks.Record.PortfolioSummary;
+import com.example.stocks.Respository.AllPortfolios;
 import com.example.stocks.Respository.PortfolioRepository;
-import com.example.stocks.Respository.StockRepository;
 import com.example.stocks.Service.*;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -20,24 +20,19 @@ import java.util.List;
 public class StockController_V2 {
 
     private final DatabaseService databaseService;
-    private final StockRepository stockRepository;
     private final CacheService cacheService;
     private final PortfolioRepository portfolioRepository;
     private final ValidateStockService validateStockService;
     private final DividendSummaryService dividendData;
-    private final PortfolioSummaryService portfolioSummaryService;
 
-    public StockController_V2(DatabaseService databaseService,
-                              StockRepository stockRepository, CacheService cacheService,
+    public StockController_V2(DatabaseService databaseService, CacheService cacheService,
                               PortfolioRepository portfolioRepository, ValidateStockService validateStockService,
-                              DividendSummaryService dividendData, PortfolioSummaryService portfolioSummaryService) {
+                              DividendSummaryService dividendData) {
         this.databaseService = databaseService;
-        this.stockRepository = stockRepository;
         this.cacheService = cacheService;
         this.portfolioRepository = portfolioRepository;
         this.validateStockService = validateStockService;
         this.dividendData = dividendData;
-        this.portfolioSummaryService = portfolioSummaryService;
     }
 
     ///////////////////////// POSTMAPPING ////////////////////////
@@ -70,13 +65,10 @@ public class StockController_V2 {
         return portfolioRepository.findAll();
     }
 
-    //Shows all portfolios and stocks within them
+    //Shows all portfolios and Ids to the portfolios
     @GetMapping("portfolios")
-    public List<Portfolio> getPortfolios(){
-        return portfolioRepository.findAll()
-                .stream()
-                .map(p -> new Portfolio(p.getId(), p.getName()))
-                .toList();
+    public List<AllPortfolios> getPortfolios(){
+        return portfolioRepository.findAllBy();
     }
 
     //Shows a specific portfolio and shares within it

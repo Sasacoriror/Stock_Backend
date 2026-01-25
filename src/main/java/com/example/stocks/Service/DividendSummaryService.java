@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -58,25 +60,27 @@ public class DividendSummaryService {
             DividendDTO dividendData = APIService.getDividendData(stockName, 1, true);
             List<DividendDTO.Results> call = dividendData.getResults();
 
-            if (dividendData.getResults() != null && !dividendData.getResults().isEmpty()) {
+            if (call != null && !call.isEmpty()) {
 
+                DividendDTO.Results closest = call.get(0);
 
-
-                Double yield = ((call.get(0).getCash_amount() * stock.getDividend()) / stock.getCurrentPrice()) * 100;
+                Double yield = ((closest.getCash_amount() * stock.getDividend()) / stock.getCurrentPrice()) * 100;
 
                 calenders.add(new DividendCalender(
                         stockName,
                         stock.getCompanyName(),
-                        call.get(0).getPayDate(),
-                        call.get(0).getCash_amount() * stock.getStockQuantity(),
+                        closest.getPayDate(),
+                        closest.getCash_amount() * stock.getStockQuantity(),
                         stock.getDividend(),
                         yield,
-                        call.get(0).getExDate()
+                        closest.getExDate()
                 ));
             } else {
                 System.out.println("No dividend data");
             }
         }
+
+        calenders.sort(Comparator.comparing(c -> LocalDate.parse(c.getPaymentDate())));
 
         return new Dividends(
                 fullDividend,

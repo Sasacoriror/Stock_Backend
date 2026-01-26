@@ -109,10 +109,10 @@ public class RecordSearchService {
         return new SearchSummary(
                 exchange,
                 trailing_eps,
-                forward_Eps,
-                peRatio,
-                forward_Pe,
-                beta,
+                calculateData.roundNumbers(forward_Eps),
+                calculateData.roundNumbers(peRatio),
+                calculateData.roundNumbers(forward_Pe),
+                calculateData.roundNumbers(beta),
                 marketCap,
                 description,
                 price,
@@ -120,7 +120,7 @@ public class RecordSearchService {
                 targetLow,
                 targetHigh,
                 numberOfAnalyst,
-                recommendationMean,
+                calculateData.roundNumbers(recommendationMean),
                 recommendationKey
         );
     }

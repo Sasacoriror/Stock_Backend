@@ -1,5 +1,6 @@
 package com.example.stocks.Service;
 
+import com.example.stocks.Calculate.CalculateData;
 import com.example.stocks.DTO.DividendDTO;
 import com.example.stocks.Link.Endpoints;
 import com.example.stocks.Model.DividendCalender;
@@ -29,6 +30,9 @@ public class DividendSummaryService {
     @Autowired
     private API_Service APIService;
 
+    @Autowired
+    private CalculateData calculateData;
+
     public Dividends dividendData() {
 
         List<Stocks> stockData = stockRepository.findAll();
@@ -41,13 +45,10 @@ public class DividendSummaryService {
             fullInvestemnt += stock.getTotalInvested();
         }
 
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        DecimalFormat df = new DecimalFormat("#.##", symbols);
-
-        double monthlyDividend = Double.parseDouble(df.format(fullDividend / 12));
-        double dailyDividend = Double.parseDouble(df.format(fullDividend / 365));
-        double hourlyDividend = Double.parseDouble(df.format(fullDividend / 8765));
-        double yieldOnCost = Double.parseDouble(df.format((fullDividend / fullInvestemnt) * 100));
+        double monthlyDividend = (fullDividend / 12);
+        double dailyDividend = (fullDividend / 365);
+        double hourlyDividend = (fullDividend / 8765);
+        double yieldOnCost = (fullDividend / fullInvestemnt) * 100;
 
         List<DividendCalender> calenders = new ArrayList<>();
 
@@ -64,6 +65,8 @@ public class DividendSummaryService {
 
                 DividendDTO.Results closest = call.get(0);
 
+                String isPaid = isDividendPaid(closest.getPayDate());
+
                 Double yield = ((closest.getCash_amount() * stock.getDividend()) / stock.getCurrentPrice()) * 100;
 
                 calenders.add(new DividendCalender(
@@ -72,8 +75,9 @@ public class DividendSummaryService {
                         closest.getPayDate(),
                         closest.getCash_amount() * stock.getStockQuantity(),
                         stock.getDividend(),
-                        yield,
-                        closest.getExDate()
+                        calculateData.roundNumbers(yield),
+                        closest.getExDate(),
+                        isPaid
                 ));
             } else {
                 System.out.println("No dividend data");
@@ -84,11 +88,22 @@ public class DividendSummaryService {
 
         return new Dividends(
                 fullDividend,
-                monthlyDividend,
-                dailyDividend,
-                hourlyDividend,
-                yieldOnCost,
+                calculateData.roundNumbers(monthlyDividend),
+                calculateData.roundNumbers(dailyDividend),
+                calculateData.roundNumbers(hourlyDividend),
+                calculateData.roundNumbers(yieldOnCost),
                 calenders
         );
+    }
+
+    public String isDividendPaid(String date) {
+        LocalDate dividendDate = LocalDate.parse(date);
+        LocalDate today = LocalDate.now();
+
+        if (dividendDate.isBefore(today)){
+            return "Paid";
+        } else {
+            return "Un-Paid";
+        }
     }
 }

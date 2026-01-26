@@ -33,4 +33,7 @@ public class DividendCalender {
 
     @JsonProperty("Ex_Date")
     private String exDate;
+
+    @JsonProperty("IsPaid")
+    private String isPaid;
 }

@@ -75,9 +75,11 @@ public class RecordSearchService {
 
     public SearchSummary getSummary(String ticker) {
         CompletableFuture<TickerOverviewDTO> basicsFuture = marketDataService.fetchTickerData(ticker);
-        CompletableFuture.allOf(/*priceFuture,*/ basicsFuture).join();
+        CompletableFuture<metricsAndTargetsDTO> metricsTargetFuture = marketDataService.fetchMetricsAndTargets(ticker);
+        CompletableFuture.allOf(metricsTargetFuture, basicsFuture).join();
 
         TickerOverviewDTO basicData = basicsFuture.join();
+        metricsAndTargetsDTO metricsTargetData = metricsTargetFuture.join();
 
         String exchangeCode = basicData.getResults().getExchange();
 
@@ -88,12 +90,38 @@ public class RecordSearchService {
         }+":"+ticker;
 
         String description = basicData.getResults().getDescription();
-        double eps = 0.0;
+
+        double trailing_eps = metricsTargetData.getMetrics().getT_eps();
+        double forward_Eps = metricsTargetData.getMetrics().getF_eps();
+        double peRatio = metricsTargetData.getMetrics().getPe_ratio();
+        double forward_Pe = metricsTargetData.getMetrics().getF_pe();
+        double beta = metricsTargetData.getMetrics().getBeta();
+        double marketCap = metricsTargetData.getMetrics().getMarketCap();
+
+        double price = metricsTargetData.getTargets().getCurrentPrice();
+        double targetMean = metricsTargetData.getTargets().getTargetMean();
+        double targetLow = metricsTargetData.getTargets().getTargetLow();
+        double targetHigh = metricsTargetData.getTargets().getTargetHigh();
+        int numberOfAnalyst = metricsTargetData.getTargets().getAnalystCount();
+        double recommendationMean = metricsTargetData.getTargets().getRecommendationMean();
+        String recommendationKey = metricsTargetData.getTargets().getRecomendationKey();
 
         return new SearchSummary(
                 exchange,
-                eps,
-                description
+                trailing_eps,
+                forward_Eps,
+                peRatio,
+                forward_Pe,
+                beta,
+                marketCap,
+                description,
+                price,
+                targetMean,
+                targetLow,
+                targetHigh,
+                numberOfAnalyst,
+                recommendationMean,
+                recommendationKey
         );
     }
 

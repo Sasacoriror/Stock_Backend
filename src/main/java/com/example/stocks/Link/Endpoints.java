@@ -16,6 +16,7 @@ public class Endpoints {
     private String watchListAPI;
     private String basicTickerInfo;
     private String weekRange;
+    private String metricsAndTargets;
 
     @Value("${api.key}")
     private String APIkey;
@@ -63,6 +64,10 @@ public class Endpoints {
         this.weekRange = url;
     }
 
+    public void setMetricsAndTargets(String ticker) {
+        String url = "http://localhost:8000/stock/"+ticker;
+        this.metricsAndTargets = url;
+    }
 
     // Getting the HTTP get calls to the API
 
@@ -92,5 +97,9 @@ public class Endpoints {
 
     public String getWeekRange() {
         return weekRange;
+    }
+
+    public String getMetricsAndTargets() {
+        return metricsAndTargets;
     }
 }

@@ -48,4 +48,9 @@ public class MarketDataService {
         return CompletableFuture.completedFuture(apiService.getPriceOverTimeData(ticker));
     }
 
+    @Async("marketDataExecutor")
+    public CompletableFuture<metricsAndTargetsDTO> fetchMetricsAndTargets(String ticker){
+        return CompletableFuture.completedFuture(apiService.getMetricsAndTargets(ticker));
+    }
+
 }

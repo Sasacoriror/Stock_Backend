@@ -19,7 +19,6 @@ public class DividendCalender {
     @JsonProperty("Company_Name")
     private String companyName;
 
-    //@JsonFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("Payment_Date")
     private String paymentDate;
 

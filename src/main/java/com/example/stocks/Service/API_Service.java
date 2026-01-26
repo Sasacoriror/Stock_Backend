@@ -195,4 +195,24 @@ public class API_Service {
             throw new RuntimeException("Error parsing JSON response");
         }
     }
+
+    public metricsAndTargetsDTO getMetricsAndTargets(String ticker){
+        endpoints.setMetricsAndTargets(ticker);
+
+        ResponseEntity<String> response = restTemplate
+                .getForEntity(endpoints.getMetricsAndTargets(), String.class);
+
+        if (response.getBody() == null) {
+            throw new RuntimeException("No Response");
+        }
+
+        try {
+            return objectMapper.readValue(response.getBody(), metricsAndTargetsDTO.class);
+        } catch (StockNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error parsing JSON response");
+        }
+    }
 }

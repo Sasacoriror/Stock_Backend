@@ -33,9 +33,6 @@ public class DatabaseService {
     private API_Service APIService;
 
     @Autowired
-    private Endpoints endpoints;
-
-    @Autowired
     private CalculateData calculateData;
 
     @Autowired
@@ -235,24 +232,24 @@ public class DatabaseService {
 
         Optional<Watchlist> watchlist = watchlistRepository.findById(id);
 
+        CompletableFuture<BasicStockDataDTO> basicsFuture = marketDataService.fetchBasics(stockName);
         CompletableFuture<PriceDTO> priceFuture = marketDataService.fetchPrice(stockName);
         CompletableFuture<TickerOverviewDTO> tickerOverviewFuture = marketDataService.fetchTickerData(stockName);
         CompletableFuture<DividendDTO> dividendFuture = marketDataService.fetchDividend(stockName, 1);
-        CompletableFuture<FinancialDTO> financialFuture = marketDataService.fetchFinancials(stockName, 1);
+        CompletableFuture<metricsAndTargetsDTO> metricsTargetFuture = marketDataService.fetchMetricsAndTargets(stockName);
         CompletableFuture<WeekRangeDTO> rangeFuture = marketDataService.fetchWeeksRange(stockName);
-        CompletableFuture.allOf(priceFuture, tickerOverviewFuture, dividendFuture, financialFuture, rangeFuture).join();
+        CompletableFuture.allOf(basicsFuture, priceFuture, tickerOverviewFuture, dividendFuture, metricsTargetFuture, rangeFuture).join();
 
+        BasicStockDataDTO basicData = basicsFuture.join();
         PriceDTO priceData = priceFuture.join();
         TickerOverviewDTO tickerData = tickerOverviewFuture.join();
         DividendDTO dividendData = dividendFuture.join();
-        FinancialDTO financialData = financialFuture.join();
+        metricsAndTargetsDTO metricsTargetData = metricsTargetFuture.join();
         WeekRangeDTO rangeData = rangeFuture.join();
 
 
-        String name = financialData.getResults().get(0).getCompanyName();
-        double pricePerShare = calculateData.pricePerShare(
-                tickerData.getResults().getMarketCap(),
-                tickerData.getResults().getWso());
+        String name = basicData.getResults().get(0).getName();
+        double pricePerShare = metricsTargetData.getTargets().getCurrentPrice();
         double dividendYield = calculateData.dividendYield(
                 dividendData.getResults().get(0).getCash_amount(),
                 dividendData.getResults().get(0).getFrequency(),
@@ -263,10 +260,7 @@ public class DatabaseService {
         double priceChange = calculateData.roundNumbers(pricePerShare - openingPrice);
         double priceChangePercentage = calculateData.roundNumbers(calculateData.percentage(priceChange, openingPrice));
 
-        double EPS = calculateData.roundNumbers(
-                financialData.getResults().get(0).getFinancials().getIncomeStatement().getNetIncome().getValue()
-                        / tickerData.getResults().getWso());
-        double PE_Ratio = calculateData.roundNumbers(priceData.getResults().get(0).getClosePrice() / EPS);
+        double PE_Ratio = metricsTargetData.getMetrics().getPe_ratio();
 
         double highestPrice = rangeData.getResults()
                 .stream()
@@ -286,7 +280,7 @@ public class DatabaseService {
         watchlist.get().setWeeksLow(lowestPrice);
         watchlist.get().setWeeksHigh(highestPrice);
         watchlist.get().setDividendYield(calculateData.roundNumbers(dividendYield));
-        watchlist.get().setPERatio(PE_Ratio); // TODO: shows the wrong PE Ratio
+        watchlist.get().setPERatio(calculateData.roundNumbers(PE_Ratio));
         watchlist.get().setMarketCap(tickerData.getResults().getMarketCap());
     }
 

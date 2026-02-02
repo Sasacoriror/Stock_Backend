@@ -44,10 +44,12 @@ public class RecordSearchService {
 
         CompletableFuture<PriceDTO> priceFuture = marketDataService.fetchPrice(ticker);
         CompletableFuture<BasicStockDataDTO> basicsFuture = marketDataService.fetchBasics(ticker);
-        CompletableFuture.allOf(priceFuture, basicsFuture).join();
+        CompletableFuture<metricsAndTargetsDTO> metricsTargetFuture = marketDataService.fetchMetricsAndTargets(ticker);
+        CompletableFuture.allOf(priceFuture, basicsFuture, metricsTargetFuture).join();
 
         PriceDTO priceData = priceFuture.join();
         BasicStockDataDTO basicData = basicsFuture.join();
+        metricsAndTargetsDTO metricsTargetData = metricsTargetFuture.join();
 
         String companyTicker = ticker;
         String companyName = basicData.getResults().get(0).getName();
@@ -56,7 +58,7 @@ public class RecordSearchService {
 
         boolean insideWatchlist = idOfStock.isPresent();
 
-        double currentPrice = priceData.getResults().get(0).getClosePrice();
+        double currentPrice = metricsTargetData.getTargets().getCurrentPrice();
         double openingPrice = priceData.getResults().get(0).getOpenPrice();
         double daysChangeDollars = calculateData.roundNumbers(currentPrice - openingPrice);
         double daysChangePercentage = calculateData.roundNumbers(calculateData.percentage(daysChangeDollars, openingPrice));

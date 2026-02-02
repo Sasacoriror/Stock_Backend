@@ -10,13 +10,12 @@ import com.example.stocks.Respository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class DividendSummaryService {
@@ -37,18 +36,18 @@ public class DividendSummaryService {
 
         List<Stocks> stockData = stockRepository.findAll();
 
-        double fullDividend = 0.0;
-        double fullInvestemnt = 0.0;
+        BigDecimal fullDividend = BigDecimal.ZERO;
+        BigDecimal fullInvestemnt = BigDecimal.ZERO;
 
         for (Stocks stock : stockData) {
-            fullDividend += stock.getTotalDivided();
-            fullInvestemnt += stock.getTotalInvested();
+            fullDividend = fullDividend.add(BigDecimal.valueOf(stock.getTotalDivided()));
+            fullInvestemnt = fullInvestemnt.add(BigDecimal.valueOf(stock.getTotalInvested()));
         }
 
-        double monthlyDividend = (fullDividend / 12);
-        double dailyDividend = (fullDividend / 365);
-        double hourlyDividend = (fullDividend / 8765);
-        double yieldOnCost = (fullDividend / fullInvestemnt) * 100;
+        BigDecimal monthlyDividend = fullDividend.divide(BigDecimal.valueOf(12), 10, RoundingMode.HALF_UP);
+        BigDecimal dailyDividend = fullDividend.divide(BigDecimal.valueOf(365), 10, RoundingMode.HALF_UP);
+        BigDecimal hourlyDividend = dailyDividend.divide(BigDecimal.valueOf(24), 10, RoundingMode.HALF_UP);
+        BigDecimal yieldOnCost = fullDividend.divide(fullInvestemnt, 10, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
 
         List<DividendCalender> calenders = new ArrayList<>();
 
@@ -56,7 +55,6 @@ public class DividendSummaryService {
 
             String stockName = stock.getStockName();
             endpoints.setDividendAPI(stockName, 1);
-
 
             DividendDTO dividendData = APIService.getDividendData(stockName, 1, true);
             List<DividendDTO.Results> call = dividendData.getResults();
@@ -87,11 +85,11 @@ public class DividendSummaryService {
         calenders.sort(Comparator.comparing(c -> LocalDate.parse(c.getPaymentDate())));
 
         return new Dividends(
-                fullDividend,
-                calculateData.roundNumbers(monthlyDividend),
-                calculateData.roundNumbers(dailyDividend),
-                calculateData.roundNumbers(hourlyDividend),
-                calculateData.roundNumbers(yieldOnCost),
+                fullDividend.setScale(3, RoundingMode.HALF_UP),
+                monthlyDividend.setScale(3, RoundingMode.HALF_UP),
+                dailyDividend.setScale(3, RoundingMode.HALF_UP),
+                hourlyDividend.setScale(3, RoundingMode.HALF_UP),
+                yieldOnCost.setScale(2,RoundingMode.HALF_UP),
                 calenders
         );
     }

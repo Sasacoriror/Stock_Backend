@@ -59,9 +59,10 @@ public class RecordSearchService {
         boolean insideWatchlist = idOfStock.isPresent();
 
         double currentPrice = metricsTargetData.getTargets().getCurrentPrice();
-        double openingPrice = priceData.getResults().get(0).getOpenPrice();
-        double daysChangeDollars = calculateData.roundNumbers(currentPrice - openingPrice);
-        double daysChangePercentage = calculateData.roundNumbers(calculateData.percentage(daysChangeDollars, openingPrice));
+        double closingPrice = priceData.getResults().get(0).getClosePrice();
+        double daysChangeDollars = calculateData.roundNumbers(currentPrice - closingPrice);
+        double daysChangePercentage = calculateData.roundNumbers(calculateData.percentage(daysChangeDollars, closingPrice));
+
 
         return new SearchField(
                 companyTicker,

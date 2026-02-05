@@ -250,10 +250,14 @@ public class DatabaseService {
 
         String name = basicData.getResults().get(0).getName();
         double pricePerShare = metricsTargetData.getTargets().getCurrentPrice();
-        double dividendYield = calculateData.dividendYield(
-                dividendData.getResults().get(0).getCash_amount(),
-                dividendData.getResults().get(0).getFrequency(),
-                pricePerShare);
+        double dividendYield = 0.0;
+
+        if (dividendData.getResults() != null && !dividendData.getResults().isEmpty()) {
+            dividendYield = calculateData.dividendYield(
+                    dividendData.getResults().get(0).getCash_amount(),
+                    dividendData.getResults().get(0).getFrequency(),
+                    pricePerShare);
+        }
 
         double openingPrice = priceData.getResults().get(0).getOpenPrice();
 

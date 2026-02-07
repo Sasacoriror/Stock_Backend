@@ -108,6 +108,7 @@ public class RecordSearchService {
         int numberOfAnalyst = metricsTargetData.getTargets().getAnalystCount();
         double recommendationMean = metricsTargetData.getTargets().getRecommendationMean();
         String recommendationKey = metricsTargetData.getTargets().getRecomendationKey();
+        double percentage = metricsTargetData.getTargets().getPercentageGain();
 
         return new SearchSummary(
                 exchange,
@@ -124,7 +125,17 @@ public class RecordSearchService {
                 targetHigh,
                 numberOfAnalyst,
                 calculateData.roundNumbers(recommendationMean),
-                recommendationKey
+                recommendationKey,
+                percentage,
+                metricsTargetData.getPercentageGainMoney().getOneDay(),
+                metricsTargetData.getPercentageGainMoney().getFiveDay(),
+                metricsTargetData.getPercentageGainMoney().getOneMonth(),
+                metricsTargetData.getPercentageGainMoney().getSixMonth(),
+                metricsTargetData.getPercentageGainMoney().getYTD(),
+                metricsTargetData.getPercentageGainMoney().getOneYear(),
+                metricsTargetData.getPercentageGainMoney().getThreeYear(),
+                metricsTargetData.getPercentageGainMoney().getFiveYear(),
+                metricsTargetData.getPercentageGainMoney().getTenYear()
         );
     }
 

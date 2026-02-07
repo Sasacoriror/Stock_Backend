@@ -20,6 +20,15 @@ public record SearchSummary(
         @JsonProperty("target_high") Double targetHigh,
         @JsonProperty("analyst_count") int analystCount,
         @JsonProperty("recommendation_mean") Double recommendationMean,
-        @JsonProperty("recommendation_key") String recomendationKey
-
+        @JsonProperty("recommendation_key") String recomendationKey,
+        @JsonProperty("percentage_Gain") Double percentageGain,
+        @JsonProperty("one_Day") Double oneDay,
+        @JsonProperty("five_day") Double fiveDay,
+        @JsonProperty("one_Month") Double oneMonth,
+        @JsonProperty("six_Month") Double sixMonth,
+        @JsonProperty("year_To_Date") Double YTD,
+        @JsonProperty("one_Year") Double oneYear,
+        @JsonProperty("three_Year") Double threeYear,
+        @JsonProperty("five_Year") Double fiveYear,
+        @JsonProperty("ten_Year") Double tenYears
 ) {}

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.lang.annotation.Target;
+import java.util.Map;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -16,12 +17,19 @@ public class metricsAndTargetsDTO {
     @JsonProperty("Target")
     private Target targets;
 
+    @JsonProperty("priceChangePercentage")
+    private PercentageGainMoney percentageGainMoney;
+
     public Metrics getMetrics() {
         return metrics;
     }
 
     public Target getTargets() {
         return targets;
+    }
+
+    public PercentageGainMoney getPercentageGain() {
+        return percentageGainMoney;
     }
 
     @Data
@@ -96,6 +104,9 @@ public class metricsAndTargetsDTO {
         @JsonProperty("recommendation_key")
         private String recomendationKey;
 
+        @JsonProperty("implied_upside_pct")
+        private Double percentageGain;
+
         public Double getCurrentPrice() {
             return currentPrice;
         }
@@ -123,5 +134,43 @@ public class metricsAndTargetsDTO {
         public String getRecomendationKey() {
             return recomendationKey;
         }
+
+        public Double getPercentageGain() {
+            return percentageGain;
+        }
+    }
+
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class PercentageGainMoney {
+
+        @JsonProperty("one_Day")
+        private Double oneDay;
+
+        @JsonProperty("five_Day")
+        private Double fiveDay;
+
+        @JsonProperty("one_Month")
+        private Double oneMonth;
+
+        @JsonProperty("six_Month")
+        private Double sixMonth;
+
+        @JsonProperty("year_To_Date")
+        private Double YTD;
+
+        @JsonProperty("one_Year")
+        private Double oneYear;
+
+        @JsonProperty("three_Year")
+        private Double threeYear;
+
+        @JsonProperty("five_Year")
+        private Double fiveYear;
+
+        @JsonProperty("ten_Year")
+        private Double tenYear;
+
+
     }
 }

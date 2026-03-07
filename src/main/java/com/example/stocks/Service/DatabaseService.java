@@ -119,6 +119,7 @@ public class DatabaseService {
 
         cacheService.clearStocksPortfolio(id);
         cacheService.clearPortfolioCache(id);
+        cacheService.clear_MoneyEarned_And_moneyToEarn();
 
         Long stockId = stockRepository.insertStockNative(stocks.getStockName(), stocks.getStockPrice(), stocks.getStockQuantity(),  stocks.getPortfolio().getId());
 
@@ -186,6 +187,7 @@ public class DatabaseService {
         UpdateDatabase(stock);
         cacheService.clearPortfolioCache(IDs);
         cacheService.clearStocksPortfolio(IDs);
+        cacheService.clear_MoneyEarned_And_moneyToEarn();
     }
 
     public void UpdateDatabase(Stocks stock){

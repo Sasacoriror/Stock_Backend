@@ -33,6 +33,9 @@ public class CacheService {
     @Autowired
     private PortfolioSummaryService portfolioSummaryService;
 
+    @Autowired
+    private DividendSummaryService dividendData;
+
 
     @Cacheable(value = "allWatchlist", key = "#page + '-' + #size")
     public Page<Watchlist> getEntireWatchlist(int page, int size){
@@ -97,6 +100,16 @@ public class CacheService {
     @CacheEvict(value = "dividend_History", allEntries = true)
     public void clearCacheDividendHistory(){
         System.out.println("Cache cleared.");
+    }
+
+    @Cacheable(value = "dividendPayment")
+    public Dividends moneyEarned_And_moneyToEarn(){
+        return dividendData.dividendData();
+    }
+
+    @CacheEvict(value = "dividendPayment", allEntries = true)
+    public void clear_MoneyEarned_And_moneyToEarn(){
+        System.out.println("MoneyEarned_And_moneyToEarn cached cleared");
     }
 
 }

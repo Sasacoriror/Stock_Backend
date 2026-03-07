@@ -87,6 +87,7 @@ public class StockController_V2 {
 
     @GetMapping("dividend_Summary")
     public Dividends getDividendSummary(){
-        return dividendData.dividendData();
+        return cacheService.moneyEarned_And_moneyToEarn();
+        //return dividendData.dividendData();
     }
 }

@@ -105,6 +105,7 @@ public class StockController {
     public ResponseEntity<String> delete(@PathVariable("id") Long id, @PathVariable Long IDs) {
         cacheService.clearStocksPortfolio(IDs);
         cacheService.clearPortfolioCache(IDs);
+        cacheService.clear_MoneyEarned_And_moneyToEarn();
         stockRepository.deleteById(id);
         return ResponseEntity.ok("Stock with ticker symbol "+id+" deleted successfully");
     }

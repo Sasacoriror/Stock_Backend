@@ -7,13 +7,19 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.cache.support.CompositeCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
@@ -39,15 +45,40 @@ public class appConfig {
     }
 
     @Bean
-    public CacheManager cacheManager(){
+    public CacheManager caffeineCacheManager(){
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(
                 "getAllShares", "allWatchlist", "dividend_History",
-                "portfolioSummary", "BasicStockData", "searchSummary", "dividendSummary");
+                "portfolioSummary", "BasicStockData", "searchSummary", "dividendSummary", "dividendPayment");
         cacheManager.setCaffeine(
                 Caffeine.newBuilder()
                         .expireAfterWrite(10, TimeUnit.MINUTES)
                         .maximumSize(1000)
         );
+        return cacheManager;
+    }
+
+    @Bean
+    public RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory){
+
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofMinutes(30));
+
+        return RedisCacheManager.builder(connectionFactory)
+                .cacheDefaults(config)
+                .build();
+    }
+
+    @Bean
+    @Primary
+    public CacheManager cacheManager(
+            CaffeineCacheManager caffeineCacheManager,
+            RedisCacheManager redisCacheManager){
+
+        CompositeCacheManager cacheManager =
+                new CompositeCacheManager(caffeineCacheManager, redisCacheManager);
+
+        cacheManager.setFallbackToNoOpCache(false);
+
         return cacheManager;
     }
 

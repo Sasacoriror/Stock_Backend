@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  DB_HOST: db
+  DB_NAME: stock_dividend_tracker
+  DB_PORT: "5432"

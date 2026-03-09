@@ -6,6 +6,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.support.CompositeCacheManager;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -25,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableAsync
+@EnableCaching
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 public class appConfig {
 
@@ -43,32 +47,35 @@ public class appConfig {
             }
         };
     }
-
+/*
     @Bean
     public CacheManager caffeineCacheManager(){
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager(
-                "getAllShares", "allWatchlist", "dividend_History",
-                "portfolioSummary", "BasicStockData", "searchSummary", "dividendSummary", "dividendPayment");
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCaffeine(
                 Caffeine.newBuilder()
+                        .recordStats()
                         .expireAfterWrite(10, TimeUnit.MINUTES)
                         .maximumSize(1000)
         );
         return cacheManager;
-    }
+    }*/
 
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory){
 
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(30));
+                .entryTtl(Duration.ofMinutes(30))
+                .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair
+                                .fromSerializer(new GenericJackson2JsonRedisSerializer())
+                );
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(config)
                 .build();
     }
 
-    @Bean
+  /*  @Bean
     @Primary
     public CacheManager cacheManager(
             CaffeineCacheManager caffeineCacheManager,
@@ -80,7 +87,7 @@ public class appConfig {
         cacheManager.setFallbackToNoOpCache(false);
 
         return cacheManager;
-    }
+    }*/
 
     @Bean(name = "marketDataExecutor")
     public Executor marketDataExecutor(){
